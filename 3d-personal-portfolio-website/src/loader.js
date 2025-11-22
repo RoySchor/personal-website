@@ -9,18 +9,30 @@ export function createMatrixLoader(canvasId = 'loader') {
   let raf = 0;
 
   let progress = 0;
+  let DPR = 1;
+  let CW = 0;
+  let CH = 0;
 
   function size() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    columns = Math.floor(canvas.width / fontSize);
+    DPR = Math.max(1, window.devicePixelRatio || 1);
+    // Let CSS fill the box set by `inset:0`
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    // Backing store in device pixels
+    CW = window.innerWidth;
+    CH = window.innerHeight;
+    canvas.width  = Math.round(CW * DPR);
+    canvas.height = Math.round(CH * DPR);
+    // Draw in CSS pixels again
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    columns = Math.ceil(CW / fontSize);
     drops = new Array(columns).fill(1);
   }
 
   function drawMatrix() {
     // translucent black for trails
     ctx.fillStyle = 'rgba(0,0,0,0.08)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, CW, CH);
 
     ctx.fillStyle = '#00ff88';
     ctx.font = `${fontSize}px monospace`;
@@ -32,7 +44,7 @@ export function createMatrixLoader(canvasId = 'loader') {
 
       ctx.fillText(char, x, y);
 
-      if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      if (y > CH && Math.random() > 0.975) drops[i] = 0;
       drops[i]++;
     }
   }
@@ -42,11 +54,11 @@ export function createMatrixLoader(canvasId = 'loader') {
     const pctText = `${Math.round(pct * 100)}%`;
 
     // Box geometry
-    const W = Math.min(canvas.width, canvas.height);
+    const W = Math.min(CW, CH);
     const boxWidth = Math.max(260, Math.floor(W * 0.45));
     const boxHeight = 28;
-    const boxX = Math.floor((canvas.width - boxWidth) / 2);
-    const boxY = Math.floor(canvas.height / 2 + 24); // a bit below center
+    const boxX = Math.floor((CW - boxWidth) / 2);
+    const boxY = Math.floor(CH / 2 + 24);
     const radius = 8;
 
     // Label (percent) above the box
@@ -56,14 +68,13 @@ export function createMatrixLoader(canvasId = 'loader') {
     ctx.fillStyle = '#FFE58A'; // warm yellow
     ctx.shadowColor = 'rgba(0,0,0,0.55)';
     ctx.shadowBlur = 8;
-    ctx.fillText(pctText, canvas.width / 2, boxY - 10);
+    ctx.fillText(pctText, CW / 2, boxY - 10);
     ctx.shadowBlur = 0;
 
     // Box background (subtle dark panel)
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
     roundedRect(ctx, boxX, boxY, boxWidth, boxHeight, radius, true, false);
 
-    // Border (yellow-ish)
     ctx.lineWidth = 2;
     ctx.strokeStyle = '#FFD766';
     roundedRect(ctx, boxX, boxY, boxWidth, boxHeight, radius, false, true);
