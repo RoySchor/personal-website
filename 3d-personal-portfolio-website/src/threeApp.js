@@ -12,6 +12,7 @@ export function initThree({
   onAllAssetsLoaded = () => {},
   onProgress = () => {}, // <— NEW
 } = {}) {
+  console.log(modelUrl);
   const canvas = document.getElementById(canvasId);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
