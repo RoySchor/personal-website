@@ -1,4 +1,4 @@
-name: Deploy Roy Schor 3D Portfolio Website to GitHub Pages
+name: Deploy 3D Portfolio Website
 
 on:
   push:
