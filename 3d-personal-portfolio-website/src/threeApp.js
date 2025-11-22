@@ -4,6 +4,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 
 export function initThree({
   canvasId = 'c',
@@ -21,6 +22,16 @@ export function initThree({
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.setClearAlpha(0);
+
+  // CSS3D Renderer for HTML overlay
+  const cssRenderer = new CSS3DRenderer();
+  cssRenderer.setSize(window.innerWidth, window.innerHeight);
+  cssRenderer.domElement.style.position = 'absolute';
+  cssRenderer.domElement.style.top = '0';
+  cssRenderer.domElement.style.left = '0';
+  cssRenderer.domElement.style.pointerEvents = 'none';
+  cssRenderer.domElement.style.zIndex = '10'; // Make sure it's on top
+  document.body.appendChild(cssRenderer.domElement);
 
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -97,6 +108,58 @@ export function initThree({
 
       scene.add(root);
 
+      // Add HTML to MacBook screen
+      const screenMesh = root.getObjectByName('Macbook_screen');
+      if (screenMesh) {
+        // Create a bright test div (easier to see than iframe)
+        const testDiv = document.createElement('div');
+        testDiv.style.width = '1920px';
+        testDiv.style.height = '1200px';
+        testDiv.style.background = 'linear-gradient(45deg, #ff00ff, #00ffff)';
+        testDiv.style.border = '20px solid lime';
+        testDiv.style.display = 'flex';
+        testDiv.style.alignItems = 'center';
+        testDiv.style.justifyContent = 'center';
+        testDiv.style.fontSize = '200px';
+        testDiv.style.fontWeight = 'bold';
+        testDiv.style.color = 'yellow';
+        testDiv.innerHTML = 'TEST';
+        testDiv.style.pointerEvents = 'auto';
+
+        // Wrap in CSS3DObject
+        const cssObject = new CSS3DObject(testDiv);
+
+        // Get WORLD transforms (includes parent transforms from Blender hierarchy)
+        screenMesh.updateWorldMatrix(true, false);
+
+        const worldPos = new THREE.Vector3();
+        const worldQuat = new THREE.Quaternion();
+        const worldScale = new THREE.Vector3();
+
+        worldPos.setFromMatrixPosition(screenMesh.matrixWorld);
+        worldQuat.setFromRotationMatrix(screenMesh.matrixWorld);
+        worldScale.setFromMatrixScale(screenMesh.matrixWorld);
+
+        cssObject.position.copy(worldPos);
+        cssObject.quaternion.copy(worldQuat);
+
+        // Apply the rotation correction we found earlier
+        const correctionQuat = new THREE.Quaternion();
+        correctionQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 3.9);
+        cssObject.quaternion.multiply(correctionQuat);
+
+        // Non-uniform scale: adjust X (width) and Y (height) independently
+        // Use NEGATIVE scale to mirror instead of rotating!
+        const scaleX = -0.00245; // Negative to flip horizontally
+        const scaleY = 0.00034;
+        const scaleZ = 0.0003;
+        cssObject.scale.set(scaleX, scaleY, scaleZ);
+
+        scene.add(cssObject);
+      } else {
+        console.error('❌ Macbook_screen not found');
+      }
+
       // Camera placement
       const box = new THREE.Box3().setFromObject(root);
       const center = box.getCenter(new THREE.Vector3());
@@ -144,6 +207,7 @@ export function initThree({
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    cssRenderer.setSize(window.innerWidth, window.innerHeight);
   }
   window.addEventListener('resize', onResize);
 
@@ -151,6 +215,7 @@ export function initThree({
     window.requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
+    cssRenderer.render(scene, camera);
   }
   animate();
 
