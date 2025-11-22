@@ -9,12 +9,25 @@
       body {
         background: #d6d7d7
       }
-      canvas { display: block; width: 100vw; height: 100vh; }
+      #c, #loader {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+      }
+      #loader {
+        position: fixed; inset: 0; z-index: 9999;
+        background: #000;
+        transition: opacity 400ms ease;
+      }
+      #loader.hide { opacity: 0; pointer-events: none; }
     </style>
   </head>
   <body>
+    <!-- matrix loader overlay -->
+    <canvas id="loader"></canvas>
+    <!-- three.js canvas -->
     <canvas id="c"></canvas>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
-
