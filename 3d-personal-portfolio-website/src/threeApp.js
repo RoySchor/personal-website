@@ -61,40 +61,6 @@ export function initThree({
   fill.position.set(-4, 3, -5);
   scene.add(fill);
 
-  function getViewportRect() {
-    const vv = window.visualViewport;
-    if (vv) {
-      return {
-        w: Math.round(vv.width),
-        h: Math.round(vv.height),
-        x: Math.round(vv.offsetLeft),
-        y: Math.round(vv.offsetTop),
-      };
-    }
-    return { w: window.innerWidth, h: window.innerHeight, x: 0, y: 0 };
-  }
-
-  function syncViewport() {
-    const { w, h, x, y } = getViewportRect();
-
-    // Size both renderers to the *same* visual viewport
-    renderer.setSize(w, h, false);
-    cssRenderer.setSize(w, h);
-
-    // Keep camera in sync
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-
-    // When the URL bar shows/hides, the visual viewport shifts.
-    // Nudge the CSS layer by that offset so CSS3D == WebGL.
-    cssRenderer.domElement.style.transform = `translate(${x}px, ${y}px)`;
-  }
-
-  syncViewport();
-  window.addEventListener('resize', syncViewport);
-  window.visualViewport?.addEventListener('resize', syncViewport);
-  window.visualViewport?.addEventListener('scroll', syncViewport);
-
   // Loading manager: progress + done
   const manager = new THREE.LoadingManager(
     () => {
