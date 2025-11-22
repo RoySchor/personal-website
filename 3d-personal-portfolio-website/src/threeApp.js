@@ -6,13 +6,13 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
 import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
 
+import roomUrl from './assets/portfolio-room.glb?url';
+
 export function initThree({
   canvasId = 'c',
-  modelUrl = `${import.meta.env.BASE_URL}assets/portfolio-room.glb`,
   onAllAssetsLoaded = () => {},
-  onProgress = () => {}, // <— NEW
+  onProgress = () => {},
 } = {}) {
-  console.log(modelUrl);
   const canvas = document.getElementById(canvasId);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -74,12 +74,14 @@ export function initThree({
   );
 
   const gltfLoader = new GLTFLoader(manager);
-  const ktx2 = new KTX2Loader(manager).setTranscoderPath('/basis/').detectSupport(renderer);
+  const ktx2 = new KTX2Loader(manager)
+    .setTranscoderPath(`${import.meta.env.BASE_URL}basis/`)
+    .detectSupport(renderer);
   gltfLoader.setKTX2Loader(ktx2);
   gltfLoader.setMeshoptDecoder(MeshoptDecoder);
 
   gltfLoader.load(
-    modelUrl,
+    roomUrl,
     (gltf) => {
       const root = gltf.scene;
 
