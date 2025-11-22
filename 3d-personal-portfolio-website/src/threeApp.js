@@ -1,4 +1,3 @@
-// src/threeApp.js
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
@@ -10,8 +9,8 @@ export function initThree({
   canvasId = 'c',
   modelUrl = '/assets/portfolio-room.glb',
   onAllAssetsLoaded = () => {},
+  onProgress = () => {}, // <— NEW
 } = {}) {
-  // renderer
   const canvas = document.getElementById(canvasId);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -23,12 +22,10 @@ export function initThree({
   renderer.toneMappingExposure = 1.0;
   renderer.setClearAlpha(0);
 
-  // scene
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
 
-  // camera + controls
   const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 100);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -36,7 +33,6 @@ export function initThree({
   controls.maxDistance = 12;
   controls.minDistance = 1.0;
 
-  // lights
   const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
   scene.add(hemi);
 
@@ -52,24 +48,29 @@ export function initThree({
   fill.position.set(-4, 3, -5);
   scene.add(fill);
 
-  // loading manager: fires once KTX2 + GLB done
-  const manager = new THREE.LoadingManager(() => {
-    onAllAssetsLoaded();
-  });
+  // Loading manager: progress + done
+  const manager = new THREE.LoadingManager(
+    () => {
+      onProgress(1, 1, 1); // ensure 100%
+      onAllAssetsLoaded();
+    },
+    (url, loaded, total) => {
+      // Some pipelines don't know 'total'; clamp if needed
+      const pct = total ? loaded / total : 0;
+      onProgress(pct, loaded, total);
+    }
+  );
 
-  // loaders
   const gltfLoader = new GLTFLoader(manager);
   const ktx2 = new KTX2Loader(manager).setTranscoderPath('/basis/').detectSupport(renderer);
   gltfLoader.setKTX2Loader(ktx2);
   gltfLoader.setMeshoptDecoder(MeshoptDecoder);
 
-  // load model
   gltfLoader.load(
     modelUrl,
     (gltf) => {
       const root = gltf.scene;
 
-      // material tweaks (glare)
       root.traverse((obj) => {
         if (obj.isMesh) {
           obj.castShadow = true;
@@ -96,7 +97,7 @@ export function initThree({
 
       scene.add(root);
 
-      // frame and place camera (~35° down, rotated to look into room)
+      // Camera placement
       const box = new THREE.Box3().setFromObject(root);
       const center = box.getCenter(new THREE.Vector3());
       const sizeVec = box.getSize(new THREE.Vector3());
@@ -106,7 +107,6 @@ export function initThree({
 
       const horizontalDist = radius * 1.75;
       const y = horizontalDist * 0.6;
-      // look from diagonal front-left -> into room (swap sign on Z to rotate)
       camera.position.set(center.x + horizontalDist, center.y + y, center.z - horizontalDist);
       camera.lookAt(center);
 
@@ -117,7 +117,6 @@ export function initThree({
     (err) => console.error('GLB load error:', err)
   );
 
-  // resize & loop
   function onResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -132,6 +131,5 @@ export function initThree({
   }
   animate();
 
-  // expose a few handles if you need them later
   return { renderer, scene, camera, controls };
 }
