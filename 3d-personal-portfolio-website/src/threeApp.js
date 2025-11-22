@@ -112,6 +112,32 @@ export function initThree({
 
       controls.maxPolarAngle = Math.PI * 0.49;
       controls.update();
+
+      // === Clamp OrbitControls so you can't rotate to the opposite corner ===
+
+      const startAz = Math.atan2(
+        camera.position.z - controls.target.z,
+        camera.position.x - controls.target.x
+      );
+
+      // How wide you want to allow (± around current view)
+      const halfFan = THREE.MathUtils.degToRad(125); // tighten/loosen as you like
+
+      requestAnimationFrame(() => {
+        // Allow only a fan around the current view
+        controls.minAzimuthAngle = startAz + halfFan;
+        controls.maxAzimuthAngle = startAz - halfFan;
+
+        // Vertical tilt limits
+        controls.minPolarAngle = THREE.MathUtils.degToRad(20);
+        // controls.maxPolarAngle = THREE.MathUtils.degToRad(80);
+
+        // Zoom limits
+        controls.minDistance = 1.2;
+        controls.maxDistance = 8.0;
+
+        controls.update();
+      });
     },
     undefined,
     (err) => console.error('GLB load error:', err)
