@@ -124,7 +124,7 @@ export function initThree({
         testDiv.style.fontWeight = 'bold';
         testDiv.style.color = 'yellow';
         testDiv.innerHTML = 'TEST';
-        testDiv.style.pointerEvents = 'auto';
+        testDiv.style.pointerEvents = 'none';
 
         // Wrap in CSS3DObject
         const cssObject = new CSS3DObject(testDiv);
