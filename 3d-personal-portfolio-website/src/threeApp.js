@@ -8,7 +8,7 @@ import { CSS3DRenderer, CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRe
 
 export function initThree({
   canvasId = 'c',
-  modelUrl = '/assets/portfolio-room.glb',
+  modelUrl = `${import.meta.env.BASE_URL}assets/portfolio-room.glb`,
   onAllAssetsLoaded = () => {},
   onProgress = () => {}, // <— NEW
 } = {}) {
