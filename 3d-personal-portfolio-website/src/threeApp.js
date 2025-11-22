@@ -187,8 +187,7 @@ export function initThree({
         camera.position.x - controls.target.x
       );
 
-      const halfFanDeg = isCoarse ? 100 : 125;
-      const halfFan = THREE.MathUtils.degToRad(halfFanDeg);
+      const halfFan = THREE.MathUtils.degToRad(120);
 
       requestAnimationFrame(() => {
         // Allow only a fan around the current view
