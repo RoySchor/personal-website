@@ -46,6 +46,37 @@ export function initThree({
   controls.maxDistance = 12;
   controls.minDistance = 1.0;
 
+  function getVV() {
+    const vv = window.visualViewport;
+    return vv
+      ? { w: Math.round(vv.width), h: Math.round(vv.height), x: Math.round(vv.offsetLeft), y: Math.round(vv.offsetTop) }
+      : { w: window.innerWidth, h: window.innerHeight, x: 0, y: 0 };
+  }
+
+  function syncViewport() {
+    const { w, h, x, y } = getVV();
+
+    renderer.setSize(w, h, false);
+    cssRenderer.setSize(w, h);
+
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+
+    cssRenderer.domElement.style.transform = `translate(${x}px, ${y}px)`;
+  }
+
+  syncViewport();
+  requestAnimationFrame(() => {
+    syncViewport();
+    requestAnimationFrame(syncViewport);
+  });
+
+  window.addEventListener('resize', syncViewport, { passive: true });
+  window.visualViewport?.addEventListener('resize', syncViewport, { passive: true });
+  window.visualViewport?.addEventListener('scroll', syncViewport, { passive: true });
+  window.addEventListener('orientationchange', () => setTimeout(syncViewport, 0), { passive: true });
+  window.addEventListener('pageshow', () => setTimeout(syncViewport, 0));
+
   const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
   scene.add(hemi);
 
