@@ -105,7 +105,10 @@ export function initThree({
 
       controls.target.copy(center);
 
-      const horizontalDist = radius * 1.75;
+      const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+      const phoneZoomOutMultiplier = isCoarse ? 1.15 : 1.0;
+      const horizontalDist = radius * 1.75 * phoneZoomOutMultiplier;
+
       const y = horizontalDist * 0.6;
       camera.position.set(center.x + horizontalDist, center.y + y, center.z - horizontalDist);
       camera.lookAt(center);
@@ -113,27 +116,21 @@ export function initThree({
       controls.maxPolarAngle = Math.PI * 0.49;
       controls.update();
 
-      // === Clamp OrbitControls so you can't rotate to the opposite corner ===
-
       const startAz = Math.atan2(
         camera.position.z - controls.target.z,
         camera.position.x - controls.target.x
       );
 
-      // How wide you want to allow (± around current view)
-      const halfFan = THREE.MathUtils.degToRad(125); // tighten/loosen as you like
+      const halfFanDeg = isCoarse ? 100 : 125;
+      const halfFan = THREE.MathUtils.degToRad(halfFanDeg);
 
       requestAnimationFrame(() => {
         // Allow only a fan around the current view
         controls.minAzimuthAngle = startAz + halfFan;
         controls.maxAzimuthAngle = startAz - halfFan;
 
-        // Vertical tilt limits
-        controls.minPolarAngle = THREE.MathUtils.degToRad(20);
-        // controls.maxPolarAngle = THREE.MathUtils.degToRad(80);
-
         // Zoom limits
-        controls.minDistance = 1.2;
+        controls.minDistance = .5;
         controls.maxDistance = 8.0;
 
         controls.update();
