@@ -2,13 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
     <link rel="shortcut icon" sizes="114x114" type="image/x-icon" href="./assets/Headshot-favicon.jpg" />
     <title>Roy Schor</title>
     <style>
       html, body { height: 100%; margin: 0; }
       body {
-        background: #d6d7d7
+        background: #d6d7d7;
+        overflow: hidden;
       }
       #c, #loader {
         display: block;
@@ -17,6 +18,7 @@
         position: fixed;
         top: 0;
         left: 0;
+        inset: 0;
         z-index: 1;
       }
       #loader {
