@@ -113,52 +113,36 @@ export function initThree({
 
       // Add HTML to MacBook screen
       const screenMesh = root.getObjectByName('Macbook_screen');
-      if (screenMesh) {
+      const screenAnchor = root.getObjectByName('Macbook_screen_anchor');
+
+      if (screenMesh && screenAnchor) {
         // Create a bright test div (easier to see than iframe)
         const testDiv = document.createElement('div');
-        testDiv.style.width = '1920px';
-        testDiv.style.height = '1200px';
-        testDiv.style.background = 'linear-gradient(45deg, #ff00ff, #00ffff)';
-        testDiv.style.border = '20px solid lime';
+        const CSS_W = 1920;
+        const CSS_H = 1200;
+        testDiv.style.width  = CSS_W + 'px';
+        testDiv.style.height = CSS_H + 'px';
+        testDiv.style.background = 'linear-gradient(45deg,#ff00ff,#00ffff)';
+        testDiv.style.border = '8px solid lime';
         testDiv.style.display = 'flex';
         testDiv.style.alignItems = 'center';
         testDiv.style.justifyContent = 'center';
-        testDiv.style.fontSize = '200px';
+        testDiv.style.fontSize = '64px';
         testDiv.style.fontWeight = 'bold';
         testDiv.style.color = 'yellow';
-        testDiv.innerHTML = 'TEST';
-        testDiv.style.pointerEvents = 'none';
+        testDiv.textContent = 'TEST';
+        testDiv.style.pointerEvents = 'auto';
 
         // Wrap in CSS3DObject
         const cssObject = new CSS3DObject(testDiv);
 
-        // Get WORLD transforms (includes parent transforms from Blender hierarchy)
-        screenMesh.updateWorldMatrix(true, false);
+        screenAnchor.add(cssObject);
 
-        const worldPos = new THREE.Vector3();
-        const worldQuat = new THREE.Quaternion();
-        const worldScale = new THREE.Vector3();
-
-        worldPos.setFromMatrixPosition(screenMesh.matrixWorld);
-        worldQuat.setFromRotationMatrix(screenMesh.matrixWorld);
-        worldScale.setFromMatrixScale(screenMesh.matrixWorld);
-
-        cssObject.position.copy(worldPos);
-        cssObject.quaternion.copy(worldQuat);
-
-        // Apply the rotation correction we found earlier
-        const correctionQuat = new THREE.Quaternion();
-        correctionQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 3.9);
-        cssObject.quaternion.multiply(correctionQuat);
-
-        // Non-uniform scale: adjust X (width) and Y (height) independently
-        // Use NEGATIVE scale to mirror instead of rotating!
-        const scaleX = -0.00245; // Negative to flip horizontally
-        const scaleY = 0.00034;
-        const scaleZ = 0.0003;
-        cssObject.scale.set(scaleX, scaleY, scaleZ);
-
-        scene.add(cssObject);
+        const size = new THREE.Box3().setFromObject(screenMesh).getSize(new THREE.Vector3());
+        const pxToWorld = size.x / CSS_W;
+        cssObject.scale.set(pxToWorld, pxToWorld, 1);
+        cssObject.scale.x *= -1;
+        cssObject.position.set(0, 0, 0.002);
       } else {
         console.error('❌ Macbook_screen not found');
       }
