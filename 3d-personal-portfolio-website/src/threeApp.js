@@ -49,29 +49,28 @@ export function initThree({
   controls.maxDistance = 12;
   controls.minDistance = 1.0;
 
-  function syncToLayer() {
-    const rect = cssRenderer.domElement.getBoundingClientRect();
+  function syncSizesEven() {
+    // Use the canvas’ actual on-screen rect to avoid viewport quirks
+    const rect = renderer.domElement.getBoundingClientRect();
     const w = Math.round(rect.width);
     const h = Math.round(rect.height);
+    const evenH = (h % 2 === 0) ? h : h + 1; // enforce even height
+    const evenW = (w % 2 === 0) ? w : w + 1; // enforce even width
 
-    renderer.setSize(w, h, false);   // don't touch canvas.style size
-    cssRenderer.setSize(w, h);
+    // Size both renderers to the SAME even size
+    renderer.setSize(evenW, evenH, false);   // don't touch canvas.style
+    cssRenderer.setSize(evenW, evenH);
 
-    camera.aspect = w / h;
+    // Also set CSS sizes on the CSS layer to prevent fractional layout
+    cssRenderer.domElement.style.width = evenW + 'px';
+    cssRenderer.domElement.style.height = evenH + 'px';
+
+    // Keep camera in sync
+    camera.aspect = evenW / evenH;
     camera.updateProjectionMatrix();
   }
-
-  // call once and on common changes
-  syncToLayer();
-  window.addEventListener('resize', syncToLayer, { passive: true });
-  window.addEventListener('orientationchange', () => setTimeout(syncToLayer, 0), { passive: true });
-  // HMR cleanup (optional)
-  if (import.meta.hot) {
-    import.meta.hot.dispose(() => {
-      try { cssRenderer.domElement.remove(); } catch {}
-      try { renderer.dispose(); } catch {}
-    });
-  }
+  // Initial sync (run once right after creating renderers/camera)
+  syncSizesEven();
 
   const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
   scene.add(hemi);
@@ -218,12 +217,13 @@ export function initThree({
   );
 
   function onResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    cssRenderer.setSize(window.innerWidth, window.innerHeight);
+    // camera.aspect = window.innerWidth / window.innerHeight;
+    // camera.updateProjectionMatrix();
+    // renderer.setSize(window.innerWidth, window.innerHeight);
+    // cssRenderer.setSize(window.innerWidth, window.innerHeight);
+    syncSizesEven();
   }
-  window.addEventListener('resize', onResize);
+  window.addEventListener('resize', onResize, { passive: true });
 
   function animate() {
     window.requestAnimationFrame(animate);
