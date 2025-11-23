@@ -60,6 +60,30 @@ export function initThree({
   key.shadow.camera.far = 25;
   scene.add(key);
 
+  function syncToLayer() {
+    const rect = cssRenderer.domElement.getBoundingClientRect();
+    const w = Math.round(rect.width);
+    const h = Math.round(rect.height);
+
+    renderer.setSize(w, h, false);   // don't touch canvas.style size
+    cssRenderer.setSize(w, h);
+
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+
+  // call once and on common changes
+  syncToLayer();
+  window.addEventListener('resize', syncToLayer, { passive: true });
+  window.addEventListener('orientationchange', () => setTimeout(syncToLayer, 0), { passive: true });
+  // HMR cleanup (optional)
+  if (import.meta.hot) {
+    import.meta.hot.dispose(() => {
+      try { cssRenderer.domElement.remove(); } catch {}
+      try { renderer.dispose(); } catch {}
+    });
+  }
+
   const fill = new THREE.DirectionalLight(0xffffff, 0.35);
   fill.position.set(-4, 3, -5);
   scene.add(fill);
