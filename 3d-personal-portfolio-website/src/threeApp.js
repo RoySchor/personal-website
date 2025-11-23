@@ -13,208 +13,208 @@ export function initThree({
   onAllAssetsLoaded = () => {},
   onProgress = () => {},
 } = {}) {
-  const canvas = document.getElementById(canvasId);
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
-  renderer.setClearAlpha(0);
+  // const canvas = document.getElementById(canvasId);
+  // const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  // renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // renderer.setSize(window.innerWidth, window.innerHeight);
+  // renderer.outputColorSpace = THREE.SRGBColorSpace;
+  // renderer.shadowMap.enabled = true;
+  // renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  // renderer.toneMappingExposure = 1.0;
+  // renderer.setClearAlpha(0);
 
   // CSS3D Renderer for HTML overlay
-  const cssRenderer = new CSS3DRenderer();
-  cssRenderer.setSize(window.innerWidth, window.innerHeight);
-  cssRenderer.domElement.style.position = 'fixed';
-  cssRenderer.domElement.style.top = '0';
-  cssRenderer.domElement.style.left = '0';
-  cssRenderer.domElement.style.pointerEvents = 'none';
-  cssRenderer.domElement.style.inset = '0';
-  cssRenderer.domElement.style.zIndex = '10'; // Make sure it's on top
-  document.getElementById('css3d-root')?.remove();
-  document.body.appendChild(cssRenderer.domElement);
+  // const cssRenderer = new CSS3DRenderer();
+  // cssRenderer.setSize(window.innerWidth, window.innerHeight);
+  // cssRenderer.domElement.style.position = 'fixed';
+  // cssRenderer.domElement.style.top = '0';
+  // cssRenderer.domElement.style.left = '0';
+  // cssRenderer.domElement.style.pointerEvents = 'none';
+  // cssRenderer.domElement.style.inset = '0';
+  // cssRenderer.domElement.style.zIndex = '10'; // Make sure it's on top
+  // document.getElementById('css3d-root')?.remove();
+  // document.body.appendChild(cssRenderer.domElement);
 
-  renderer.domElement.style.touchAction = 'none';
+  // renderer.domElement.style.touchAction = 'none';
 
-  const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
+  // const scene = new THREE.Scene();
+  // const pmrem = new THREE.PMREMGenerator(renderer);
+  // scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
 
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 100);
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.enablePan = false;
-  controls.maxDistance = 12;
-  controls.minDistance = 1.0;
+  // const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 100);
+  // const controls = new OrbitControls(camera, renderer.domElement);
+  // controls.enableDamping = true;
+  // controls.enablePan = false;
+  // controls.maxDistance = 12;
+  // controls.minDistance = 1.0;
 
-  function syncSizesEven() {
+  // function syncSizesEven() {
     // Use the canvas’ actual on-screen rect to avoid viewport quirks
-    const rect = renderer.domElement.getBoundingClientRect();
-    const w = Math.round(rect.width);
-    const h = Math.round(rect.height);
-    const evenH = (h % 2 === 0) ? h : h + 1; // enforce even height
-    const evenW = (w % 2 === 0) ? w : w + 1; // enforce even width
+    // const rect = renderer.domElement.getBoundingClientRect();
+    // const w = Math.round(rect.width);
+    // const h = Math.round(rect.height);
+    // const evenH = (h % 2 === 0) ? h : h + 1; // enforce even height
+    // const evenW = (w % 2 === 0) ? w : w + 1; // enforce even width
 
     // Size both renderers to the SAME even size
-    renderer.setSize(evenW, evenH, false);   // don't touch canvas.style
-    cssRenderer.setSize(evenW, evenH);
+    // renderer.setSize(evenW, evenH, false);   // don't touch canvas.style
+    // cssRenderer.setSize(evenW, evenH);
 
     // Also set CSS sizes on the CSS layer to prevent fractional layout
-    cssRenderer.domElement.style.width = evenW + 'px';
-    cssRenderer.domElement.style.height = evenH + 'px';
+    // cssRenderer.domElement.style.width = evenW + 'px';
+    // cssRenderer.domElement.style.height = evenH + 'px';
 
     // Keep camera in sync
-    camera.aspect = evenW / evenH;
-    camera.updateProjectionMatrix();
-  }
+    // camera.aspect = evenW / evenH;
+    // camera.updateProjectionMatrix();
+  // }
   // Initial sync (run once right after creating renderers/camera)
-  syncSizesEven();
+  // syncSizesEven();
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
-  scene.add(hemi);
+  // const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
+  // scene.add(hemi);
 
-  const key = new THREE.DirectionalLight(0xffffff, 1.1);
-  key.position.set(5, 7, 4);
-  key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048);
-  key.shadow.camera.near = 0.1;
-  key.shadow.camera.far = 25;
-  scene.add(key);
+  // const key = new THREE.DirectionalLight(0xffffff, 1.1);
+  // key.position.set(5, 7, 4);
+  // key.castShadow = true;
+  // key.shadow.mapSize.set(2048, 2048);
+  // key.shadow.camera.near = 0.1;
+  // key.shadow.camera.far = 25;
+  // scene.add(key);
 
-  const fill = new THREE.DirectionalLight(0xffffff, 0.35);
-  fill.position.set(-4, 3, -5);
-  scene.add(fill);
+  // const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+  // fill.position.set(-4, 3, -5);
+  // scene.add(fill);
 
   // Loading manager: progress + done
-  const manager = new THREE.LoadingManager(
-    () => {
-      onProgress(1, 1, 1); // ensure 100%
-      onAllAssetsLoaded();
-    },
-    (url, loaded, total) => {
-      // Some pipelines don't know 'total'; clamp if needed
-      const pct = total ? loaded / total : 0;
-      onProgress(pct, loaded, total);
-    }
-  );
+  // const manager = new THREE.LoadingManager(
+    // () => {
+    //   onProgress(1, 1, 1); // ensure 100%
+    //   onAllAssetsLoaded();
+    // },
+    // (url, loaded, total) => {
+    //   // Some pipelines don't know 'total'; clamp if needed
+    //   const pct = total ? loaded / total : 0;
+    //   onProgress(pct, loaded, total);
+    // }
+  // );
 
-  const gltfLoader = new GLTFLoader(manager);
-  const ktx2 = new KTX2Loader(manager)
-    .setTranscoderPath(`${import.meta.env.BASE_URL}basis/`)
-    .detectSupport(renderer);
-  gltfLoader.setKTX2Loader(ktx2);
-  gltfLoader.setMeshoptDecoder(MeshoptDecoder);
+  // const gltfLoader = new GLTFLoader(manager);
+  // const ktx2 = new KTX2Loader(manager)
+  //   .setTranscoderPath(`${import.meta.env.BASE_URL}basis/`)
+  //   .detectSupport(renderer);
+  // gltfLoader.setKTX2Loader(ktx2);
+  // gltfLoader.setMeshoptDecoder(MeshoptDecoder);
 
-  gltfLoader.load(
-    roomUrl,
-    (gltf) => {
-      const root = gltf.scene;
+  // gltfLoader.load(
+  //   roomUrl,
+  //   (gltf) => {
+  //     const root = gltf.scene;
 
-      root.traverse((obj) => {
-        if (obj.isMesh) {
-          obj.castShadow = true;
-          obj.receiveShadow = true;
+  //     root.traverse((obj) => {
+  //       if (obj.isMesh) {
+  //         obj.castShadow = true;
+  //         obj.receiveShadow = true;
 
-          const m = obj.material;
-          if (m && m.map) m.map.colorSpace = THREE.SRGBColorSpace;
-          if (m && m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace;
+  //         const m = obj.material;
+  //         if (m && m.map) m.map.colorSpace = THREE.SRGBColorSpace;
+  //         if (m && m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace;
 
-          if (m && m.name) {
-            if (
-              m.name === 'DeskWood' ||
-              m.name === 'ready_player_one_book_cover' ||
-              m.name === 'stacked paper'
-            ) {
-              m.roughness = 0.85;
-              m.metalness = 0.0;
-              m.needsUpdate = true;
-            }
-            m.roughness = Math.min((m.roughness ?? 0.5) + 0.2, 1.0);
-          }
-        }
-      });
+  //         if (m && m.name) {
+  //           if (
+  //             m.name === 'DeskWood' ||
+  //             m.name === 'ready_player_one_book_cover' ||
+  //             m.name === 'stacked paper'
+  //           ) {
+  //             m.roughness = 0.85;
+  //             m.metalness = 0.0;
+  //             m.needsUpdate = true;
+  //           }
+  //           m.roughness = Math.min((m.roughness ?? 0.5) + 0.2, 1.0);
+  //         }
+  //       }
+  //     });
 
-      scene.add(root);
+  //     scene.add(root);
 
       // Add HTML to MacBook screen
-      const screenMesh = root.getObjectByName('Macbook_screen');
-      const screenAnchor = root.getObjectByName('Macbook_screen_anchor');
+      // const screenMesh = root.getObjectByName('Macbook_screen');
+      // const screenAnchor = root.getObjectByName('Macbook_screen_anchor');
 
-      if (screenMesh && screenAnchor) {
+      // if (screenMesh && screenAnchor) {
         // Create a bright test div (easier to see than iframe)
-        const testDiv = document.createElement('div');
-        const CSS_W = 1920;
-        const CSS_H = 1200;
-        testDiv.style.width  = CSS_W + 'px';
-        testDiv.style.height = CSS_H + 'px';
-        testDiv.style.background = 'linear-gradient(45deg,#ff00ff,#00ffff)';
-        testDiv.style.border = '8px solid lime';
-        testDiv.style.display = 'flex';
-        testDiv.style.alignItems = 'center';
-        testDiv.style.justifyContent = 'center';
-        testDiv.style.fontSize = '64px';
-        testDiv.style.fontWeight = 'bold';
-        testDiv.style.color = 'yellow';
-        testDiv.textContent = 'TEST';
-        testDiv.style.pointerEvents = 'auto';
+        // const testDiv = document.createElement('div');
+        // const CSS_W = 1920;
+        // const CSS_H = 1200;
+        // testDiv.style.width  = CSS_W + 'px';
+        // testDiv.style.height = CSS_H + 'px';
+        // testDiv.style.background = 'linear-gradient(45deg,#ff00ff,#00ffff)';
+        // testDiv.style.border = '8px solid lime';
+        // testDiv.style.display = 'flex';
+        // testDiv.style.alignItems = 'center';
+        // testDiv.style.justifyContent = 'center';
+        // testDiv.style.fontSize = '64px';
+        // testDiv.style.fontWeight = 'bold';
+        // testDiv.style.color = 'yellow';
+        // testDiv.textContent = 'TEST';
+        // testDiv.style.pointerEvents = 'auto';
 
         // Wrap in CSS3DObject
-        const cssObject = new CSS3DObject(testDiv);
+        // const cssObject = new CSS3DObject(testDiv);
 
-        screenAnchor.add(cssObject);
+        // screenAnchor.add(cssObject);
 
-        const size = new THREE.Box3().setFromObject(screenMesh).getSize(new THREE.Vector3());
-        const pxToWorld = size.x / CSS_W;
-        cssObject.scale.set(pxToWorld, pxToWorld, 1);
-        cssObject.scale.x *= -1;
-        cssObject.position.set(0, 0, 0.002);
-      } else {
-        console.error('❌ Macbook_screen not found');
-      }
+        // const size = new THREE.Box3().setFromObject(screenMesh).getSize(new THREE.Vector3());
+        // const pxToWorld = size.x / CSS_W;
+        // cssObject.scale.set(pxToWorld, pxToWorld, 1);
+        // cssObject.scale.x *= -1;
+        // cssObject.position.set(0, 0, 0.002);
+      // } else {
+        // console.error('❌ Macbook_screen not found');
+      // }
 
       // Camera placement
-      const box = new THREE.Box3().setFromObject(root);
-      const center = box.getCenter(new THREE.Vector3());
-      const sizeVec = box.getSize(new THREE.Vector3());
-      const radius = sizeVec.length() * 0.5;
+      // const box = new THREE.Box3().setFromObject(root);
+      // const center = box.getCenter(new THREE.Vector3());
+      // const sizeVec = box.getSize(new THREE.Vector3());
+      // const radius = sizeVec.length() * 0.5;
 
       controls.target.copy(center);
 
-      const isCoarse = window.matchMedia('(pointer: coarse)').matches;
-      const phoneZoomOutMultiplier = isCoarse ? 1.15 : 1.0;
-      const horizontalDist = radius * 1.75 * phoneZoomOutMultiplier;
+      // const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+      // const phoneZoomOutMultiplier = isCoarse ? 1.15 : 1.0;
+      // const horizontalDist = radius * 1.75 * phoneZoomOutMultiplier;
 
-      const y = horizontalDist * 0.6;
-      camera.position.set(center.x + horizontalDist, center.y + y, center.z - horizontalDist);
-      camera.lookAt(center);
+      // const y = horizontalDist * 0.6;
+      // camera.position.set(center.x + horizontalDist, center.y + y, center.z - horizontalDist);
+      // camera.lookAt(center);
 
-      controls.maxPolarAngle = Math.PI * 0.49;
+      // controls.maxPolarAngle = Math.PI * 0.49;
       controls.update();
 
-      const startAz = Math.atan2(
-        camera.position.z - controls.target.z,
-        camera.position.x - controls.target.x
-      );
+      // const startAz = Math.atan2(
+      //   camera.position.z - controls.target.z,
+      //   camera.position.x - controls.target.x
+      // );
 
-      const halfFan = THREE.MathUtils.degToRad(120);
+      // const halfFan = THREE.MathUtils.degToRad(120);
 
-      requestAnimationFrame(() => {
+      // requestAnimationFrame(() => {
         // Allow only a fan around the current view
-        controls.minAzimuthAngle = startAz + halfFan;
-        controls.maxAzimuthAngle = startAz - halfFan;
+        // controls.minAzimuthAngle = startAz + halfFan;
+        // controls.maxAzimuthAngle = startAz - halfFan;
 
         // Zoom limits
-        controls.minDistance = .5;
-        controls.maxDistance = 8.0;
+        // controls.minDistance = .5;
+        // controls.maxDistance = 8.0;
 
-        controls.update();
-      });
-    },
-    undefined,
-    (err) => console.error('GLB load error:', err)
-  );
+        // controls.update();
+      // });
+    // },
+    // undefined,
+    // (err) => console.error('GLB load error:', err)
+  // );
 
   function onResize() {
     // camera.aspect = window.innerWidth / window.innerHeight;
@@ -223,7 +223,7 @@ export function initThree({
     // cssRenderer.setSize(window.innerWidth, window.innerHeight);
     syncSizesEven();
   }
-  window.addEventListener('resize', onResize, { passive: true });
+  // window.addEventListener('resize', onResize, { passive: true });
 
   function animate() {
     window.requestAnimationFrame(animate);
