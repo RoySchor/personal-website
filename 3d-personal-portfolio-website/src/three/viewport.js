@@ -9,22 +9,22 @@ export function makeEvenViewportSync(ctx) {
    * Thread relating to multiple issues can be found here:
    * https://github.com/pmndrs/drei/issues/720
    * Unsolved without resolution plan in sight
-  */
+   */
   function syncSizesEven() {
     const rect = renderer.domElement.getBoundingClientRect();
     let w = Math.round(rect.width);
     let h = Math.round(rect.height);
 
     // force even
-    const evenH = (h % 2 === 0) ? h : h + 1;
-    const evenW = (w % 2 === 0) ? w : w + 1;
+    const evenH = h % 2 === 0 ? h : h + 1;
+    const evenW = w % 2 === 0 ? w : w + 1;
 
     renderer.setSize(evenW, evenH, false);
     cssRenderer.setSize(evenW, evenH);
 
     // lock CSS box to exact px to avoid fractional layout
-    cssRenderer.domElement.style.width  = evenW + 'px';
-    cssRenderer.domElement.style.height = evenH + 'px';
+    cssRenderer.domElement.style.width = evenW + "px";
+    cssRenderer.domElement.style.height = evenH + "px";
 
     camera.aspect = evenW / evenH;
     camera.updateProjectionMatrix();
@@ -32,7 +32,7 @@ export function makeEvenViewportSync(ctx) {
 
   syncSizesEven();
   const onResize = () => syncSizesEven();
-  window.addEventListener('resize', onResize, { passive: true });
+  window.addEventListener("resize", onResize, { passive: true });
 
-  return { syncSizesEven, dispose: () => window.removeEventListener('resize', onResize) };
+  return { syncSizesEven, dispose: () => window.removeEventListener("resize", onResize) };
 }

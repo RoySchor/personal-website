@@ -1,10 +1,8 @@
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
+import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
+import { CSS3DRenderer } from "three/examples/jsm/renderers/CSS3DRenderer.js";
 
-export function createThreeContext(
-  canvasId = 'c'
-) {
+export function createThreeContext(canvasId = "c") {
   const canvas = document.getElementById(canvasId);
 
   // WebGL renderer
@@ -17,19 +15,19 @@ export function createThreeContext(
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.setClearAlpha(0);
-  renderer.domElement.style.touchAction = 'none';
+  renderer.domElement.style.touchAction = "none";
 
   // CSS3D Renderer for HTML overlay
   const cssRenderer = new CSS3DRenderer();
   cssRenderer.setSize(window.innerWidth, window.innerHeight);
-  cssRenderer.domElement.id = 'css3d-root'; // New
-  cssRenderer.domElement.style.position = 'fixed';
-  cssRenderer.domElement.style.top = '0'; // To remove check first
-  cssRenderer.domElement.style.left = '0'; // To remove check first
-  cssRenderer.domElement.style.pointerEvents = 'none';
-  cssRenderer.domElement.style.inset = '0';
-  cssRenderer.domElement.style.zIndex = '10'; // Make sure it's on top
-  document.getElementById('css3d-root')?.remove();
+  cssRenderer.domElement.id = "css3d-root"; // New
+  cssRenderer.domElement.style.position = "fixed";
+  cssRenderer.domElement.style.top = "0"; // To remove check first
+  cssRenderer.domElement.style.left = "0"; // To remove check first
+  cssRenderer.domElement.style.pointerEvents = "none";
+  cssRenderer.domElement.style.inset = "0";
+  cssRenderer.domElement.style.zIndex = "10"; // Make sure it's on top
+  document.getElementById("css3d-root")?.remove();
   document.body.appendChild(cssRenderer.domElement);
 
   // Scene + Environment
@@ -38,12 +36,7 @@ export function createThreeContext(
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
 
   // Camera
-  const camera = new THREE.PerspectiveCamera(
-    45,
-    window.innerWidth / window.innerHeight,
-    0.05,
-    100
-  );
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 100);
 
   return { renderer, cssRenderer, scene, camera };
 }

@@ -1,31 +1,31 @@
-import * as THREE from 'three';
-import { CSS3DObject } from 'three/examples/jsm/renderers/CSS3DRenderer.js';
+import * as THREE from "three";
+import { CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer.js";
 
 export function mountScreenOverlay(root) {
-  const screenMesh   = root.getObjectByName('Macbook_screen');
-  const screenAnchor = root.getObjectByName('Macbook_screen_anchor');
+  const screenMesh = root.getObjectByName("Macbook_screen");
+  const screenAnchor = root.getObjectByName("Macbook_screen_anchor");
 
   if (!screenMesh || !screenAnchor) {
-    console.error('❌ Missing Macbook_screen and/or Macbook_screen_anchor');
+    console.error("❌ Missing Macbook_screen and/or Macbook_screen_anchor");
     return null;
   }
 
   // Content (swap for iframe when ready)
   const CSS_W = 1920;
   const CSS_H = 1200;
-  const testDiv = document.createElement('div');
-  testDiv.style.width  = CSS_W + 'px';
-  testDiv.style.height = CSS_H + 'px';
-  testDiv.style.background = 'linear-gradient(45deg,#ff00ff,#00ffff)';
-  testDiv.style.border = '8px solid lime';
-  testDiv.style.display = 'flex';
-  testDiv.style.alignItems = 'center';
-  testDiv.style.justifyContent = 'center';
-  testDiv.style.fontSize = '64px';
-  testDiv.style.fontWeight = 'bold';
-  testDiv.style.color = 'yellow';
-  testDiv.textContent = 'TEST';
-  testDiv.style.pointerEvents = 'auto';
+  const testDiv = document.createElement("div");
+  testDiv.style.width = CSS_W + "px";
+  testDiv.style.height = CSS_H + "px";
+  testDiv.style.background = "linear-gradient(45deg,#ff00ff,#00ffff)";
+  testDiv.style.border = "8px solid lime";
+  testDiv.style.display = "flex";
+  testDiv.style.alignItems = "center";
+  testDiv.style.justifyContent = "center";
+  testDiv.style.fontSize = "64px";
+  testDiv.style.fontWeight = "bold";
+  testDiv.style.color = "yellow";
+  testDiv.textContent = "TEST";
+  testDiv.style.pointerEvents = "auto";
 
   const cssObject = new CSS3DObject(testDiv);
 

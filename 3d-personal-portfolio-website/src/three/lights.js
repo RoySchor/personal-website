@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 export function addLights(scene) {
   const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);

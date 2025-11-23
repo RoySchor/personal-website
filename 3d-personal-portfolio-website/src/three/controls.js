@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 export function createControls(camera, domElement) {
   const controls = new OrbitControls(camera, domElement);
@@ -12,10 +12,7 @@ export function createControls(camera, domElement) {
 }
 
 export function lockAzimuthAroundCurrentView(controls, camera, target, isCoarse) {
-  const startAz = Math.atan2(
-    camera.position.z - target.z,
-    camera.position.x - target.x
-  );
+  const startAz = Math.atan2(camera.position.z - target.z, camera.position.x - target.x);
   const halfFan = THREE.MathUtils.degToRad(120);
 
   requestAnimationFrame(() => {

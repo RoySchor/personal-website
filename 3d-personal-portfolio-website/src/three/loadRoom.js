@@ -1,15 +1,12 @@
-import * as THREE from 'three';
-import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { KTX2Loader } from 'three/examples/jsm/loaders/KTX2Loader.js';
+import * as THREE from "three";
+import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader.js";
 
 export function loadRoom(
   ctx,
   roomUrl,
-  {
-    onProgress = () => {},
-    onAllAssetsLoaded = () => {}
-  } = {}
+  { onProgress = () => {}, onAllAssetsLoaded = () => {} } = {},
 ) {
   const { renderer, scene, camera } = ctx;
 
@@ -21,7 +18,7 @@ export function loadRoom(
     (url, loaded, total) => {
       const pct = total ? loaded / total : 0;
       onProgress(pct, loaded, total);
-    }
+    },
   );
 
   const gltfLoader = new GLTFLoader(manager);
@@ -49,11 +46,10 @@ export function loadRoom(
             if (m.map) m.map.colorSpace = THREE.SRGBColorSpace;
             if (m.emissiveMap) m.emissiveMap.colorSpace = THREE.SRGBColorSpace;
             if (
-              m.name && (
-                m.name === 'DeskWood' ||
-                m.name === 'ready_player_one_book_cover' ||
-                m.name === 'stacked paper'
-              )
+              m.name &&
+              (m.name === "DeskWood" ||
+                m.name === "ready_player_one_book_cover" ||
+                m.name === "stacked paper")
             ) {
               m.roughness = 0.85;
               m.metalness = 0.0;
@@ -71,7 +67,7 @@ export function loadRoom(
         const sizeVec = box.getSize(new THREE.Vector3());
         const radius = sizeVec.length() * 0.5;
 
-        const isCoarse = window.matchMedia('(pointer: coarse)').matches;
+        const isCoarse = window.matchMedia("(pointer: coarse)").matches;
         const phoneZoomOutMultiplier = isCoarse ? 1.15 : 1.0;
         const horizontalDist = radius * 1.75 * phoneZoomOutMultiplier;
         const y = horizontalDist * 0.6;
@@ -84,9 +80,9 @@ export function loadRoom(
       },
       undefined,
       (err) => {
-        console.error('GLB load error:', err);
+        console.error("GLB load error:", err);
         reject(err);
-      }
+      },
     );
   });
 }

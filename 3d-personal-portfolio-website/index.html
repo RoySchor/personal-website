@@ -2,16 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"/>
-    <link rel="shortcut icon" sizes="114x114" type="image/x-icon" href="./assets/Headshot-favicon.jpg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+    />
+    <link
+      rel="shortcut icon"
+      sizes="114x114"
+      type="image/x-icon"
+      href="./assets/Headshot-favicon.jpg"
+    />
     <title>Roy Schor</title>
     <style>
-      html, body { height: 100%; margin: 0; }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
       body {
         background: #d6d7d7;
         overflow: hidden;
       }
-      #c, #loader {
+      #c,
+      #loader {
         display: block;
       }
       #c {
@@ -22,11 +35,16 @@
         z-index: 1;
       }
       #loader {
-        position: fixed; inset: 0; z-index: 9999;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
         background: #000;
         transition: opacity 400ms ease;
       }
-      #loader.hide { opacity: 0; pointer-events: none; }
+      #loader.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
