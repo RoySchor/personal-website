@@ -1,12 +1,11 @@
 import roomUrl from './assets/portfolio-room.glb?url';
 import { createMatrixLoader } from './loader.js';
-// import { initThree } from './threeApp.js';
 import { createThreeContext } from './three/context.js';
-import { makeEvenViewportSync } from './three/viewport.js';
-import { addLights } from './three/lights.js';
 import { createControls, lockAzimuthAroundCurrentView } from './three/controls.js';
+import { addLights } from './three/lights.js';
 import { loadRoom } from './three/loadRoom.js';
 import { mountScreenOverlay } from './three/screenOverlay.js';
+import { makeEvenViewportSync } from './three/viewport.js';
 
 // Start Matrix rain overlay
 const matrix = createMatrixLoader('loader');
@@ -41,9 +40,7 @@ const onAllAssetsLoaded = () => {
   lockAzimuthAroundCurrentView(controls, camera, center, isCoarse);
 
   // mount CSS3D overlay on laptop screen
-  const overlay = mountScreenOverlay(root);
-  // When ready to show your site:
-  // swapToIframe(overlay, 'https://royschor.com');
+  mountScreenOverlay(root);
 
   // render loop
   function animate() {
@@ -54,7 +51,6 @@ const onAllAssetsLoaded = () => {
   }
   animate();
 
-  // HMR cleanup (optional)
   if (import.meta.hot) {
     import.meta.hot.dispose(() => {
       try { cssRenderer.domElement.remove(); } catch {}
@@ -63,21 +59,3 @@ const onAllAssetsLoaded = () => {
     });
   }
 })();
-
-
-
-// initThree({
-//   canvasId: 'c',
-//   modelUrl: '/assets/portfolio-room.glb',
-
-  // Update progress bar as assets stream in
-  // onProgress: (pct /* 0..1 */) => {
-  //   matrix.setProgress(pct || 0);
-  // },
-
-  // // When everything is ready, fade out the loader
-  // onAllAssetsLoaded: () => {
-  //   matrix.setProgress(1);
-  //   matrix.stop();
-  // },
-// });

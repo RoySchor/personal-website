@@ -40,6 +40,7 @@ export default [
       'no-unused-vars': ['warn', { args: 'none', varsIgnorePattern: '^_' }],
       'no-undef': 'error',
       'no-console': 'off',
+      'no-empty': 'off',
 
       // Three/Vite friendliness
       'import/no-unresolved': 'off', // three/examples paths & Vite aliases
