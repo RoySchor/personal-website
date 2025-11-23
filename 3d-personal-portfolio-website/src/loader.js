@@ -2,7 +2,7 @@ export function createMatrixLoader(canvasId = 'loader') {
   const canvas = document.getElementById(canvasId);
   const ctx = canvas.getContext('2d', { alpha: false });
 
-  const glyphs = '01𐄷Ξπϟ9中日仮ｱｲｳｴｵﾊﾐﾑﾒﾓｶｷｸｹｺשדלעץפצףהמא';
+  const glyphs = '01ܬܫܐܒܓܗܛܕܟܡאבגדהוזחטיכךלמנןסםעפףצץקרשת';
   const fontSize = 18;
   let columns = 0;
   let drops = [];
