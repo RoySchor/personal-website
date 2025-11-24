@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { CSS3DObject } from "three/examples/jsm/renderers/CSS3DRenderer.js";
 
-export function mountScreenOverlay(root) {
+export function mountScreenOverlay(root, { iframeUrl = "https://example.org" } = {}) {
   const screenMesh = root.getObjectByName("Macbook_screen");
   const screenAnchor = root.getObjectByName("Macbook_screen_anchor");
 
@@ -9,25 +9,18 @@ export function mountScreenOverlay(root) {
     console.error("❌ Missing Macbook_screen and/or Macbook_screen_anchor");
     return null;
   }
-
   // Content (swap for iframe when ready)
   const CSS_W = 1920;
   const CSS_H = 1200;
-  const testDiv = document.createElement("div");
-  testDiv.style.width = CSS_W + "px";
-  testDiv.style.height = CSS_H + "px";
-  testDiv.style.background = "linear-gradient(45deg,#ff00ff,#00ffff)";
-  testDiv.style.border = "8px solid lime";
-  testDiv.style.display = "flex";
-  testDiv.style.alignItems = "center";
-  testDiv.style.justifyContent = "center";
-  testDiv.style.fontSize = "64px";
-  testDiv.style.fontWeight = "bold";
-  testDiv.style.color = "yellow";
-  testDiv.textContent = "TEST";
-  testDiv.style.pointerEvents = "auto";
+  const iframe = document.createElement("iframe");
+  iframe.src = iframeUrl;
+  iframe.style.width = CSS_W + "px";
+  iframe.style.height = CSS_H + "px";
+  iframe.style.border = "0";
+  iframe.style.background = "#111";
+  iframe.style.pointerEvents = "auto";
 
-  const cssObject = new CSS3DObject(testDiv);
+  const cssObject = new CSS3DObject(iframe);
 
   // Parent to the anchor (inherits position+rotation)
   screenAnchor.add(cssObject);
@@ -43,5 +36,5 @@ export function mountScreenOverlay(root) {
   // Lift slightly off the glass
   cssObject.position.set(0, 0, 0.002);
 
-  return { cssObject, element: testDiv, screenMesh, screenAnchor };
+  return { cssObject, iframeement: iframe, screenMesh, screenAnchor };
 }

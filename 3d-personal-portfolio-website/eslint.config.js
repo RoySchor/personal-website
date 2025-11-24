@@ -29,6 +29,7 @@ export default [
         requestAnimationFrame: "readonly",
         cancelAnimationFrame: "readonly",
         setTimeout: "readonly",
+        performance: "readonly",
       },
     },
     plugins: {
