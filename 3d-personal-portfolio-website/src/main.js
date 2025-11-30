@@ -107,10 +107,12 @@ const onAllAssetsLoaded = () => {
       });
       setTimeout(() => {
         cssRenderer.domElement.style.pointerEvents = "auto";
-        if (iframeEl) iframeEl.style.pointerEvents = "auto";
+        cssRenderer.domElement.style.cursor = "pointer";
+        if (iframeEl) {
+          iframeEl.style.pointerEvents = "auto";
+          iframeEl.style.cursor = "pointer";
+        }
       }, 650);
-      // cssRenderer.domElement.style.pointerEvents = "auto";
-      // if (iframeEl) iframeEl.style.pointerEvents = "auto";
       return;
     }
 
@@ -118,7 +120,11 @@ const onAllAssetsLoaded = () => {
       focuser.restore();
       setTimeout(() => {
         cssRenderer.domElement.style.pointerEvents = "none";
-        if (iframeEl) iframeEl.style.pointerEvents = "none";
+        cssRenderer.domElement.style.cursor = "";
+        if (iframeEl) {
+          iframeEl.style.pointerEvents = "none";
+          iframeEl.style.cursor = "";
+        }
       }, 260);
     }
   }
@@ -148,7 +154,10 @@ const onAllAssetsLoaded = () => {
     setMouseFromEvent(e);
     ray.setFromCamera(ndc, camera);
     const hits = ray.intersectObject(laptopRoot, true);
-    renderer.domElement.style.cursor = hits.length ? "pointer" : "";
+    // renderer.domElement.style.cursor = hits.length ? "pointer" : "";
+    const c = hits.length ? "pointer" : "";
+    renderer.domElement.style.cursor = c;
+    cssRenderer.domElement.style.cursor = c;
   }
   renderer.domElement.addEventListener("mousemove", hoverRoom);
   cssRenderer.domElement.addEventListener("mousemove", hoverRoom);
