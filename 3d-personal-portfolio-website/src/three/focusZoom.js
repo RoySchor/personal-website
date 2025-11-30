@@ -55,7 +55,7 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     });
   }
 
-  function focusOn({ centerFrom, orientFrom, distanceScale = 0.8, duration = 650 }) {
+  function focusOn({ centerFrom, orientFrom, distanceScale = 0.8, duration = 650, margin = 1.06 }) {
     if (!centerFrom || !orientFrom) return;
     if (!focusing) save();
 
@@ -68,7 +68,16 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     const centerToCamera = cameraPos.sub(center); // vector pointing toward camera
     if (n.dot(centerToCamera) < 0) n.multiplyScalar(-1); // face camera
 
-    const distance = Math.max(0.25, size.length() * distanceScale);
+    // const distance = Math.max(0.25, size.length() * distanceScale);
+    const vFov = THREE.MathUtils.degToRad(camera.fov);
+    const hFov = 2 * Math.atan(Math.tan(vFov * 0.5) * camera.aspect);
+    const fitHeight = (size.y * 0.5) / Math.tan(vFov * 0.5);
+    const fitWidth = (size.x * 0.5) / Math.tan(hFov * 0.5);
+
+    const isSmall = window.innerWidth < 768;
+    const m = (typeof margin === "number" ? margin : 1.06) * (isSmall ? 1.06 : 1);
+    const distance = Math.max(0.25, Math.max(fitHeight, fitWidth) * m);
+
     const toPos = center.clone().addScaledVector(n, distance);
     const toTar = center.clone();
 

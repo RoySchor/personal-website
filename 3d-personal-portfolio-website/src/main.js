@@ -7,7 +7,6 @@ import { createControls, lockAzimuthAroundCurrentView } from "./three/controls.j
 import { createFocusZoom } from "./three/focusZoom.js";
 import { addLights } from "./three/lights.js";
 import { loadRoom } from "./three/loadRoom.js";
-import { createCameraRig } from "./three/rig.js";
 import { mountScreenOverlay } from "./three/screenOverlay.js";
 import { makeEvenViewportSync } from "./three/viewport.js";
 
@@ -29,8 +28,6 @@ const onAllAssetsLoaded = () => {
 (async function start() {
   const ctx = createThreeContext("c");
   const { renderer, cssRenderer, scene, camera } = ctx;
-  // const cameraRig = createCameraRig(camera);
-  // scene.add(cameraRig);
 
   // keep both renderers in perfect sync (even width/height)
   const viewport = makeEvenViewportSync(ctx);
@@ -52,7 +49,6 @@ const onAllAssetsLoaded = () => {
   const overlay = mountScreenOverlay(root, { iframeUrl: "https://example.org" });
   if (!overlay) return;
   const { screenMesh, screenAnchor, iframeEl, wrapper, cssObject } = overlay;
-  const clickable = screenMesh?.parent || screenMesh;
 
   // Find the smallest ancestor that represents the whole laptop
   function getLaptopRoot(node) {
@@ -90,7 +86,6 @@ const onAllAssetsLoaded = () => {
     console.log("[clickRoom] canvas clicked", e.type);
     setMouseFromEvent(e);
     ray.setFromCamera(ndc, camera);
-    // const hits = clickable ? ray.intersectObject(clickable, true) : [];
     const hits = ray.intersectObject(laptopRoot, true);
     console.log(
       "[clickRoom] hits:",
