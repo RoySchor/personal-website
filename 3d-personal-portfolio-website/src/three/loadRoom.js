@@ -9,6 +9,7 @@ export function loadRoom(
   { onProgress = () => {}, onAllAssetsLoaded = () => {} } = {},
 ) {
   const { renderer, scene, camera } = ctx;
+  const cameraRig = scene.children.find((o) => o.isGroup) || scene;
 
   const manager = new THREE.LoadingManager(
     () => {

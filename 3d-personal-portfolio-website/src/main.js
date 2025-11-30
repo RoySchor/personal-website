@@ -7,6 +7,7 @@ import { createControls, lockAzimuthAroundCurrentView } from "./three/controls.j
 import { createFocusZoom } from "./three/focusZoom.js";
 import { addLights } from "./three/lights.js";
 import { loadRoom } from "./three/loadRoom.js";
+import { createCameraRig } from "./three/rig.js";
 import { mountScreenOverlay } from "./three/screenOverlay.js";
 import { makeEvenViewportSync } from "./three/viewport.js";
 
@@ -28,6 +29,8 @@ const onAllAssetsLoaded = () => {
 (async function start() {
   const ctx = createThreeContext("c");
   const { renderer, cssRenderer, scene, camera } = ctx;
+  // const cameraRig = createCameraRig(camera);
+  // scene.add(cameraRig);
 
   // keep both renderers in perfect sync (even width/height)
   const viewport = makeEvenViewportSync(ctx);
@@ -48,7 +51,7 @@ const onAllAssetsLoaded = () => {
   // mount CSS3D overlay on laptop screen
   const overlay = mountScreenOverlay(root, { iframeUrl: "https://example.org" });
   if (!overlay) return;
-  const { screenMesh, screenAnchor } = overlay;
+  const { screenMesh, screenAnchor, iframeEl, wrapper, cssObject } = overlay;
   const clickable = screenMesh?.parent || screenMesh;
 
   // Find the smallest ancestor that represents the whole laptop
@@ -98,23 +101,41 @@ const onAllAssetsLoaded = () => {
     if (firstLaptopHit) {
       focuser.focusOn({
         centerFrom: screenMesh, // geometry center = screen surface
-        orientFrom: screenAnchor, // orientation/normal = anchor’s +Z
+        orientFrom: cssObject, // orientation/normal = anchor’s +Z
         distanceScale: 0.75,
-        duration: 500,
+        duration: 650,
       });
-      cssRenderer.domElement.style.pointerEvents = "auto";
+      setTimeout(() => {
+        cssRenderer.domElement.style.pointerEvents = "auto";
+        if (iframeEl) iframeEl.style.pointerEvents = "auto";
+      }, 650);
+      // cssRenderer.domElement.style.pointerEvents = "auto";
+      // if (iframeEl) iframeEl.style.pointerEvents = "auto";
       return;
     }
 
     if (!focuser.isFocusing() && cssRenderer.domElement.style.pointerEvents === "auto") {
       focuser.restore();
-      setTimeout(() => (cssRenderer.domElement.style.pointerEvents = "none"), 260);
+      setTimeout(() => {
+        cssRenderer.domElement.style.pointerEvents = "none";
+        if (iframeEl) iframeEl.style.pointerEvents = "none";
+      }, 260);
     }
   }
 
   // Click / tap listeners on the WebGL canvas
   renderer.domElement.addEventListener("click", clickRoom);
+  cssRenderer.domElement.addEventListener("click", clickRoom);
   renderer.domElement.addEventListener(
+    "touchstart",
+    (e) => {
+      const t = e.touches[0];
+      clickRoom({ clientX: t.clientX, clientY: t.clientY });
+    },
+    { passive: true },
+  );
+
+  cssRenderer.domElement.addEventListener(
     "touchstart",
     (e) => {
       const t = e.touches[0];
@@ -130,6 +151,7 @@ const onAllAssetsLoaded = () => {
     renderer.domElement.style.cursor = hits.length ? "pointer" : "";
   }
   renderer.domElement.addEventListener("mousemove", hoverRoom);
+  cssRenderer.domElement.addEventListener("mousemove", hoverRoom);
   // Escape closes focus
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {

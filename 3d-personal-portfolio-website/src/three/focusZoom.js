@@ -5,10 +5,16 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
   let animId = 0;
   let focusing = false;
 
-  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
-  const stopAnim = () => animId && cancelAnimationFrame(animId);
+  const ease = (t) => 1 - Math.pow(1 - t, 3);
+  const stop = () => animId && cancelAnimationFrame(animId);
 
-  function saveState() {
+  const worldNormal = (obj) => {
+    const n = new THREE.Vector3(0, 0, 1);
+    const normalMatrix = new THREE.Matrix3().getNormalMatrix(obj.matrixWorld);
+    return n.applyMatrix3(normalMatrix).normalize();
+  };
+
+  function save() {
     saved = {
       camPos: camera.position.clone(),
       target: controls.target.clone(),
@@ -19,7 +25,7 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     };
   }
 
-  function restore(duration = 450) {
+  function restore(duration = 500) {
     if (!saved) return;
     const fromPos = camera.position.clone();
     const fromTar = controls.target.clone();
@@ -31,10 +37,10 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     controls.enabled = false;
     cssRoot && (cssRoot.style.pointerEvents = saved.pointerEvents);
 
-    stopAnim();
+    stop();
     animId = requestAnimationFrame(function step(now) {
       const t = Math.min(1, (now - start) / duration);
-      const k = easeOutCubic(t);
+      const k = ease(t);
       camera.position.lerpVectors(fromPos, toPos, k);
       controls.target.lerpVectors(fromTar, toTar, k);
       camera.lookAt(controls.target);
@@ -49,36 +55,26 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     });
   }
 
-  /**
-   * Focus using separate objects:
-   * - centerFrom: object with geometry to compute AABB center (e.g., Macbook_screen mesh)
-   * - orientFrom: object to read world rotation / +Z normal (e.g., Macbook_screen_anchor)
-   */
-  function focusOn({ centerFrom, orientFrom, distanceScale = 0.85, duration = 500 }) {
+  function focusOn({ centerFrom, orientFrom, distanceScale = 0.8, duration = 650 }) {
     if (!centerFrom || !orientFrom) return;
+    if (!focusing) save();
 
-    if (!focusing) saveState();
-
-    // Center from geometry (screen mesh)
     const box = new THREE.Box3().setFromObject(centerFrom);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
 
-    // Normal from orientFrom (+Z in world space)
-    const normal = new THREE.Vector3(0, 0, 1)
-      .applyQuaternion(orientFrom.getWorldQuaternion(new THREE.Quaternion()))
-      .normalize();
+    let n = worldNormal(orientFrom);
+    const cameraPos = camera.getWorldPosition(new THREE.Vector3());
+    const centerToCamera = cameraPos.sub(center); // vector pointing toward camera
+    if (n.dot(centerToCamera) < 0) n.multiplyScalar(-1); // face camera
 
-    const diag = Math.max(0.001, size.length());
-    const distance = Math.max(0.2, diag * distanceScale);
-
-    const toPos = center.clone().addScaledVector(normal, distance);
-    const toTar = center;
+    const distance = Math.max(0.25, size.length() * distanceScale);
+    const toPos = center.clone().addScaledVector(n, distance);
+    const toTar = center.clone();
 
     const fromPos = camera.position.clone();
     const fromTar = controls.target.clone();
 
-    // tighten while focused
     controls.minDistance = 0.2;
     controls.maxDistance = Math.max(1.0, distance * 1.6);
 
@@ -87,10 +83,10 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     controls.enabled = false;
     cssRoot && (cssRoot.style.pointerEvents = "auto");
 
-    stopAnim();
+    stop();
     animId = requestAnimationFrame(function step(now) {
       const t = Math.min(1, (now - start) / duration);
-      const k = easeOutCubic(t);
+      const k = ease(t);
       camera.position.lerpVectors(fromPos, toPos, k);
       controls.target.lerpVectors(fromTar, toTar, k);
       camera.lookAt(controls.target);
@@ -103,9 +99,5 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     });
   }
 
-  return {
-    focusOn,
-    restore,
-    isFocusing: () => focusing,
-  };
+  return { focusOn, restore, isFocusing: () => focusing };
 }

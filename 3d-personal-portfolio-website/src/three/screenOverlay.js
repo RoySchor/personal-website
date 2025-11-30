@@ -12,15 +12,22 @@ export function mountScreenOverlay(root, { iframeUrl = "https://example.org" } =
   // Content (swap for iframe when ready)
   const CSS_W = 1920;
   const CSS_H = 1200;
+
+  const wrapper = document.createElement("div");
+  wrapper.style.width = CSS_W + "px";
+  wrapper.style.height = CSS_H + "px";
+  wrapper.style.pointerEvents = "auto";
+
   const iframe = document.createElement("iframe");
   iframe.src = iframeUrl;
   iframe.style.width = CSS_W + "px";
   iframe.style.height = CSS_H + "px";
   iframe.style.border = "0";
   iframe.style.background = "#111";
-  iframe.style.pointerEvents = "auto";
+  iframe.style.pointerEvents = "none";
+  wrapper.appendChild(iframe);
 
-  const cssObject = new CSS3DObject(iframe);
+  const cssObject = new CSS3DObject(wrapper);
 
   // Parent to the anchor (inherits position+rotation)
   screenAnchor.add(cssObject);
@@ -36,5 +43,5 @@ export function mountScreenOverlay(root, { iframeUrl = "https://example.org" } =
   // Lift slightly off the glass
   cssObject.position.set(0, 0, 0.002);
 
-  return { cssObject, iframeement: iframe, screenMesh, screenAnchor };
+  return { cssObject, iframEl: iframe, wrapper, screenMesh, screenAnchor };
 }
