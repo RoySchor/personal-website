@@ -26,7 +26,9 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
   }
 
   function restore(duration = 500) {
-    if (!saved) return;
+    if (!saved) return Promise.resolve();
+    let resolveDone;
+    const done = new Promise((r) => (resolveDone = r));
     const fromPos = camera.position.clone();
     const fromTar = controls.target.clone();
     const toPos = saved.camPos.clone();
@@ -51,12 +53,16 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
         controls.minDistance = saved.minDist;
         controls.maxDistance = saved.maxDist;
         controls.enabled = saved.enabled;
+        resolveDone();
       }
     });
+    return done;
   }
 
   function focusOn({ centerFrom, orientFrom, distanceScale = 0.8, duration = 650, margin = 1.06 }) {
-    if (!centerFrom || !orientFrom) return;
+    if (!centerFrom || !orientFrom) return Promise.resolve();
+    let resolveDone;
+    const done = new Promise((r) => (resolveDone = r));
     if (!focusing) save();
 
     const box = new THREE.Box3().setFromObject(centerFrom);
@@ -103,8 +109,10 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
       else {
         focusing = false;
         controls.enabled = true;
+        resolveDone();
       }
     });
+    return done;
   }
 
   return { focusOn, restore, isFocusing: () => focusing };

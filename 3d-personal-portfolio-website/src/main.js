@@ -78,6 +78,15 @@ const onAllAssetsLoaded = () => {
   }
 
   const focuser = createFocusZoom({ camera, controls, cssRoot: cssRenderer.domElement });
+  let transitioning = false;
+
+  function gateIfBusy(e) {
+    if (transitioning || focuser.isFocusing()) {
+      e?.preventDefault?.();
+      return true;
+    }
+    return false;
+  }
 
   const preview = createPreviewFocus({
     cssRoot: cssRenderer.domElement,
@@ -110,6 +119,7 @@ const onAllAssetsLoaded = () => {
     glRoot: renderer.domElement,
     screenMesh,
     cssObject,
+    shouldBlock: () => transitioning || focuser.isFocusing(),
   });
 
   const pan = createPanPreview({
@@ -119,18 +129,25 @@ const onAllAssetsLoaded = () => {
     cssRoot: cssRenderer.domElement,
     screenMesh,
     cssObject,
+    shouldBlock: () => transitioning || focuser.isFocusing(),
   });
 
   const ray = createRaycast(renderer, camera);
 
   function clickRoom(e) {
+    if (gateIfBusy(e)) return;
     const hits = ray.intersect(e, laptopRoot, true);
     const firstLaptopHit = hits.find((h) => isDesc(h.object, laptopRoot));
 
     if (firstLaptopHit) {
       if (!focuser.isFocusing() && preview.isFocused()) return;
-      focuser.focusOn({ centerFrom: screenMesh, orientFrom: cssObject, duration: 650 });
-      setTimeout(() => preview.enablePreview(), 650);
+      transitioning = true;
+      (async () => {
+        await focuser.focusOn({ centerFrom: screenMesh, orientFrom: cssObject, duration: 650 });
+        preview.enablePreview();
+        transitioning = false;
+      })();
+      // setTimeout(() => preview.enablePreview(), 650);
       return;
     }
     if (!focuser.isFocusing() && preview.isFocused()) {
@@ -139,12 +156,19 @@ const onAllAssetsLoaded = () => {
   }
 
   function exitFocus() {
-    focuser.restore(500);
-    setTimeout(() => preview.disableAllPointers(), 260);
+    // focuser.restore(500);
+    // setTimeout(() => preview.disableAllPointers(), 260);
+    transitioning = true;
+    (async () => {
+      await focuser.restore(500);
+      preview.disableAllPointers();
+      transitioning = false;
+    })();
   }
 
   // hover cursor
   function hoverRoom(e) {
+    if (transitioning || focuser.isFocusing()) return;
     const hits = ray.intersect(e, laptopRoot, true);
     const c = hits.length ? "pointer" : "";
     renderer.domElement.style.cursor = c;
@@ -156,12 +180,21 @@ const onAllAssetsLoaded = () => {
   renderer.domElement.addEventListener("mousemove", hoverRoom);
   cssRenderer.domElement.addEventListener("mousemove", hoverRoom);
 
+  renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
+  cssRenderer.domElement.addEventListener("wheel", onWheel, { passive: false });
+
   // Escape closes focus
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && preview.isFocused()) {
       exitFocus();
     }
   });
+
+  function onWheel(e) {
+    if (transitioning || focuser.isFocusing()) {
+      e.preventDefault();
+    }
+  }
 
   // render loop
   function animate() {
@@ -184,7 +217,40 @@ const onAllAssetsLoaded = () => {
         viewport.dispose();
       } catch {}
       try {
+        pan?.detach();
+      } catch {}
+      try {
+        pinch?.detach();
+      } catch {}
+      try {
+        preview?.detach?.();
+      } catch {}
+
+      // Click listeners
+      try {
         renderer.domElement.removeEventListener("click", clickRoom);
+      } catch {}
+      try {
+        cssRenderer.domElement.removeEventListener("click", clickRoom);
+      } catch {}
+
+      // Hover listeners
+      try {
+        renderer.domElement.removeEventListener("mousemove", hoverRoom);
+      } catch {}
+      try {
+        cssRenderer.domElement.removeEventListener("mousemove", hoverRoom);
+      } catch {}
+
+      // Wheel listeners
+      try {
+        renderer.domElement.removeEventListener("wheel", onWheel);
+      } catch {}
+      try {
+        cssRenderer.domElement.removeEventListener("wheel", onWheel);
+      } catch {}
+      try {
+        window.removeEventListener("resize", viewport?.syncSizesEven);
       } catch {}
     });
   }

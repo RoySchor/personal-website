@@ -3,7 +3,15 @@ import * as THREE from "three";
 import { getScreenBasis } from "../util/screenBasis.js";
 import { getWorldPerPixel } from "../util/worldPerPixel.js";
 
-export function createPanPreview({ camera, controls, renderer, cssRoot, screenMesh, cssObject }) {
+export function createPanPreview({
+  camera,
+  controls,
+  renderer,
+  cssRoot,
+  screenMesh,
+  cssObject,
+  shouldBlock = () => false,
+}) {
   let panOn = false;
   let lastX = 0,
     lastY = 0;
@@ -98,12 +106,14 @@ export function createPanPreview({ camera, controls, renderer, cssRoot, screenMe
 
   // Wiring
   function onTouchStart(e) {
+    if (shouldBlock()) return;
     if (e.touches.length === 1) {
       start(e.touches[0].clientX, e.touches[0].clientY);
       e.preventDefault();
     }
   }
   function onTouchMove(e) {
+    if (shouldBlock()) return;
     if (e.touches.length === 1) {
       move(e.touches[0].clientX, e.touches[0].clientY);
       e.preventDefault();
@@ -114,12 +124,14 @@ export function createPanPreview({ camera, controls, renderer, cssRoot, screenMe
   }
 
   function onMouseDown(e) {
+    if (shouldBlock()) return;
     if (e.button === 0) {
       start(e.clientX, e.clientY);
       e.preventDefault();
     }
   }
   function onMouseMove(e) {
+    if (shouldBlock()) return;
     move(e.clientX, e.clientY);
   }
   function onMouseUp() {
