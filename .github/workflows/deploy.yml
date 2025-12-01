@@ -27,37 +27,47 @@ jobs:
           node-version: 22
           cache: npm
 
+      # ---- 2D build ----
       - name: Install 2D dependencies
         working-directory: 2d-personal-portfolio-website
         run: npm ci
 
-      - name: Build the 2D project
+      - name: Build 2D project
         working-directory: 2d-personal-portfolio-website
         run: npm run build
 
+      # ---- 3D build ----
       - name: Install 3D dependencies
         working-directory: 3d-personal-portfolio-website
         run: npm ci
 
-      - name: Configure .env.production (3D site)
+      - name: Configure .env.production (3D)
         working-directory: 3d-personal-portfolio-website
         run: |
           cat > .env.production << 'EOF'
           VITE_IFRAME_URL=/personal-website/screen/
           EOF
 
-      - name: Build (3D site)
+      - name: Build 3D project
         working-directory: 3d-personal-portfolio-website
         run: npm run build
 
+      # ---- Bundle 2D into /screen inside 3D dist ----
       - name: Bundle inner site into /screen
         run: |
           mkdir -p 3d-personal-portfolio-website/dist/screen
-          cp -R screen-site/dist/* 3d-personal-portfolio-website/dist/screen/
+          cp -R 2d-personal-portfolio-website/dist/* 3d-personal-portfolio-website/dist/screen/
 
-      - name: SPA 404 fallback
-        run: cp dist/index.html dist/404.html
+      # ---- SPA 404 fallbacks ----
+      - name: Create SPA 404 fallback (top-level)
+        working-directory: 3d-personal-portfolio-website/dist
+        run: cp index.html 404.html
 
+      - name: Create SPA 404 fallback for /screen
+        working-directory: 3d-personal-portfolio-website/dist/screen
+        run: cp index.html 404.html
+
+      # ---- Upload artifact ----
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
