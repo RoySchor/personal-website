@@ -53,8 +53,9 @@ const onAllAssetsLoaded = () => {
   controls.update();
   lockAzimuthAroundCurrentView(controls, camera, center, isCoarse);
 
-  // mount CSS3D overlay on laptop screen
-  const overlay = mountScreenOverlay(root, { iframeUrl: "https://example.org" });
+  const iframeUrl = import.meta.env.VITE_IFRAME_URL;
+
+  const overlay = mountScreenOverlay(root, { iframeUrl });
   if (!overlay) return;
   const { screenMesh, iframeEl, wrapper, cssObject } = overlay;
 

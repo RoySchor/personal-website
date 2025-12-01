@@ -1,0 +1,20 @@
+{
+  "name": "personal-website",
+  "private": true,
+  "workspaces": [
+    "3d-personal-portfolio-website",
+    "2d-personal-portfolio-website"
+  ],
+  "scripts": {
+    "dev": "concurrently -n 3D,SCREEN -c green,cyan \"npm:dev:3d\" \"npm:dev:screen\"",
+    "dev:3d": "npm --workspace 3d-personal-portfolio-website run dev",
+    "dev:screen": "npm --workspace 2d-personal-portfolio-website run dev",
+    "build": "npm run build:3d && npm run build:screen",
+    "build:3d": "npm --workspace 3d-personal-portfolio-website run build",
+    "build:screen": "npm --workspace 2d-personal-portfolio-website run build",
+    "preview": "npm --workspace 3d-personal-portfolio-website run preview"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

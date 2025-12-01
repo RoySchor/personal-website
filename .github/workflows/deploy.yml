@@ -17,9 +17,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: 3d-personal-portfolio-website
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,13 +26,34 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: 3d-personal-portfolio-website/package-lock.json
 
-      - name: Install dependencies
+      - name: Install 2D dependencies
+        working-directory: 2d-personal-portfolio-website
         run: npm ci
 
-      - name: Build the project
+      - name: Build the 2D project
+        working-directory: 2d-personal-portfolio-website
         run: npm run build
+
+      - name: Install 3D dependencies
+        working-directory: 3d-personal-portfolio-website
+        run: npm ci
+
+      - name: Configure .env.production (3D site)
+        working-directory: 3d-personal-portfolio-website
+        run: |
+          cat > .env.production << 'EOF'
+          VITE_IFRAME_URL=/personal-website/screen/
+          EOF
+
+      - name: Build (3D site)
+        working-directory: 3d-personal-portfolio-website
+        run: npm run build
+
+      - name: Bundle inner site into /screen
+        run: |
+          mkdir -p 3d-personal-portfolio-website/dist/screen
+          cp -R screen-site/dist/* 3d-personal-portfolio-website/dist/screen/
 
       - name: SPA 404 fallback
         run: cp dist/index.html dist/404.html
