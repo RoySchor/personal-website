@@ -68,7 +68,6 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     const centerToCamera = cameraPos.sub(center); // vector pointing toward camera
     if (n.dot(centerToCamera) < 0) n.multiplyScalar(-1); // face camera
 
-    // const distance = Math.max(0.25, size.length() * distanceScale);
     const vFov = THREE.MathUtils.degToRad(camera.fov);
     const hFov = 2 * Math.atan(Math.tan(vFov * 0.5) * camera.aspect);
     const fitHeight = (size.y * 0.5) / Math.tan(vFov * 0.5);
