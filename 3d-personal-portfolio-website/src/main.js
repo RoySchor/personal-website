@@ -29,6 +29,33 @@ const onAllAssetsLoaded = () => {
   const ctx = createThreeContext("c");
   const { renderer, cssRenderer, scene, camera } = ctx;
 
+  function makeExitButton() {
+    const btn = document.createElement("button");
+    btn.textContent = "Exit ⎋";
+    Object.assign(btn.style, {
+      position: "fixed",
+      top: "12px",
+      right: "12px",
+      zIndex: "99999",
+      padding: "8px 12px",
+      borderRadius: "10px",
+      border: "1px solid rgba(255,255,255,0.3)",
+      background: "rgba(0,0,0,0.55)",
+      color: "#fff",
+      font: "500 12px system-ui, -apple-system, Segoe UI, Roboto, sans-serif",
+      backdropFilter: "blur(6px)",
+      cursor: "pointer",
+      display: "none",
+    });
+    btn.addEventListener("click", () => {
+      if (!focuser.isFocusing() && focused) exitFocus();
+    });
+    document.body.appendChild(btn);
+    return btn;
+  }
+
+  const exitBtn = makeExitButton();
+
   // keep both renderers in perfect sync (even width/height)
   const viewport = makeEvenViewportSync(ctx);
 
@@ -82,45 +109,79 @@ const onAllAssetsLoaded = () => {
     ndc.set(x, y);
   }
 
+  let focused = false;
+  let interactive = false;
+  let previewClickArm = null;
+
+  function enablePreview() {
+    focused = true;
+    cssRenderer.domElement.style.pointerEvents = "auto";
+    cssRenderer.domElement.style.cursor = "pointer";
+    wrapper.style.pointerEvents = "auto";
+    iframeEl.style.pointerEvents = "none";
+    interactive = false;
+    // one-time: the next click on the wrapper enables the iframe
+    const arm = (ev) => {
+      // stop this click from raycasting again
+      ev.stopPropagation();
+      iframeEl.style.pointerEvents = "auto";
+      iframeEl.style.cursor = "pointer";
+      wrapper.style.pointerEvents = "none"; // pass-through to iframe now
+      interactive = true;
+      wrapper.removeEventListener("click", arm, true);
+      previewClickArm = null;
+    };
+    previewClickArm = arm;
+    // capture so it fires even if iframe is under it
+    wrapper.addEventListener("click", arm, true);
+  }
+
+  function disableAllPointers() {
+    focused = false;
+    cssRenderer.domElement.style.pointerEvents = "none";
+    cssRenderer.domElement.style.cursor = "";
+    wrapper.style.pointerEvents = "none";
+    iframeEl.style.pointerEvents = "none";
+    iframeEl.style.cursor = "";
+    if (previewClickArm) {
+      wrapper.removeEventListener("click", previewClickArm, true);
+      previewClickArm = null;
+    }
+    interactive = false;
+  }
+
+  function exitFocus() {
+    focuser.restore(500);
+    setTimeout(() => {
+      disableAllPointers();
+      exitBtn.style.display = "none";
+    }, 260);
+  }
+
   function clickRoom(e) {
-    console.log("[clickRoom] canvas clicked", e.type);
     setMouseFromEvent(e);
     ray.setFromCamera(ndc, camera);
     const hits = ray.intersectObject(laptopRoot, true);
-    console.log(
-      "[clickRoom] hits:",
-      hits.map((h) => h.object.name),
-    );
     const firstLaptopHit = hits.find((h) => isDescendantOf(h.object, laptopRoot));
 
     if (firstLaptopHit) {
+      if (!focuser.isFocusing() && focused) {
+        return;
+      }
+
       focuser.focusOn({
         centerFrom: screenMesh, // geometry center = screen surface
         orientFrom: cssObject, // orientation/normal = anchor’s +Z
-        distanceScale: 0.75,
         duration: 650,
       });
       setTimeout(() => {
-        cssRenderer.domElement.style.pointerEvents = "auto";
-        cssRenderer.domElement.style.cursor = "pointer";
-        if (iframeEl) {
-          iframeEl.style.pointerEvents = "auto";
-          iframeEl.style.cursor = "pointer";
-        }
+        enablePreview();
+        exitBtn.style.display = "block";
       }, 650);
       return;
     }
-
-    if (!focuser.isFocusing() && cssRenderer.domElement.style.pointerEvents === "auto") {
-      focuser.restore();
-      setTimeout(() => {
-        cssRenderer.domElement.style.pointerEvents = "none";
-        cssRenderer.domElement.style.cursor = "";
-        if (iframeEl) {
-          iframeEl.style.pointerEvents = "none";
-          iframeEl.style.cursor = "";
-        }
-      }, 260);
+    if (!focuser.isFocusing() && focused) {
+      exitFocus();
     }
   }
 
@@ -159,11 +220,7 @@ const onAllAssetsLoaded = () => {
   // Escape closes focus
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      const focused = cssRenderer.domElement.style.pointerEvents === "auto";
-      if (focused) {
-        focuser.restore();
-        setTimeout(() => (cssRenderer.domElement.style.pointerEvents = "none"), 260);
-      }
+      if (focused) exitFocus();
     }
   });
 

@@ -43,5 +43,5 @@ export function mountScreenOverlay(root, { iframeUrl = "https://example.org" } =
   // Lift slightly off the glass
   cssObject.position.set(0, 0, 0.002);
 
-  return { cssObject, iframEl: iframe, wrapper, screenMesh, screenAnchor };
+  return { cssObject, iframeEl: iframe, wrapper, screenMesh, screenAnchor };
 }
