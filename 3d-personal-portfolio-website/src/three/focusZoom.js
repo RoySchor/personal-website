@@ -95,7 +95,6 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     const start = performance.now();
     focusing = true;
     controls.enabled = false;
-    cssRoot && (cssRoot.style.pointerEvents = "auto");
 
     stop();
     animId = requestAnimationFrame(function step(now) {
