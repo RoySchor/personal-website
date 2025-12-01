@@ -56,7 +56,7 @@ const onAllAssetsLoaded = () => {
   // mount CSS3D overlay on laptop screen
   const overlay = mountScreenOverlay(root, { iframeUrl: "https://example.org" });
   if (!overlay) return;
-  const { screenMesh, screenAnchor, iframeEl, wrapper, cssObject } = overlay;
+  const { screenMesh, iframeEl, wrapper, cssObject } = overlay;
 
   // Find the smallest ancestor that represents the whole laptop
   function getLaptopRoot(node) {
