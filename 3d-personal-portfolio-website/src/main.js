@@ -125,6 +125,7 @@ const onAllAssetsLoaded = () => {
     cssRenderer.domElement.style.touchAction = "none";
     wrapper.style.touchAction = "none";
     attachPinchZoom();
+    attachPan();
     interactive = false;
     // one-time: the next click on the wrapper enables the iframe
     const arm = (ev) => {
@@ -134,6 +135,7 @@ const onAllAssetsLoaded = () => {
       iframeEl.style.cursor = "pointer";
       wrapper.style.pointerEvents = "none";
       detachPinchZoom();
+      detachPan();
       interactive = true;
       wrapper.removeEventListener("click", arm, true);
       previewClickArm = null;
@@ -153,6 +155,7 @@ const onAllAssetsLoaded = () => {
     cssRenderer.domElement.style.touchAction = "";
     wrapper.style.touchAction = "";
     detachPinchZoom();
+    detachPan();
     viewport = makeEvenViewportSync(ctx);
     if (previewClickArm) {
       wrapper.removeEventListener("click", previewClickArm, true);
@@ -287,6 +290,210 @@ const onAllAssetsLoaded = () => {
     renderer.domElement.removeEventListener("touchstart", onTouchStart);
     renderer.domElement.removeEventListener("touchmove", onTouchMove);
     renderer.domElement.removeEventListener("touchend", onTouchEnd);
+  }
+
+  // --- Pan in PREVIEW mode (one-finger drag; also mouse drag) ---
+  let panOn = false;
+  let panLastX = 0,
+    panLastY = 0;
+  let panBasis = null; // {center,normal,right,up,box}
+  let panDistance = 0; // current camera distance along normal
+  const PAN_MULT = 1.0; // adjust feel if you like
+  const PAN_CLAMP_MARGIN = 1.08; // allow a bit beyond physical glass
+
+  function currentDistanceAlongNormal(center, normal) {
+    const camPos = camera.getWorldPosition(new THREE.Vector3());
+    return camPos.clone().sub(center).dot(normal);
+  }
+
+  function clampTargetToScreen(target, basis) {
+    // Project target into screen plane (center/right/up coordinates), clamp then return clamped world point
+    const { center, right, up, box } = basis;
+
+    // Half-extents from the mesh’s axis-aligned box in world, but we need in screen plane coords:
+    // Build four corners and measure extents in (right, up)
+    const pts = [
+      new THREE.Vector3(box.min.x, box.min.y, box.min.z),
+      new THREE.Vector3(box.min.x, box.min.y, box.max.z),
+      new THREE.Vector3(box.min.x, box.max.y, box.min.z),
+      new THREE.Vector3(box.min.x, box.max.y, box.max.z),
+      new THREE.Vector3(box.max.x, box.min.y, box.min.z),
+      new THREE.Vector3(box.max.x, box.min.y, box.max.z),
+      new THREE.Vector3(box.max.x, box.max.y, box.min.z),
+      new THREE.Vector3(box.max.x, box.max.y, box.max.z),
+    ];
+    let minU = Infinity,
+      maxU = -Infinity,
+      minV = Infinity,
+      maxV = -Infinity;
+    for (const p of pts) {
+      const d = p.clone().sub(center);
+      const u = d.dot(right);
+      const v = d.dot(up);
+      if (u < minU) minU = u;
+      if (u > maxU) maxU = u;
+      if (v < minV) minV = v;
+      if (v > maxV) maxV = v;
+    }
+    const halfU = Math.max(Math.abs(minU), Math.abs(maxU)) * PAN_CLAMP_MARGIN;
+    const halfV = Math.max(Math.abs(minV), Math.abs(maxV)) * PAN_CLAMP_MARGIN;
+
+    // Decompose target offset in (right, up, normal)
+    const off = target.clone().sub(center);
+    let u = off.dot(right);
+    let v = off.dot(up);
+    const n = off.dot(basis.normal); // not used for clamping; keep same depth
+
+    u = THREE.MathUtils.clamp(u, -halfU, +halfU);
+    v = THREE.MathUtils.clamp(v, -halfV, +halfV);
+
+    return center
+      .clone()
+      .addScaledVector(right, u)
+      .addScaledVector(up, v)
+      .addScaledVector(basis.normal, n);
+  }
+
+  function startPan(clientX, clientY) {
+    if (!focused || interactive) return;
+    panOn = true;
+    panLastX = clientX;
+    panLastY = clientY;
+
+    panBasis = getScreenBasis();
+    panDistance = currentDistanceAlongNormal(panBasis.center, panBasis.normal);
+  }
+
+  function movePan(clientX, clientY) {
+    if (!panOn || !panBasis) return;
+
+    const dx = clientX - panLastX;
+    const dy = clientY - panLastY;
+    panLastX = clientX;
+    panLastY = clientY;
+
+    const { worldPerPxX, worldPerPxY } = getWorldPerPixel(panDistance);
+
+    // negative dx moves camera/target to the right in world (so content appears to move left)
+    const shift = new THREE.Vector3()
+      .addScaledVector(panBasis.right, -dx * worldPerPxX * PAN_MULT)
+      .addScaledVector(panBasis.up, +dy * worldPerPxY * PAN_MULT);
+
+    // move both camera and target so relative view stays
+    camera.position.add(shift);
+    const newTarget = controls.target.clone().add(shift);
+
+    // Clamp target to the screen rectangle (keep Z along normal)
+    const clamped = clampTargetToScreen(newTarget, panBasis);
+    // Apply the delta from clamping to camera too, to maintain ray
+    const clampDelta = clamped.clone().sub(newTarget);
+    camera.position.add(clampDelta);
+    controls.target.copy(clamped);
+
+    camera.lookAt(controls.target);
+    controls.update();
+  }
+
+  function endPan() {
+    panOn = false;
+    panBasis = null;
+  }
+
+  // Touch
+  function onPanTouchStart(e) {
+    if (!focused || interactive) return;
+    if (e.touches.length === 1) {
+      startPan(e.touches[0].clientX, e.touches[0].clientY);
+      e.preventDefault();
+    }
+  }
+  function onPanTouchMove(e) {
+    if (!panOn || e.touches.length !== 1) return;
+    movePan(e.touches[0].clientX, e.touches[0].clientY);
+    e.preventDefault();
+  }
+  function onPanTouchEnd() {
+    endPan();
+  }
+
+  // Mouse (optional: left-drag in preview)
+  function onPanMouseDown(e) {
+    if (!focused || interactive) return;
+    if (e.button === 0) {
+      // left mouse
+      startPan(e.clientX, e.clientY);
+      e.preventDefault();
+    }
+  }
+  function onPanMouseMove(e) {
+    if (!panOn) return;
+    movePan(e.clientX, e.clientY);
+  }
+  function onPanMouseUp() {
+    endPan();
+  }
+
+  function attachPan() {
+    // Touch
+    cssRenderer.domElement.addEventListener("touchstart", onPanTouchStart, { passive: false });
+    cssRenderer.domElement.addEventListener("touchmove", onPanTouchMove, { passive: false });
+    cssRenderer.domElement.addEventListener("touchend", onPanTouchEnd, { passive: true });
+    renderer.domElement.addEventListener("touchstart", onPanTouchStart, { passive: false });
+    renderer.domElement.addEventListener("touchmove", onPanTouchMove, { passive: false });
+    renderer.domElement.addEventListener("touchend", onPanTouchEnd, { passive: true });
+    // Mouse
+    cssRenderer.domElement.addEventListener("mousedown", onPanMouseDown);
+    window.addEventListener("mousemove", onPanMouseMove);
+    window.addEventListener("mouseup", onPanMouseUp);
+  }
+
+  function detachPan() {
+    cssRenderer.domElement.removeEventListener("touchstart", onPanTouchStart);
+    cssRenderer.domElement.removeEventListener("touchmove", onPanTouchMove);
+    cssRenderer.domElement.removeEventListener("touchend", onPanTouchEnd);
+    renderer.domElement.removeEventListener("touchstart", onPanTouchStart);
+    renderer.domElement.removeEventListener("touchmove", onPanTouchMove);
+    renderer.domElement.removeEventListener("touchend", onPanTouchEnd);
+
+    cssRenderer.domElement.removeEventListener("mousedown", onPanMouseDown);
+    window.removeEventListener("mousemove", onPanMouseMove);
+    window.removeEventListener("mouseup", onPanMouseUp);
+  }
+
+  function getScreenBasis() {
+    // Center & normal like pinch uses
+    const box = new THREE.Box3().setFromObject(screenMesh);
+    const center = box.getCenter(new THREE.Vector3());
+
+    const q = cssObject.getWorldQuaternion(new THREE.Quaternion());
+    const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(q).normalize();
+
+    // Right (local +X) and Up (local +Y) in world space
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(q).normalize();
+    const up = new THREE.Vector3(0, 1, 0).applyQuaternion(q).normalize();
+
+    // Ensure normal faces camera
+    const camPos = camera.getWorldPosition(new THREE.Vector3());
+    if (normal.dot(camPos.clone().sub(center)) < 0) {
+      normal.multiplyScalar(-1);
+      // right/up remain fine; handedness flip isn’t an issue here
+    }
+
+    return { center, normal, right, up, box };
+  }
+
+  function getWorldPerPixel(distance) {
+    // map screen pixels to world units at given distance along view
+    const vFov = THREE.MathUtils.degToRad(camera.fov);
+    const hFov = 2 * Math.atan(Math.tan(vFov * 0.5) * camera.aspect);
+
+    const viewport = renderer.domElement.getBoundingClientRect();
+    const W = Math.max(1, viewport.width);
+    const H = Math.max(1, viewport.height);
+
+    const worldPerPxY = (2 * distance * Math.tan(vFov * 0.5)) / H; // along screen up
+    const worldPerPxX = (2 * distance * Math.tan(hFov * 0.5)) / W; // along screen right
+    return { worldPerPxX, worldPerPxY };
   }
 
   // Click / tap listeners on the WebGL canvas
