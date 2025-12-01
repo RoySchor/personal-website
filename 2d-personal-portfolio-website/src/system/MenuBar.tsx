@@ -136,7 +136,8 @@ const Item: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick
       margin: "30px 10px",
       cursor: "pointer",
       color: "black",
-      fontSize: 24,
+      fontSize: 26,
+      fontWeight: 100,
       textShadow: `
           -0.5px -0.5px 0 #000,
           0.5px -0.5px 0 #000,
