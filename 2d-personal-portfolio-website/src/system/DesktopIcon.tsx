@@ -15,6 +15,8 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
   rightOffset,
   topOffset,
 }) => {
+  const isPortfolio = title === "Portfolio";
+
   return (
     <div
       onDoubleClick={onOpen}
@@ -23,15 +25,37 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
         position: "absolute",
         right: rightOffset,
         top: topOffset,
-        width: 80,
+        width: 86,
         textAlign: "center",
         cursor: "default",
       }}
     >
-      <div className="glass" style={{ padding: 10, borderRadius: 12 }}>
-        <img src={icon} style={{ width: 48, height: 48 }} />
+      <div className="glass" style={{ padding: 10, borderRadius: 20 }}>
+        <img
+          src={icon}
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: isPortfolio ? "40%" : "0",
+          }}
+        />
       </div>
-      <div style={{ marginTop: 6, fontSize: 12, color: "var(--muted)" }}>{title}</div>
+      <div
+        style={{
+          marginTop: 8,
+          fontSize: 24,
+          fontWeight: 600,
+          color: "var(--muted)",
+          textShadow: `
+          -0.5px -0.5px 0 #000,
+          0.5px -0.5px 0 #000,
+          -0.5px  0.5px 0 #000,
+          0.5px  0.5px 0 #000
+        `,
+        }}
+      >
+        {title}
+      </div>
     </div>
   );
 };

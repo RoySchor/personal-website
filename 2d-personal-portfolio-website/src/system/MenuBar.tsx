@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 
-import menuLogo from "../assets/icons/menu-logo.svg";
+import menuLogo from "../assets/icons/menu-logo.webp";
 
 interface MenuBarProps {
   onShutdown: () => void;
@@ -28,7 +28,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
         top: 0,
         left: 0,
         right: 0,
-        height: 28,
+        height: 58,
         display: "flex",
         alignItems: "center",
         padding: "0 8px",
@@ -43,24 +43,31 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 8,
+            gap: 20,
             cursor: "pointer",
-            padding: "4px 8px",
+            padding: "4px 10px",
             borderRadius: 6,
+            fontSize: 32,
+            textShadow: `
+              -0.5px -0.5px 0 #000,
+              0.5px -0.5px 0 #000,
+              -0.5px  0.5px 0 #000,
+              0.5px  0.5px 0 #000
+            `,
           }}
           title="Menu"
         >
-          <img src={menuLogo} width={16} height={16} />
-          <span style={{ fontWeight: 600 }}>Menu</span>
+          <img src={menuLogo} width={48} height={48} />
+          <span style={{ fontWeight: 400 }}>Menu</span>
         </div>
         {open && (
           <div
-            className="mac-blur glass"
+            className="mac-blur glass-menu"
             style={{
               position: "absolute",
-              top: 26,
+              top: 58,
               left: 4,
-              width: 200,
+              width: 240,
               padding: 8,
               borderRadius: 10,
             }}
@@ -86,9 +93,35 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
       {/* center empty spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* right status (clock placeholder) */}
-      <div style={{ fontSize: 12, opacity: 0.8 }}>
-        {new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
+      <div
+        style={{
+          fontSize: 30,
+          opacity: 0.85,
+          paddingRight: 14,
+          textShadow: `
+          -0.5px -0.5px 0 #000,
+          0.5px -0.5px 0 #000,
+          -0.5px  0.5px 0 #000,
+          0.5px  0.5px 0 #000
+        `,
+        }}
+      >
+        <span style={{ marginRight: 20 }}>
+          {(() => {
+            const d = new Date();
+            const weekday = d.toLocaleDateString("en-US", { weekday: "short" });
+            const month = d.toLocaleDateString("en-US", { month: "short" });
+            const day = d.getDate();
+            return `${weekday}\u00A0\u00A0${month}\u00A0\u00A0${day}`;
+          })()}
+        </span>
+        <span>
+          {new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          })}
+        </span>
       </div>
     </div>
   );
@@ -97,12 +130,19 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
 const Item: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick }) => (
   <div
     onMouseDown={onClick}
-    className="glass"
     style={{
-      padding: "8px 10px",
+      padding: "10px 20px",
       borderRadius: 8,
-      marginBottom: 6,
+      margin: "30px 10px",
       cursor: "pointer",
+      color: "black",
+      fontSize: 24,
+      textShadow: `
+          -0.5px -0.5px 0 #000,
+          0.5px -0.5px 0 #000,
+          -0.5px  0.5px 0 #000,
+          0.5px  0.5px 0 #000
+        `,
     }}
   >
     {label}

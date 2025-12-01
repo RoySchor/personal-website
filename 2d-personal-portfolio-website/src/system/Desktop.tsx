@@ -12,13 +12,15 @@ import BackgammonApp from "../apps/BackgammonApp";
 import BlogApp from "../apps/BlogApp";
 import PortfolioApp from "../apps/PortfolioApp";
 import QuotesApp from "../apps/QuotesApp";
+// WALLPAPER
 // ICONS
-import iconBackgammon from "../assets/icons/app-backgammon.svg";
+import iconBackgammon from "../assets/icons/app-backgammon.webp";
 import iconBlog from "../assets/icons/app-blog.svg";
-import iconPortfolio from "../assets/icons/app-portfolio.svg";
+import iconPortfolio from "../assets/icons/app-portfolio.webp";
 import iconQuotes from "../assets/icons/app-quotes.svg";
 import iconGithub from "../assets/icons/external-github.svg";
-import iconLinkedIn from "../assets/icons/external-linkedin.svg";
+import iconLinkedIn from "../assets/icons/external-linkedin.webp";
+import wallpaper from "../assets/wallpapers/desktop-wallpaper.webp";
 
 const Desktop: React.FC = () => {
   const apps: AppDefinition[] = useMemo(
@@ -138,7 +140,17 @@ const Desktop: React.FC = () => {
   return (
     <div style={{ position: "absolute", inset: 0, background: "var(--mac-desktop)" }}>
       {/* Desktop wallpaper (optional) */}
-      {/* <img src="/path/to/wall.jpg" style={{position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover'}}/> */}
+      <img
+        src={wallpaper}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          opacity: 0.8,
+        }}
+      />
 
       <MenuBar onShutdown={() => setMode("shutdown")} onLock={() => setMode("lock")} />
 
@@ -147,45 +159,45 @@ const Desktop: React.FC = () => {
         title="Portfolio"
         icon={iconPortfolio}
         onOpen={() => openApp("portfolio")}
-        rightOffset={16}
+        rightOffset={40}
         topOffset={64}
       />
       <DesktopIcon
-        title="Backgammon"
+        title="Shesh Besh"
         icon={iconBackgammon}
         onOpen={() => openApp("backgammon")}
-        rightOffset={16}
-        topOffset={64 + 96}
+        rightOffset={40}
+        topOffset={64 + 150}
       />
       <DesktopIcon
         title="Quotes"
         icon={iconQuotes}
         onOpen={() => openApp("quotes")}
-        rightOffset={16}
-        topOffset={64 + 96 * 2}
+        rightOffset={40}
+        topOffset={64 + 150 * 2}
       />
       <DesktopIcon
         title="Blog"
         icon={iconBlog}
         onOpen={() => openApp("blog")}
-        rightOffset={16}
-        topOffset={64 + 96 * 3}
+        rightOffset={40}
+        topOffset={64 + 150 * 3}
       />
 
       {/* External-only (not in dock): LinkedIn + GitHub */}
       <DesktopIcon
         title="LinkedIn"
         icon={iconLinkedIn}
-        onOpen={() => openLink("https://www.linkedin.com/")}
-        rightOffset={16}
-        topOffset={64 + 96 * 5}
+        onOpen={() => openLink("https://www.linkedin.com/in/roy-schor")}
+        rightOffset={40}
+        topOffset={64 + 135 * 5}
       />
       <DesktopIcon
         title="GitHub"
         icon={iconGithub}
-        onOpen={() => openLink("https://github.com/")}
-        rightOffset={16}
-        topOffset={64 + 96 * 6}
+        onOpen={() => openLink("https://github.com/RoySchor")}
+        rightOffset={40}
+        topOffset={64 + 135 * 6}
       />
 
       {/* Windows */}

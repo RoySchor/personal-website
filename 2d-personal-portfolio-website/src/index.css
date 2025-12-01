@@ -1,15 +1,15 @@
 :root {
   --mac-bg: #101113;
   --mac-desktop: #0f1115;
-  --mac-menubar: rgba(28, 29, 33, 0.9);
-  --mac-menubar-text: #e6e6e6;
-  --mac-dock-bg: rgba(28, 29, 33, 0.5);
-  --mac-dock-border: rgba(255, 255, 255, 0.08);
+  --mac-menubar: rgba(28, 29, 33, 0.6);
+  --mac-menubar-text: #fffefe;
+  --mac-dock-bg: rgba(115, 114, 109, 0.556);
+  --mac-dock-border: rgba(0, 0, 0, 0.08);
   --win-active: #2f81f7;
   --win-border: rgba(255, 255, 255, 0.08);
   --win-bg: #16181d;
   --win-text: #e7e7e7;
-  --muted: #9aa3ad;
+  --muted: #ffffff;
 }
 
 * {
@@ -57,7 +57,13 @@ a:hover {
 
 /* Simple glass card */
 .glass {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid var(--win-border);
+  border-radius: 12px;
+}
+
+.glass-menu {
+  background: rgba(197, 201, 202, 0.98);
   border: 1px solid var(--win-border);
   border-radius: 12px;
 }

@@ -21,12 +21,12 @@ const Dock: React.FC<DockProps> = ({ apps, openApp, minimizedWindows, restoreWin
         left: "50%",
         transform: "translateX(-50%)",
         bottom: 10,
-        height: 72,
+        height: 150,
         borderRadius: 18,
-        padding: "10px 14px",
+        padding: "10px 34px",
         display: "flex",
         alignItems: "center",
-        gap: 14,
+        gap: 20,
         background: "var(--mac-dock-bg)",
         border: `1px solid var(--mac-dock-border)`,
       }}
@@ -41,7 +41,7 @@ const Dock: React.FC<DockProps> = ({ apps, openApp, minimizedWindows, restoreWin
       ))}
 
       {/* divider */}
-      <div style={{ width: 1, height: 42, background: "rgba(255,255,255,0.12)" }} />
+      <div style={{ width: 1, height: 42, background: "rgb(0, 0, 0)" }} />
 
       {runningMin.map((w) => (
         <DockIcon
@@ -61,26 +61,38 @@ const DockIcon: React.FC<{ title: string; icon: string; onClick: () => void; sma
   icon,
   onClick,
   small,
-}) => (
-  <button
-    onMouseDown={onClick}
-    title={title}
-    style={{
-      appearance: "none",
-      border: 0,
-      background: "transparent",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      width: small ? 44 : 56,
-      height: small ? 44 : 56,
-      borderRadius: 12,
-      padding: 6,
-    }}
-  >
-    <img src={icon} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-  </button>
-);
+}) => {
+  const isPortfolio = title === "Portfolio";
+
+  return (
+    <button
+      onMouseDown={onClick}
+      title={title}
+      style={{
+        appearance: "none",
+        border: 0,
+        background: "transparent",
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: small ? 88 : 100,
+        height: small ? 88 : 100,
+        borderRadius: 12,
+        padding: 6,
+      }}
+    >
+      <img
+        src={icon}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+          borderRadius: isPortfolio ? "40%" : "0",
+        }}
+      />
+    </button>
+  );
+};
 
 export default Dock;
