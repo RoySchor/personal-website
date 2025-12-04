@@ -1,11 +1,11 @@
 import * as THREE from "three";
 
 import roomUrl from "./assets/portfolio-room.glb?url";
-import { createPanPreview } from "./interactions/panPreview.js";
 import { createPinchZoom } from "./interactions/pinchZoom.js";
 import { createPreviewFocus } from "./interactions/previewFocus.js";
 import { createRaycast } from "./interactions/raycast.js";
 import { createMatrixLoader } from "./loader.js";
+import { createCameraMover } from "./three/cameraMover.js";
 import { createThreeContext } from "./three/context.js";
 import { createControls, lockAzimuthAroundCurrentView } from "./three/controls.js";
 import { createFocusZoom } from "./three/focusZoom.js";
@@ -13,6 +13,7 @@ import { addLights } from "./three/lights.js";
 import { loadRoom } from "./three/loadRoom.js";
 import { mountScreenOverlay } from "./three/screenOverlay.js";
 import { makeEvenViewportSync } from "./three/viewport.js";
+import { createArrowControls } from "./ui/arrowControls.js";
 import { createExitButton } from "./ui/exitButton.js";
 
 // Start Matrix rain overlay
@@ -44,6 +45,15 @@ const onAllAssetsLoaded = () => {
   addLights(scene);
   const controls = createControls(camera, renderer.domElement);
 
+  // NOW create these after controls exists
+  const cameraMover = createCameraMover({ camera, controls });
+
+  const arrowControls = createArrowControls({
+    camera,
+    controls,
+    onMove: (direction) => cameraMover.move(direction),
+  });
+
   // load room glb
   const { root, center, isCoarse } = await loadRoom(ctx, roomUrl, {
     onProgress,
@@ -58,6 +68,9 @@ const onAllAssetsLoaded = () => {
   const overlay = mountScreenOverlay(root, { iframeUrl });
   if (!overlay) return;
   const { screenMesh, iframeEl, wrapper, cssObject } = overlay;
+
+  // Update cameraMover with actual mesh/cssObject
+  cameraMover.setMesh(screenMesh, cssObject);
 
   // Find the smallest ancestor that represents the whole laptop
   function getLaptopRoot(node) {
@@ -123,18 +136,17 @@ const onAllAssetsLoaded = () => {
     onEnter: () => {
       viewport?.dispose();
       pinch.attach();
-      pan.attach();
+      arrowControls.show();
       exitBtn.style.display = "block";
     },
     onExit: () => {
       pinch.detach();
-      pan.detach();
+      arrowControls.hide();
       viewport = makeEvenViewportSync(ctx);
       exitBtn.style.display = "none";
     },
     onArmIframe: () => {
       pinch.detach();
-      pan.detach();
     },
   });
 
@@ -143,16 +155,6 @@ const onAllAssetsLoaded = () => {
     controls,
     cssRoot: cssRenderer.domElement,
     glRoot: renderer.domElement,
-    screenMesh,
-    cssObject,
-    shouldBlock: () => transitioning || focuser.isFocusing(),
-  });
-
-  const pan = createPanPreview({
-    camera,
-    controls,
-    renderer,
-    cssRoot: cssRenderer.domElement,
     screenMesh,
     cssObject,
     shouldBlock: () => transitioning || focuser.isFocusing(),
@@ -246,9 +248,6 @@ const onAllAssetsLoaded = () => {
       } catch {}
       try {
         viewport.dispose();
-      } catch {}
-      try {
-        pan?.detach();
       } catch {}
       try {
         pinch?.detach();

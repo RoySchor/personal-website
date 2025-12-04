@@ -1,10 +1,10 @@
 export function createExitButton(onClick) {
   const btn = document.createElement("button");
-  btn.textContent = "Exit ⎋";
+  btn.textContent = "Exit";
   Object.assign(btn.style, {
     position: "fixed",
     top: "12px",
-    right: "12px",
+    right: "20px",
     zIndex: "99999",
     padding: "8px 12px",
     borderRadius: "10px",
