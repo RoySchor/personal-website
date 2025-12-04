@@ -30,18 +30,18 @@
 /* Mobile/Tablet - scale everything up */
 @media (max-width: 1024px) {
   :root {
-    --desktop-icon-size: 96px;
-    --desktop-icon-width: 126px;
+    --desktop-icon-size: 102px;
+    --desktop-icon-width: 132px;
     --desktop-icon-top-offset: 78px;
-    --desktop-icon-gap: 170px;
-    --desktop-icon-font-size: 28px;
+    --desktop-icon-gap: 175px;
+    --desktop-icon-font-size: 30px;
     --dock-height: 180px;
     --dock-icon-size: 130px;
     --dock-icon-small: 130px;
     --dock-gap: 24px;
     --dock-padding: 14px 40px;
-    --menubar-height: 68px;
-    --menubar-font-size: 42px;
+    --menubar-height: 72px;
+    --menubar-font-size: 48px;
     --ui-scale: 1.2;
   }
 }
