@@ -36,11 +36,11 @@
   --menu-bar-dropdown-menu-item-padding: 10px 20px;
   --window-border-radius: 12px;
   --window-header-height: 42px;
-  ---window-header-icon-size: 26px;
-  --window-header-icon-gap: 20px;
+  ---window-header-icon-size: 28px;
+  --window-header-icon-gap: 30px;
   --window-min-width: 360px;
   --window-min-height: 220px;
-  --window-icon-size: 20px;
+  --window-header-inner-circle-icon-size: 20px;
   --window-title-website-icon-size: 32px;
   --window-title-website-font-size: 30px;
   --ui-scale: 1;
@@ -71,15 +71,15 @@
     --menu-bar-dropdown-menu-font-size: 20px;
     --menu-bar-dropdown-menu-item-margin: 10px 10px;
     --menu-bar-dropdown-menu-item-padding: 5px 20px;
-    --window-border-radius: 8px;
-    --window-header-height: 28px;
-    ---window-header-icon-size: 14px;
-    --window-header-icon-gap: 8px;
+    --window-border-radius: 12px;
+    --window-header-height: 34px;
+    ---window-header-icon-size: 26px;
+    --window-header-icon-gap: 22px;
     --window-min-width: 280px;
     --window-min-height: 180px;
-    --window-icon-size: 12px;
-    --window-title-website-icon-size: 16px;
-    --window-title-website-font-size: 16px;
+    --window-header-inner-circle-icon-size: 24px;
+    --window-title-website-icon-size: 24px;
+    --window-title-website-font-size: 20px;
     --ui-scale: 1;
   }
 }

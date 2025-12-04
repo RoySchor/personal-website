@@ -35,6 +35,8 @@ export default [
         Node: "readonly",
         clearTimeout: "readonly",
         getComputedStyle: "readonly",
+        TouchEvent: "readonly",
+        EventListener: "readonly",
       },
     },
 

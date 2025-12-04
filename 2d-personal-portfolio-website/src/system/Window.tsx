@@ -28,15 +28,20 @@ const Window: React.FC<Props> = (props) => {
   const resizeStart = useRef<{ w: number; h: number; mx: number; my: number }>(null);
 
   useEffect(() => {
-    const onMove = (e: MouseEvent) => {
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      const clientX = "touches" in e ? e.touches[0]?.clientX : e.clientX;
+      const clientY = "touches" in e ? e.touches[0]?.clientY : e.clientY;
+
+      if (!clientX || !clientY) return;
+
       if (dragging && dragStart.current) {
-        const dx = e.clientX - dragStart.current.mx;
-        const dy = e.clientY - dragStart.current.my;
+        const dx = clientX - dragStart.current.mx;
+        const dy = clientY - dragStart.current.my;
         props.onMove(dragStart.current.x + dx, Math.max(28, dragStart.current.y + dy));
       }
       if (resizing && resizeStart.current) {
-        const dw = e.clientX - resizeStart.current.mx;
-        const dh = e.clientY - resizeStart.current.my;
+        const dw = clientX - resizeStart.current.mx;
+        const dh = clientY - resizeStart.current.my;
         const minW =
           parseInt(
             getComputedStyle(document.documentElement).getPropertyValue("--window-min-width"),
@@ -57,23 +62,31 @@ const Window: React.FC<Props> = (props) => {
     };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onMove as EventListener);
+    window.addEventListener("touchend", onUp);
     return () => {
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onMove as EventListener);
+      window.removeEventListener("touchend", onUp);
     };
   }, [props, dragging, resizing]);
 
-  const startDrag = (e: React.MouseEvent) => {
+  const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     setDragging(true);
-    dragStart.current = { x: props.x, y: props.y, mx: e.clientX, my: e.clientY };
+    dragStart.current = { x: props.x, y: props.y, mx: clientX, my: clientY };
     props.onFocus();
   };
 
-  const startResize = (e: React.MouseEvent) => {
+  const startResize = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     setResizing(true);
-    resizeStart.current = { w: props.w, h: props.h, mx: e.clientX, my: e.clientY };
+    resizeStart.current = { w: props.w, h: props.h, mx: clientX, my: clientY };
     props.onFocus();
   };
 
@@ -97,6 +110,7 @@ const Window: React.FC<Props> = (props) => {
       <div
         ref={headerRef}
         onMouseDown={startDrag}
+        onTouchStart={startDrag}
         className="mac-blur"
         style={{
           height: "var(--window-header-height)",
@@ -125,21 +139,14 @@ const Window: React.FC<Props> = (props) => {
             onClick={props.onClose}
             icon="close"
             showIcon={controlsHovered}
-            iconSize="var(--window-icon-size)"
+            iconSize="var(--window-header-inner-circle-icon-size)"
           />
           <WindowControl
             color="#febc2e"
             onClick={props.onMinimize}
             icon="minimize"
             showIcon={controlsHovered}
-            iconSize="var(--window-icon-size)"
-          />
-          <WindowControl
-            color="#28c840"
-            onClick={() => {}}
-            icon="maximize"
-            showIcon={controlsHovered}
-            iconSize="var(--window-icon-size)"
+            iconSize="var(--window-header-inner-circle-icon-size)"
           />
         </div>
 
@@ -175,6 +182,7 @@ const Window: React.FC<Props> = (props) => {
       {/* Resize handle */}
       <div
         onMouseDown={startResize}
+        onTouchStart={startResize}
         style={{
           position: "absolute",
           right: 6,

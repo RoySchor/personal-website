@@ -61,9 +61,18 @@ const Desktop: React.FC = () => {
   const [zCounter, setZ] = useState(10);
 
   const [wins, setWins] = useState<Record<AppKey, WindowState>>(() => {
-    // Boot with Portfolio open
+    // Boot with Portfolio open - center it on screen
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const isMobile = screenWidth <= 1024;
+
+    const windowWidth = isMobile ? Math.min(screenWidth - 40, 600) : 1000;
+    const windowHeight = isMobile ? Math.min(screenHeight - 100, 500) : 640;
+    const x = (screenWidth - windowWidth) / 2;
+    const y = isMobile ? 60 : 80;
+
     return {
-      portfolio: mkWindow("portfolio", 120, 80, 1000, 640, 11),
+      portfolio: mkWindow("portfolio", x, y, windowWidth, windowHeight, 11),
       backgammon: undefined as unknown as WindowState,
       quotes: undefined as unknown as WindowState,
       blog: undefined as unknown as WindowState,
@@ -95,16 +104,20 @@ const Desktop: React.FC = () => {
     setWins((prev) => {
       const exists = prev[key];
       if (exists) return { ...prev, [key]: { ...exists, minimized: false, z: zCounter + 1 } };
+
+      // Center new windows responsively
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      const isMobile = screenWidth <= 1024;
+
+      const windowWidth = isMobile ? Math.min(screenWidth - 40, 600) : 1000;
+      const windowHeight = isMobile ? Math.min(screenHeight - 100, 500) : 640;
+      const x = (screenWidth - windowWidth) / 2 + (Math.random() * 40 - 20);
+      const y = isMobile ? 60 + Math.random() * 20 : 100 + Math.random() * 60;
+
       return {
         ...prev,
-        [key]: mkWindow(
-          key,
-          140 + Math.random() * 80,
-          100 + Math.random() * 60,
-          1000,
-          640,
-          zCounter + 1,
-        ),
+        [key]: mkWindow(key, x, y, windowWidth, windowHeight, zCounter + 1),
       };
     });
   }
