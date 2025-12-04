@@ -20,9 +20,13 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
     return () => window.removeEventListener("mousedown", handler);
   }, []);
 
-  const menubarLogoSize = parseInt(
-    getComputedStyle(document.documentElement).getPropertyValue("--menubar-logo-size"),
-  );
+  const menubarLogoSize =
+    typeof window !== "undefined"
+      ? parseInt(
+          getComputedStyle(document.documentElement).getPropertyValue("--menubar-logo-size") ||
+            "36",
+        )
+      : 36;
 
   return (
     <div
