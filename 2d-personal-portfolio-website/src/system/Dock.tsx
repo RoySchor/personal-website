@@ -41,7 +41,13 @@ const Dock: React.FC<DockProps> = ({ apps, openApp, minimizedWindows, restoreWin
       ))}
 
       {/* divider */}
-      <div style={{ width: 1, height: 42, background: "rgb(0, 0, 0)" }} />
+      <div
+        style={{
+          width: 1.5,
+          height: "calc(var(--dock-height) - 40px)",
+          background: "rgb(0, 0, 0)",
+        }}
+      />
 
       {runningMin.map((w) => (
         <DockIcon

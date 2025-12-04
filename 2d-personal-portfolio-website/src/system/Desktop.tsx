@@ -177,29 +177,29 @@ const Desktop: React.FC = () => {
         title="Portfolio"
         icon={iconPortfolio}
         onOpen={() => openApp("portfolio")}
-        rightOffset={40}
+        rightOffset={50}
         topOffset={desktopIconTopOffset}
       />
       <DesktopIcon
         title="Shesh Besh"
         icon={iconBackgammon}
         onOpen={() => openApp("backgammon")}
-        rightOffset={40}
+        rightOffset={50}
         topOffset={desktopIconTopOffset + iconGap}
       />
       <DesktopIcon
         title="Quotes"
         icon={iconQuotes}
         onOpen={() => openApp("quotes")}
-        rightOffset={40}
-        topOffset={desktopIconTopOffset + iconGap * 2}
+        rightOffset={50}
+        topOffset={desktopIconTopOffset + iconGap * 2.1}
       />
       <DesktopIcon
         title="Blog"
         icon={iconBlog}
         onOpen={() => openApp("blog")}
-        rightOffset={40}
-        topOffset={desktopIconTopOffset + iconGap * 3}
+        rightOffset={50}
+        topOffset={desktopIconTopOffset + iconGap * 3.1}
       />
 
       {/* External-only (not in dock): LinkedIn + GitHub */}
@@ -207,15 +207,15 @@ const Desktop: React.FC = () => {
         title="LinkedIn"
         icon={iconLinkedIn}
         onOpen={() => openLink("https://www.linkedin.com/in/roy-schor")}
-        rightOffset={40}
-        topOffset={desktopIconTopOffset + iconGap * 4.2}
+        rightOffset={50}
+        topOffset={desktopIconTopOffset + iconGap * 4.3}
       />
       <DesktopIcon
         title="GitHub"
         icon={iconGithub}
         onOpen={() => openLink("https://github.com/RoySchor")}
-        rightOffset={40}
-        topOffset={desktopIconTopOffset + iconGap * 5.2}
+        rightOffset={50}
+        topOffset={desktopIconTopOffset + iconGap * 5.3}
       />
 
       {/* Windows */}
