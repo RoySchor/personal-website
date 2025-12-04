@@ -85,7 +85,7 @@ const onAllAssetsLoaded = () => {
     const hitboxMesh = new THREE.Mesh(hitboxGeom, hitboxMat);
 
     hitboxMesh.position.copy(center);
-    hitboxMesh.name = 'laptop_hitbox';
+    hitboxMesh.name = "laptop_hitbox";
 
     scene.add(hitboxMesh);
 
