@@ -73,9 +73,9 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
             className="mac-blur glass-menu"
             style={{
               position: "absolute",
-              top: 48,
+              top: "var(--menu-bar-dropdown-menu-top-gap)",
               left: 4,
-              width: 240,
+              width: "var(--menu-bar-dropdown-menu-width)",
               padding: 8,
               borderRadius: 10,
             }}
@@ -141,13 +141,13 @@ const Item: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick
   <div
     onMouseDown={onClick}
     style={{
-      padding: "10px 20px",
+      padding: "var(--menu-bar-dropdown-menu-item-padding)",
       borderRadius: 8,
-      margin: "20px 10px",
+      margin: "var(--menu-bar-dropdown-menu-item-margin)",
       cursor: "pointer",
       color: "black",
-      fontSize: 24,
-      fontWeight: 100,
+      fontSize: "var(--menu-bar-dropdown-menu-font-size)",
+      fontWeight: 50,
       textShadow: `
           -0.5px -0.5px 0 #000,
           0.5px -0.5px 0 #000,

@@ -63,7 +63,7 @@ const Desktop: React.FC = () => {
   const [wins, setWins] = useState<Record<AppKey, WindowState>>(() => {
     // Boot with Portfolio open
     return {
-      portfolio: mkWindow("portfolio", 120, 80, 960, 600, 11),
+      portfolio: mkWindow("portfolio", 120, 80, 1000, 640, 11),
       backgammon: undefined as unknown as WindowState,
       quotes: undefined as unknown as WindowState,
       blog: undefined as unknown as WindowState,
@@ -101,8 +101,8 @@ const Desktop: React.FC = () => {
           key,
           140 + Math.random() * 80,
           100 + Math.random() * 60,
-          900,
-          560,
+          1000,
+          640,
           zCounter + 1,
         ),
       };

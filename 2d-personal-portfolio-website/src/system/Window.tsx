@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 
+import WindowControl from "./WindowControls";
+
 interface Props {
   title: string;
   icon?: string;
@@ -21,6 +23,7 @@ const Window: React.FC<Props> = (props) => {
   const headerRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
   const [resizing, setResizing] = useState(false);
+  const [controlsHovered, setControlsHovered] = useState(false);
   const dragStart = useRef<{ x: number; y: number; mx: number; my: number }>(null);
   const resizeStart = useRef<{ w: number; h: number; mx: number; my: number }>(null);
 
@@ -34,9 +37,17 @@ const Window: React.FC<Props> = (props) => {
       if (resizing && resizeStart.current) {
         const dw = e.clientX - resizeStart.current.mx;
         const dh = e.clientY - resizeStart.current.my;
+        const minW =
+          parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue("--window-min-width"),
+          ) || 360;
+        const minH =
+          parseInt(
+            getComputedStyle(document.documentElement).getPropertyValue("--window-min-height"),
+          ) || 220;
         props.onResize(
-          Math.max(360, resizeStart.current.w + dw),
-          Math.max(220, resizeStart.current.h + dh),
+          Math.max(minW, resizeStart.current.w + dw),
+          Math.max(minH, resizeStart.current.h + dh),
         );
       }
     };
@@ -74,7 +85,7 @@ const Window: React.FC<Props> = (props) => {
         width: props.w,
         height: props.h,
         zIndex: props.z,
-        borderRadius: 12,
+        borderRadius: "var(--window-border-radius)",
         overflow: "hidden",
         boxShadow: props.active ? "0 10px 24px rgba(0,0,0,0.45)" : "0 6px 16px rgba(0,0,0,0.25)",
         border: "1px solid var(--win-border)",
@@ -88,35 +99,76 @@ const Window: React.FC<Props> = (props) => {
         onMouseDown={startDrag}
         className="mac-blur"
         style={{
-          height: 32,
+          height: "var(--window-header-height)",
           display: "flex",
           alignItems: "center",
+          justifyContent: "center",
           padding: "0 10px",
-          gap: 8,
           cursor: "grab",
           background: "rgba(22,24,29,0.7)",
+          position: "relative",
         }}
       >
         {/* window traffic lights */}
-        <div style={{ display: "flex", gap: 10, marginRight: 6 }}>
-          <Circle color="#ff5f57" onClick={props.onClose} />
-          <Circle color="#febc2e" onClick={props.onMinimize} />
-          <Circle color="#28c840" onClick={() => {}} />
-        </div>
-        {props.icon && (
-          <img
-            src={props.icon}
-            style={{
-              width: 20,
-              height: 20,
-            }}
+        <div
+          style={{
+            position: "absolute",
+            left: 10,
+            display: "flex",
+            gap: "var(--window-header-icon-gap)",
+          }}
+          onMouseEnter={() => setControlsHovered(true)}
+          onMouseLeave={() => setControlsHovered(false)}
+        >
+          <WindowControl
+            color="#ff5f57"
+            onClick={props.onClose}
+            icon="close"
+            showIcon={controlsHovered}
+            iconSize="var(--window-icon-size)"
           />
-        )}
-        <div style={{ fontSize: 20, opacity: 0.9 }}>{props.title}</div>
+          <WindowControl
+            color="#febc2e"
+            onClick={props.onMinimize}
+            icon="minimize"
+            showIcon={controlsHovered}
+            iconSize="var(--window-icon-size)"
+          />
+          <WindowControl
+            color="#28c840"
+            onClick={() => {}}
+            icon="maximize"
+            showIcon={controlsHovered}
+            iconSize="var(--window-icon-size)"
+          />
+        </div>
+
+        {/* Centered title and icon */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {props.icon && (
+            <img
+              src={props.icon}
+              style={{
+                borderRadius: "20%",
+                width: "var(--window-title-website-icon-size)",
+                height: "var(--window-title-website-icon-size)",
+              }}
+            />
+          )}
+          <div style={{ fontSize: "var(--window-title-website-font-size)", opacity: 0.9 }}>
+            {props.title}
+          </div>
+        </div>
       </div>
 
       {/* Content */}
-      <div style={{ width: "100%", height: `calc(100% - 32px)`, overflow: "auto" }}>
+      <div
+        style={{
+          width: "100%",
+          height: `calc(100% - var(--window-header-height))`,
+          overflow: "auto",
+        }}
+      >
         {props.children}
       </div>
 
@@ -141,15 +193,5 @@ const Window: React.FC<Props> = (props) => {
     </div>
   );
 };
-
-const Circle: React.FC<{ color: string; onClick?: () => void }> = ({ color, onClick }) => (
-  <div
-    onMouseDown={(e) => {
-      e.stopPropagation();
-      onClick?.();
-    }}
-    style={{ width: 18, height: 18, background: color, borderRadius: 12, cursor: "pointer" }}
-  />
-);
 
 export default Window;
