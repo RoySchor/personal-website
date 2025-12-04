@@ -137,8 +137,16 @@ export function createPanPreview({
       }
     }
   }
-  function onTouchEnd() {
+  function onTouchEnd(e) {
     end();
+    // Make sure we're ready for next touch
+    if (e.cancelable && panStarted) {
+      e.preventDefault();
+    }
+  }
+
+  function onTouchCancel() {
+    end(); // Reset state if touch is cancelled
   }
 
   function onMouseDown(e) {
@@ -159,10 +167,12 @@ export function createPanPreview({
   function attach() {
     cssRoot.addEventListener("touchstart", onTouchStart, { passive: false });
     cssRoot.addEventListener("touchmove", onTouchMove, { passive: false });
-    cssRoot.addEventListener("touchend", onTouchEnd, { passive: true });
+    cssRoot.addEventListener("touchend", onTouchEnd, { passive: false });
+    cssRoot.addEventListener("touchcancel", onTouchCancel, { passive: false });
     renderer.domElement.addEventListener("touchstart", onTouchStart, { passive: false });
     renderer.domElement.addEventListener("touchmove", onTouchMove, { passive: false });
-    renderer.domElement.addEventListener("touchend", onTouchEnd, { passive: true });
+    renderer.domElement.addEventListener("touchend", onTouchEnd, { passive: false });
+    renderer.domElement.addEventListener("touchcancel", onTouchCancel, { passive: false });
 
     cssRoot.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
@@ -173,9 +183,11 @@ export function createPanPreview({
     cssRoot.removeEventListener("touchstart", onTouchStart);
     cssRoot.removeEventListener("touchmove", onTouchMove);
     cssRoot.removeEventListener("touchend", onTouchEnd);
+    cssRoot.removeEventListener("touchcancel", onTouchCancel);
     renderer.domElement.removeEventListener("touchstart", onTouchStart);
     renderer.domElement.removeEventListener("touchmove", onTouchMove);
     renderer.domElement.removeEventListener("touchend", onTouchEnd);
+    renderer.domElement.removeEventListener("touchcancel", onTouchCancel);
 
     cssRoot.removeEventListener("mousedown", onMouseDown);
     window.removeEventListener("mousemove", onMouseMove);

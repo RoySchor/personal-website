@@ -98,18 +98,21 @@ const Window: React.FC<Props> = (props) => {
         }}
       >
         {/* window traffic lights */}
-        <div style={{ display: "flex", gap: 8, marginRight: 6 }}>
+        <div style={{ display: "flex", gap: 10, marginRight: 6 }}>
           <Circle color="#ff5f57" onClick={props.onClose} />
           <Circle color="#febc2e" onClick={props.onMinimize} />
-          <Circle
-            color="#28c840"
-            onClick={() => {
-              /* (optional) maximize later */
+          <Circle color="#28c840" onClick={() => {}} />
+        </div>
+        {props.icon && (
+          <img
+            src={props.icon}
+            style={{
+              width: 20,
+              height: 20,
             }}
           />
-        </div>
-        {props.icon && <img src={props.icon} width={16} height={16} />}
-        <div style={{ fontSize: 12, opacity: 0.9 }}>{props.title}</div>
+        )}
+        <div style={{ fontSize: 20, opacity: 0.9 }}>{props.title}</div>
       </div>
 
       {/* Content */}
@@ -145,7 +148,7 @@ const Circle: React.FC<{ color: string; onClick?: () => void }> = ({ color, onCl
       e.stopPropagation();
       onClick?.();
     }}
-    style={{ width: 12, height: 12, background: color, borderRadius: 12, cursor: "pointer" }}
+    style={{ width: 18, height: 18, background: color, borderRadius: 12, cursor: "pointer" }}
   />
 );
 

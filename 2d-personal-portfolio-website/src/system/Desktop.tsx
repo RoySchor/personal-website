@@ -186,10 +186,10 @@ const Desktop: React.FC = () => {
         title="Blog"
         icon={iconBlog}
         onOpen={() => openApp("blog")}
-        rightOffset="var(--desktop-right-offset-row-1)"
+        rightOffset="var(--desktop-right-offset-row-2)"
         topOffset="var(--desktop-icon-top-offset)"
         iconGap="var(--desktop-icon-gap)"
-        gapMultiplier={3.1}
+        gapMultiplier={2}
       />
 
       {/* External-only (not in dock): LinkedIn + GitHub */}

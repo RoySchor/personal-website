@@ -20,13 +20,15 @@
   --desktop-right-offset-row-1: 50px;
   --desktop-right-offset-row-2: 1150px;
   --dock-height: 100px;
+  --dock-divider-height: 80px;
   --dock-icon-size: 86px;
-  --dock-icon-small: 100px;
+  --dock-icon-small: 72px;
   --dock-gap: 20px;
   --dock-padding: 10px 34px;
   --menubar-height: 45px;
   --menubar-font-size: 28px;
-  --menubar-logo-size: 36px;
+  --menubar-logo-size: 32px;
+  --menubar-gap: 10px;
   --ui-scale: 1;
 }
 
@@ -34,20 +36,22 @@
 @media (max-width: 1024px) {
   :root {
     --desktop-icon-size: 42px;
-    --desktop-icon-width: 50px;
-    --desktop-icon-top-offset: 64px;
-    --desktop-icon-gap: 10px;
-    --desktop-icon-font-size: 24px;
-    --desktop-right-offset-row-1: 50px;
-    --desktop-right-offset-row-2: 100px;
-    --dock-height: 70px;
-    --dock-icon-size: 64px;
-    --dock-icon-small: 58px;
+    --desktop-icon-width: 64px;
+    --desktop-icon-top-offset: 48px;
+    --desktop-icon-gap: 100px;
+    --desktop-icon-font-size: 14px;
+    --desktop-right-offset-row-1: 20px;
+    --desktop-right-offset-row-2: 560px;
+    --dock-height: 50px;
+    --dock-divider-height: 35px;
+    --dock-icon-size: 48px;
+    --dock-icon-small: 42px;
     --dock-gap: 15px;
     --dock-padding: 5px 20px;
     --menubar-height: 36px;
     --menubar-font-size: 22px;
-    --menubar-logo-size: 30px;
+    --menubar-logo-size: 26px;
+    --menubar-gap: 10px;
     --ui-scale: 1;
   }
 }

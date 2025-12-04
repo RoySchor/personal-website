@@ -44,7 +44,7 @@ const Dock: React.FC<DockProps> = ({ apps, openApp, minimizedWindows, restoreWin
       <div
         style={{
           width: 1.5,
-          height: "calc(var(--dock-height) - 40px)",
+          height: "var(--dock-divider-height)",
           background: "rgb(0, 0, 0)",
         }}
       />

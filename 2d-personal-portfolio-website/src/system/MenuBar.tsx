@@ -20,14 +20,6 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
     return () => window.removeEventListener("mousedown", handler);
   }, []);
 
-  const menubarLogoSize =
-    typeof window !== "undefined"
-      ? parseInt(
-          getComputedStyle(document.documentElement).getPropertyValue("--menubar-logo-size") ||
-            "36",
-        )
-      : 36;
-
   return (
     <div
       className="mac-blur app-no-select"
@@ -51,7 +43,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 20,
+            gap: "var(--menubar-gap)",
             cursor: "pointer",
             padding: "4px 10px",
             borderRadius: 6,
@@ -65,7 +57,15 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
           }}
           title="Menu"
         >
-          <img src={menuLogo} width={menubarLogoSize} height={menubarLogoSize} />
+          <img
+            src={menuLogo}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              width: "var(--menubar-logo-size)",
+              height: "var(--menubar-logo-size)",
+            }}
+          />
           <span style={{ fontWeight: 400 }}>Menu</span>
         </div>
         {open && (
@@ -103,6 +103,8 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
 
       <div
         style={{
+          display: "flex",
+          alignItems: "center",
           fontSize: 30,
           opacity: 0.85,
           paddingRight: 14,
