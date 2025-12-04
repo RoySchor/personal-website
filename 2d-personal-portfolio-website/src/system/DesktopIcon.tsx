@@ -1,11 +1,25 @@
 import React from "react";
 
+type CSSPx = number | string;
+
 interface DesktopIconProps {
   title: string;
   icon: string;
   onOpen: () => void;
-  rightOffset: number; // stack on the right side
-  topOffset: number;
+  rightOffset: CSSPx; // stack on the right side
+  topOffset: CSSPx;
+  iconGap: CSSPx;
+  gapMultiplier: number;
+}
+
+function toPx(v: CSSPx) {
+  return typeof v === "number" ? `${v}px` : v;
+}
+
+function topWithGap(top: CSSPx, gap: CSSPx = 0, mult = 0) {
+  const t = toPx(top);
+  const g = toPx(gap);
+  return mult ? `calc(${t} + ${g} * ${mult})` : t;
 }
 
 const DesktopIcon: React.FC<DesktopIconProps> = ({
@@ -14,6 +28,8 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
   onOpen,
   rightOffset,
   topOffset,
+  iconGap,
+  gapMultiplier,
 }) => {
   const isPortfolio = title === "Portfolio";
 
@@ -23,8 +39,8 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
       title={title}
       style={{
         position: "absolute",
-        right: rightOffset,
-        top: topOffset,
+        right: toPx(rightOffset),
+        top: topWithGap(topOffset, iconGap, gapMultiplier),
         width: "var(--desktop-icon-width)",
         textAlign: "center",
         cursor: "default",

@@ -123,18 +123,18 @@ const onAllAssetsLoaded = () => {
     onEnter: () => {
       viewport?.dispose();
       pinch.attach();
-      // pan.attach(); // TEMPORARILY DISABLED - testing iframe interaction
+      pan.attach();
       exitBtn.style.display = "block";
     },
     onExit: () => {
       pinch.detach();
-      // pan.detach(); // TEMPORARILY DISABLED
+      pan.detach();
       viewport = makeEvenViewportSync(ctx);
       exitBtn.style.display = "none";
     },
     onArmIframe: () => {
       pinch.detach();
-      // pan.detach(); // TEMPORARILY DISABLED
+      pan.detach();
     },
   });
 

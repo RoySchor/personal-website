@@ -13,6 +13,9 @@ export function createPanPreview({
   shouldBlock = () => false,
 }) {
   let panOn = false;
+  let panStarted = false;
+  let startX = 0,
+    startY = 0;
   let lastX = 0,
     lastY = 0;
   let basis = null;
@@ -20,6 +23,7 @@ export function createPanPreview({
 
   const CLAMP_MARGIN = 1.08;
   const MULT = 1.0;
+  const DRAG_THRESHOLD = 10;
 
   function distanceAlongNormal(basis) {
     const camPos = camera.getWorldPosition(new THREE.Vector3());
@@ -71,6 +75,9 @@ export function createPanPreview({
 
   function start(x, y) {
     panOn = true;
+    panStarted = false;
+    startX = x;
+    startY = y;
     lastX = x;
     lastY = y;
     basis = getScreenBasis(screenMesh, cssObject, camera);
@@ -78,6 +85,15 @@ export function createPanPreview({
   }
   function move(x, y) {
     if (!panOn || !basis) return;
+
+    if (!panStarted) {
+      const distMoved = Math.hypot(x - startX, y - startY);
+      if (distMoved < DRAG_THRESHOLD) {
+        return;
+      }
+      panStarted = true;
+    }
+
     const dx = x - lastX;
     const dy = y - lastY;
     lastX = x;
@@ -101,6 +117,7 @@ export function createPanPreview({
   }
   function end() {
     panOn = false;
+    panStarted = false;
     basis = null;
   }
 
@@ -109,14 +126,15 @@ export function createPanPreview({
     if (shouldBlock()) return;
     if (e.touches.length === 1) {
       start(e.touches[0].clientX, e.touches[0].clientY);
-      e.preventDefault();
     }
   }
   function onTouchMove(e) {
     if (shouldBlock()) return;
     if (e.touches.length === 1) {
       move(e.touches[0].clientX, e.touches[0].clientY);
-      e.preventDefault();
+      if (panStarted) {
+        e.preventDefault();
+      }
     }
   }
   function onTouchEnd() {

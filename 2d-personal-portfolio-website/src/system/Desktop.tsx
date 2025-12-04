@@ -23,42 +23,6 @@ import iconLinkedIn from "../assets/icons/external-linkedin.webp";
 import wallpaper from "../assets/wallpapers/desktop-wallpaper.webp";
 
 const Desktop: React.FC = () => {
-  // Responsive icon spacing
-  const iconGap =
-    typeof window !== "undefined"
-      ? parseInt(
-          getComputedStyle(document.documentElement).getPropertyValue("--desktop-icon-gap") ||
-            "150",
-        )
-      : 150;
-
-  const desktopIconTopOffset =
-    typeof window !== "undefined"
-      ? parseInt(
-          getComputedStyle(document.documentElement).getPropertyValue(
-            "--desktop-icon-top-offset",
-          ) || "64",
-        )
-      : 64;
-
-  const desktopRightOffsetRow1 =
-    typeof window !== "undefined"
-      ? parseInt(
-          getComputedStyle(document.documentElement).getPropertyValue(
-            "--desktop-right-offset-row-1",
-          ) || "50",
-        )
-      : 50;
-
-  const desktopRightOffsetRow2 =
-    typeof window !== "undefined"
-      ? parseInt(
-          getComputedStyle(document.documentElement).getPropertyValue(
-            "--desktop-right-offset-row-2",
-          ) || "100",
-        )
-      : 100;
-
   const apps: AppDefinition[] = useMemo(
     () => [
       {
@@ -195,29 +159,37 @@ const Desktop: React.FC = () => {
         title="Portfolio"
         icon={iconPortfolio}
         onOpen={() => openApp("portfolio")}
-        rightOffset={desktopRightOffsetRow1}
-        topOffset={desktopIconTopOffset}
+        rightOffset="var(--desktop-right-offset-row-1 )"
+        topOffset="var(--desktop-icon-top-offset)"
+        iconGap="var(--desktop-icon-gap)"
+        gapMultiplier={0}
       />
       <DesktopIcon
         title="Shesh Besh"
         icon={iconBackgammon}
         onOpen={() => openApp("backgammon")}
-        rightOffset={desktopRightOffsetRow1}
-        topOffset={desktopIconTopOffset + iconGap}
+        rightOffset="var(--desktop-right-offset-row-1)"
+        topOffset="var(--desktop-icon-top-offset)"
+        iconGap="var(--desktop-icon-gap)"
+        gapMultiplier={1}
       />
       <DesktopIcon
         title="Quotes"
         icon={iconQuotes}
         onOpen={() => openApp("quotes")}
-        rightOffset={desktopRightOffsetRow1}
-        topOffset={desktopIconTopOffset + iconGap * 2.1}
+        rightOffset="var(--desktop-right-offset-row-1)"
+        topOffset="var(--desktop-icon-top-offset)"
+        iconGap="var(--desktop-icon-gap)"
+        gapMultiplier={2.1}
       />
       <DesktopIcon
         title="Blog"
         icon={iconBlog}
         onOpen={() => openApp("blog")}
-        rightOffset={desktopRightOffsetRow1}
-        topOffset={desktopIconTopOffset + iconGap * 3.1}
+        rightOffset="var(--desktop-right-offset-row-1)"
+        topOffset="var(--desktop-icon-top-offset)"
+        iconGap="var(--desktop-icon-gap)"
+        gapMultiplier={3.1}
       />
 
       {/* External-only (not in dock): LinkedIn + GitHub */}
@@ -225,15 +197,19 @@ const Desktop: React.FC = () => {
         title="LinkedIn"
         icon={iconLinkedIn}
         onOpen={() => openLink("https://www.linkedin.com/in/roy-schor")}
-        rightOffset={desktopRightOffsetRow2}
-        topOffset={desktopIconTopOffset}
+        rightOffset="var(--desktop-right-offset-row-2)"
+        topOffset="var(--desktop-icon-top-offset)"
+        iconGap="var(--desktop-icon-gap)"
+        gapMultiplier={0}
       />
       <DesktopIcon
         title="GitHub"
         icon={iconGithub}
         onOpen={() => openLink("https://github.com/RoySchor")}
-        rightOffset={desktopRightOffsetRow2}
-        topOffset={desktopIconTopOffset + iconGap}
+        rightOffset="var(--desktop-right-offset-row-2)"
+        topOffset="var(--desktop-icon-top-offset)"
+        iconGap="var(--desktop-icon-gap)"
+        gapMultiplier={1}
       />
 
       {/* Windows */}

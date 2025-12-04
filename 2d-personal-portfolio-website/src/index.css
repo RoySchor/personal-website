@@ -14,7 +14,7 @@
   /* Desktop sizes (default) */
   --desktop-icon-size: 72px;
   --desktop-icon-width: 116px;
-  --desktop-icon-top-offset: 72px;
+  --desktop-icon-top-offset: 64px;
   --desktop-icon-gap: 170px;
   --desktop-icon-font-size: 24px;
   --desktop-right-offset-row-1: 50px;
@@ -35,7 +35,7 @@
   :root {
     --desktop-icon-size: 42px;
     --desktop-icon-width: 50px;
-    --desktop-icon-top-offset: 72px;
+    --desktop-icon-top-offset: 64px;
     --desktop-icon-gap: 10px;
     --desktop-icon-font-size: 24px;
     --desktop-right-offset-row-1: 50px;
