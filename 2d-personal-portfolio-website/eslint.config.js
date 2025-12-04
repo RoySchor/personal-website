@@ -34,6 +34,7 @@ export default [
         MouseEvent: "readonly",
         Node: "readonly",
         clearTimeout: "readonly",
+        getComputedStyle: "readonly",
       },
     },
 

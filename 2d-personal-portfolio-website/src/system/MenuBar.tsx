@@ -28,7 +28,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
         top: 0,
         left: 0,
         right: 0,
-        height: 58,
+        height: "var(--menubar-height)",
         display: "flex",
         alignItems: "center",
         padding: "0 8px",
@@ -47,7 +47,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
             cursor: "pointer",
             padding: "4px 10px",
             borderRadius: 6,
-            fontSize: 32,
+            fontSize: "var(--menubar-font-size)",
             textShadow: `
               -0.5px -0.5px 0 #000,
               0.5px -0.5px 0 #000,
@@ -95,7 +95,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
 
       <div
         style={{
-          fontSize: 30,
+          fontSize: "var(--menubar-font-size)",
           opacity: 0.85,
           paddingRight: 14,
           textShadow: `

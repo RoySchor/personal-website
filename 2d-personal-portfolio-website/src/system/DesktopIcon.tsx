@@ -25,7 +25,7 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
         position: "absolute",
         right: rightOffset,
         top: topOffset,
-        width: 86,
+        width: "var(--desktop-icon-width)",
         textAlign: "center",
         cursor: "default",
       }}
@@ -34,8 +34,8 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
         <img
           src={icon}
           style={{
-            width: 64,
-            height: 64,
+            width: "var(--desktop-icon-size)",
+            height: "var(--desktop-icon-size)",
             borderRadius: isPortfolio ? "40%" : "0",
           }}
         />
@@ -43,7 +43,7 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
       <div
         style={{
           marginTop: 8,
-          fontSize: 24,
+          fontSize: "var(--desktop-icon-font-size)",
           fontWeight: 600,
           color: "var(--muted)",
           textShadow: `
