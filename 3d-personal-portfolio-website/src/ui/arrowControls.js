@@ -1,4 +1,4 @@
-export function createArrowControls({ camera, controls, onMove }) {
+export function createArrowControls({ camera, controls, onMove, onZoom }) {
   const container = document.createElement("div");
   container.style.position = "fixed";
   container.style.top = "60px";
@@ -10,17 +10,17 @@ export function createArrowControls({ camera, controls, onMove }) {
   // Grid layout: 3x3 with center empty - smaller buttons
   const grid = document.createElement("div");
   grid.style.display = "grid";
-  grid.style.gridTemplateColumns = "25px 25px 25px";
-  grid.style.gridTemplateRows = "25px 25px 25px";
-  grid.style.gap = "1px";
+  grid.style.gridTemplateColumns = "40px 40px 40px";
+  grid.style.gridTemplateRows = "40px 40px 40px";
+  grid.style.gap = "8px";
 
-  const createButton = (direction, gridArea) => {
+  const createButton = (type, direction, gridArea, label) => {
     const btn = document.createElement("button");
     btn.style.background = "rgba(0, 0, 0, 0.7)";
     btn.style.border = "2px solid rgba(255, 255, 255, 0.3)";
-    btn.style.borderRadius = "8px";
+    btn.style.borderRadius = "10px";
     btn.style.color = "white";
-    btn.style.fontSize = "14px";
+    btn.style.fontSize = "16px";
     btn.style.cursor = "pointer";
     btn.style.display = "flex";
     btn.style.alignItems = "center";
@@ -30,13 +30,7 @@ export function createArrowControls({ camera, controls, onMove }) {
     btn.style.transition = "all 0.15s";
     btn.style.backdropFilter = "blur(10px)";
 
-    const arrows = {
-      up: "↑",
-      down: "↓",
-      left: "←",
-      right: "→",
-    };
-    btn.innerHTML = arrows[direction];
+    btn.innerHTML = label;
 
     btn.addEventListener("mousedown", () => {
       btn.style.background = "rgba(255, 255, 255, 0.3)";
@@ -51,7 +45,11 @@ export function createArrowControls({ camera, controls, onMove }) {
     // Touch and click
     const handlePress = (e) => {
       e.preventDefault();
-      onMove(direction);
+      if (type === "move") {
+        onMove(direction);
+      } else if (type === "zoom") {
+        onZoom(direction);
+      }
     };
 
     btn.addEventListener("click", handlePress);
@@ -61,10 +59,12 @@ export function createArrowControls({ camera, controls, onMove }) {
   };
 
   // Create buttons in grid positions
-  grid.appendChild(createButton("up", "1 / 2 / 2 / 3"));
-  grid.appendChild(createButton("left", "2 / 1 / 3 / 2"));
-  grid.appendChild(createButton("right", "2 / 3 / 3 / 4"));
-  grid.appendChild(createButton("down", "3 / 2 / 4 / 3"));
+  grid.appendChild(createButton("zoom", "in", "1 / 1 / 2 / 2", "+"));
+  grid.appendChild(createButton("move", "up", "1 / 2 / 2 / 3", "↑"));
+  grid.appendChild(createButton("zoom", "out", "1 / 3 / 2 / 4", "−"));
+  grid.appendChild(createButton("move", "left", "2 / 1 / 3 / 2", "←"));
+  grid.appendChild(createButton("move", "right", "2 / 3 / 3 / 4", "→"));
+  grid.appendChild(createButton("move", "down", "3 / 2 / 4 / 3", "↓"));
 
   container.appendChild(grid);
   document.body.appendChild(container);

@@ -52,6 +52,7 @@ const onAllAssetsLoaded = () => {
     camera,
     controls,
     onMove: (direction) => cameraMover.move(direction),
+    onZoom: (direction) => cameraMover.zoom(direction),
   });
 
   // load room glb
