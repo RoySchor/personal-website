@@ -72,12 +72,12 @@
     --menu-bar-dropdown-menu-item-margin: 10px 10px;
     --menu-bar-dropdown-menu-item-padding: 5px 20px;
     --window-border-radius: 12px;
-    --window-header-height: 36px;
-    ---window-header-icon-size: 26px;
-    --window-header-icon-gap: 28px;
+    --window-header-height: 38px;
+    ---window-header-icon-size: 28px;
+    --window-header-icon-gap: 30px;
     --window-min-width: 280px;
     --window-min-height: 180px;
-    --window-header-inner-circle-icon-size: 24px;
+    --window-header-inner-circle-icon-size: 26px;
     --window-title-website-icon-size: 24px;
     --window-title-website-font-size: 20px;
     --ui-scale: 1;
