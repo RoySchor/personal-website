@@ -2,8 +2,10 @@ import * as THREE from "three";
 
 export function createCameraMover({ camera, controls }) {
   const MOVE_AMOUNT = 0.05;
-  const ZOOM_AMOUNT = 0.05; // Amount to zoom in/out
-  const ANIMATION_DURATION = 200; // milliseconds
+  // Larger zoom on mobile/touch devices
+  const isMobile = window.matchMedia("(pointer: coarse)").matches;
+  const ZOOM_AMOUNT = isMobile ? 0.1 : 0.05;
+  const ANIMATION_DURATION = 200;
 
   let screenMesh = null;
   let cssObject = null;
