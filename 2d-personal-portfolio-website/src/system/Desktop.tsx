@@ -41,6 +41,24 @@ const Desktop: React.FC = () => {
         )
       : 64;
 
+  const desktopRightOffsetRow1 =
+    typeof window !== "undefined"
+      ? parseInt(
+          getComputedStyle(document.documentElement).getPropertyValue(
+            "--desktop-right-offset-row-1",
+          ) || "50",
+        )
+      : 50;
+
+  const desktopRightOffsetRow2 =
+    typeof window !== "undefined"
+      ? parseInt(
+          getComputedStyle(document.documentElement).getPropertyValue(
+            "--desktop-right-offset-row-2",
+          ) || "100",
+        )
+      : 100;
+
   const apps: AppDefinition[] = useMemo(
     () => [
       {
@@ -177,28 +195,28 @@ const Desktop: React.FC = () => {
         title="Portfolio"
         icon={iconPortfolio}
         onOpen={() => openApp("portfolio")}
-        rightOffset={50}
+        rightOffset={desktopRightOffsetRow1}
         topOffset={desktopIconTopOffset}
       />
       <DesktopIcon
         title="Shesh Besh"
         icon={iconBackgammon}
         onOpen={() => openApp("backgammon")}
-        rightOffset={50}
+        rightOffset={desktopRightOffsetRow1}
         topOffset={desktopIconTopOffset + iconGap}
       />
       <DesktopIcon
         title="Quotes"
         icon={iconQuotes}
         onOpen={() => openApp("quotes")}
-        rightOffset={50}
+        rightOffset={desktopRightOffsetRow1}
         topOffset={desktopIconTopOffset + iconGap * 2.1}
       />
       <DesktopIcon
         title="Blog"
         icon={iconBlog}
         onOpen={() => openApp("blog")}
-        rightOffset={50}
+        rightOffset={desktopRightOffsetRow1}
         topOffset={desktopIconTopOffset + iconGap * 3.1}
       />
 
@@ -207,15 +225,15 @@ const Desktop: React.FC = () => {
         title="LinkedIn"
         icon={iconLinkedIn}
         onOpen={() => openLink("https://www.linkedin.com/in/roy-schor")}
-        rightOffset={50}
-        topOffset={desktopIconTopOffset + iconGap * 4.3}
+        rightOffset={desktopRightOffsetRow2}
+        topOffset={desktopIconTopOffset}
       />
       <DesktopIcon
         title="GitHub"
         icon={iconGithub}
         onOpen={() => openLink("https://github.com/RoySchor")}
-        rightOffset={50}
-        topOffset={desktopIconTopOffset + iconGap * 5.3}
+        rightOffset={desktopRightOffsetRow2}
+        topOffset={desktopIconTopOffset + iconGap}
       />
 
       {/* Windows */}

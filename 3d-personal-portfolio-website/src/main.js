@@ -69,6 +69,31 @@ const onAllAssetsLoaded = () => {
   }
   const laptopRoot = getLaptopRoot(screenMesh);
 
+  // Create a larger invisible hitbox around the laptop
+  const createExpandedHitbox = (targetObject, expandFactor = 1.5) => {
+    const bbox = new THREE.Box3().setFromObject(targetObject);
+    const size = bbox.getSize(new THREE.Vector3());
+    const center = bbox.getCenter(new THREE.Vector3());
+
+    const expandedSize = size.clone().multiplyScalar(expandFactor);
+    const hitboxGeom = new THREE.BoxGeometry(expandedSize.x, expandedSize.y, expandedSize.z);
+    const hitboxMat = new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0,
+      side: THREE.DoubleSide,
+    });
+    const hitboxMesh = new THREE.Mesh(hitboxGeom, hitboxMat);
+
+    hitboxMesh.position.copy(center);
+    hitboxMesh.name = 'laptop_hitbox';
+
+    scene.add(hitboxMesh);
+
+    return hitboxMesh;
+  };
+
+  const laptopHitbox = createExpandedHitbox(laptopRoot, 2.5); // 1.8x larger hitbox
+
   function isDesc(obj, ancestor) {
     let cur = obj;
     while (cur) {
@@ -137,10 +162,13 @@ const onAllAssetsLoaded = () => {
 
   function clickRoom(e) {
     if (gateIfBusy(e)) return;
-    const hits = ray.intersect(e, laptopRoot, true);
-    const firstLaptopHit = hits.find((h) => isDesc(h.object, laptopRoot));
+    // Check hitbox first, then check if we're clicking laptop descendants
+    const hitboxHits = ray.intersect(e, laptopHitbox, false);
+    const laptopHits = ray.intersect(e, laptopRoot, true);
 
-    if (firstLaptopHit) {
+    const hitLaptop = hitboxHits.length > 0 || laptopHits.some((h) => isDesc(h.object, laptopRoot));
+
+    if (hitLaptop) {
       if (!focuser.isFocusing() && preview.isFocused()) return;
       transitioning = true;
       (async () => {
@@ -170,8 +198,10 @@ const onAllAssetsLoaded = () => {
   // hover cursor
   function hoverRoom(e) {
     if (transitioning || focuser.isFocusing()) return;
-    const hits = ray.intersect(e, laptopRoot, true);
-    const c = hits.length ? "pointer" : "";
+    const hitboxHits = ray.intersect(e, laptopHitbox, false);
+    const laptopHits = ray.intersect(e, laptopRoot, true);
+    const overLaptop = hitboxHits.length > 0 || laptopHits.length > 0;
+    const c = overLaptop ? "pointer" : "";
     renderer.domElement.style.cursor = c;
     cssRenderer.domElement.style.cursor = c;
   }

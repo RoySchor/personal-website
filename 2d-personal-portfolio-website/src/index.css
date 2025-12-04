@@ -12,37 +12,43 @@
   --muted: #ffffff;
 
   /* Desktop sizes (default) */
-  --desktop-icon-size: 86px;
+  --desktop-icon-size: 72px;
   --desktop-icon-width: 116px;
-  --desktop-icon-top-offset: 78px;
+  --desktop-icon-top-offset: 72px;
   --desktop-icon-gap: 170px;
   --desktop-icon-font-size: 24px;
-  --dock-height: 150px;
-  --dock-icon-size: 120px;
+  --desktop-right-offset-row-1: 50px;
+  --desktop-right-offset-row-2: 1150px;
+  --dock-height: 100px;
+  --dock-icon-size: 86px;
   --dock-icon-small: 100px;
   --dock-gap: 20px;
   --dock-padding: 10px 34px;
-  --menubar-height: 60px;
-  --menubar-font-size: 32px;
+  --menubar-height: 45px;
+  --menubar-font-size: 28px;
+  --menubar-logo-size: 36px;
   --ui-scale: 1;
 }
 
 /* Mobile/Tablet - scale everything up */
 @media (max-width: 1024px) {
   :root {
-    --desktop-icon-size: 112px;
-    --desktop-icon-width: 142px;
-    --desktop-icon-top-offset: 78px;
-    --desktop-icon-gap: 185px;
-    --desktop-icon-font-size: 86px;
-    --dock-height: 200px;
-    --dock-icon-size: 145px;
-    --dock-icon-small: 145px;
-    --dock-gap: 24px;
-    --dock-padding: 14px 40px;
-    --menubar-height: 102px;
-    --menubar-font-size: 64px;
-    --ui-scale: 1.2;
+    --desktop-icon-size: 72px;
+    --desktop-icon-width: 116px;
+    --desktop-icon-top-offset: 72px;
+    --desktop-icon-gap: 170px;
+    --desktop-icon-font-size: 24px;
+    --desktop-right-offset-row-1: 50px;
+    --desktop-right-offset-row-2: 1150px;
+    --dock-height: 100px;
+    --dock-icon-size: 86px;
+    --dock-icon-small: 100px;
+    --dock-gap: 20px;
+    --dock-padding: 10px 34px;
+    --menubar-height: 45px;
+    --menubar-font-size: 28px;
+    --menubar-logo-size: 36px;
+    --ui-scale: 1;
   }
 }
 

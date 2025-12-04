@@ -20,6 +20,10 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
     return () => window.removeEventListener("mousedown", handler);
   }, []);
 
+  const menubarLogoSize = parseInt(
+    getComputedStyle(document.documentElement).getPropertyValue("--menubar-logo-size"),
+  );
+
   return (
     <div
       className="mac-blur app-no-select"
@@ -57,7 +61,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
           }}
           title="Menu"
         >
-          <img src={menuLogo} width={48} height={48} />
+          <img src={menuLogo} width={menubarLogoSize} height={menubarLogoSize} />
           <span style={{ fontWeight: 400 }}>Menu</span>
         </div>
         {open && (
@@ -65,7 +69,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
             className="mac-blur glass-menu"
             style={{
               position: "absolute",
-              top: 58,
+              top: 48,
               left: 4,
               width: 240,
               padding: 8,
@@ -95,7 +99,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
 
       <div
         style={{
-          fontSize: "var(--menubar-font-size)",
+          fontSize: 30,
           opacity: 0.85,
           paddingRight: 14,
           textShadow: `
@@ -106,7 +110,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
         `,
         }}
       >
-        <span style={{ marginRight: 20 }}>
+        <span style={{ marginRight: 20, fontSize: "var(--menubar-font-size)" }}>
           {(() => {
             const d = new Date();
             const weekday = d.toLocaleDateString("en-US", { weekday: "short" });
@@ -115,7 +119,7 @@ const MenuBar: React.FC<MenuBarProps> = ({ onShutdown, onLock }) => {
             return `${weekday}\u00A0\u00A0${month}\u00A0\u00A0${day}`;
           })()}
         </span>
-        <span>
+        <span style={{ fontSize: "var(--menubar-font-size)" }}>
           {new Date().toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
@@ -133,10 +137,10 @@ const Item: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick
     style={{
       padding: "10px 20px",
       borderRadius: 8,
-      margin: "30px 10px",
+      margin: "20px 10px",
       cursor: "pointer",
       color: "black",
-      fontSize: 26,
+      fontSize: 24,
       fontWeight: 100,
       textShadow: `
           -0.5px -0.5px 0 #000,
