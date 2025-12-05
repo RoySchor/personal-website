@@ -67,7 +67,14 @@ const LockScreen: React.FC<Props> = ({ onLogin }) => {
         }}
       >
         <h2 style={{ margin: 0 }}>Locked</h2>
-        <p style={{ marginTop: 6 }}>Press login to return to desktop</p>
+        <p
+          style={{
+            marginTop: 6,
+            fontSize: "var(--lock-screen-subtitle-font-size)",
+          }}
+        >
+          Press login to return to desktop
+        </p>
         <button
           onMouseDown={handleLogin}
           style={{

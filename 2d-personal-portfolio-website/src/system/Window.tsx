@@ -176,8 +176,6 @@ const Window: React.FC<Props> = (props) => {
       {/* Content */}
       <div
         onTouchStart={(e) => {
-          // Allow propagation so scrolling works, but stop it from reaching the drag handles if necessary.
-          // In this case, we just want to ensure it doesn't trigger parent drag listeners if they exist.
           e.stopPropagation();
         }}
         style={{
@@ -186,7 +184,7 @@ const Window: React.FC<Props> = (props) => {
           overflow: "auto",
           scrollbarGutter: "stable",
           WebkitOverflowScrolling: "touch",
-          touchAction: "pan-y", // Explicitly allow vertical scrolling
+          touchAction: "pan-y",
         }}
       >
         {props.children}

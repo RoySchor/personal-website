@@ -62,6 +62,7 @@
 
   /* Lock screen sizing */
   --lock-screen-font-size: 24px;
+  --lock-screen-subtitle-font-size: 26px;
   --lock-screen-button-font-size: 18px;
 }
 
@@ -119,6 +120,7 @@
 
     /* Lock screen sizing - mobile */
     --lock-screen-font-size: 22px;
+    --lock-screen-subtitle-font-size: 25px;
     --lock-screen-button-font-size: 18px;
   }
 }
@@ -191,4 +193,12 @@ a:hover {
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 8px;
+}
+
+/* Quotes App Button Hover */
+@media (hover: hover) {
+  .quotes-app-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+  }
 }

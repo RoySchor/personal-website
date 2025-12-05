@@ -71,8 +71,6 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
         gap: "var(--quotes-dev-gap)",
         minHeight: "100%",
         background: "var(--win-bg)",
-        overflowY: "auto",
-        WebkitOverflowScrolling: "touch",
       }}
     >
       {/* Title */}
@@ -108,6 +106,7 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
       </p>
 
       <button
+        className="quotes-app-button"
         onClick={() => {
           getRandomQuote();
         }}
@@ -124,14 +123,6 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
           touchAction: "manipulation",
           WebkitTapHighlightColor: "transparent",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "scale(1.05)";
-          e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.2)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
         }}
       >
         Quote
