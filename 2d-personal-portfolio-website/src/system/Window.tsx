@@ -170,10 +170,12 @@ const Window: React.FC<Props> = (props) => {
 
       {/* Content */}
       <div
+        onTouchStart={(e) => e.stopPropagation()}
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
           overflow: "auto",
+          scrollbarGutter: "stable",
         }}
       >
         {props.children}

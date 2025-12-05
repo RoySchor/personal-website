@@ -109,9 +109,9 @@
     /* Quotes App sizing - mobile */
     --quotes-title-size: 30px;
     --quotes-subtitle-size: 14px;
-    --quotes-subtitle-max-width: 80%;
+    --quotes-subtitle-max-width: 83%;
     --quotes-button-padding: 8px 26px;
-    --quotes-button-font-size: 18px;
+    --quotes-button-font-size: 16px;
     --quotes-quote-size: 16px;
     --quotes-container-padding: 10px 20px;
     --quotes-dev-gap: 10px;
