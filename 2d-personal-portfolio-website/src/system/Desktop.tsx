@@ -58,6 +58,7 @@ const Desktop: React.FC = () => {
   );
 
   const [mode, setMode] = useState<OSMode>("desktop");
+  const [shutdownConfirmed, setShutdownConfirmed] = useState(false);
   const [zCounter, setZ] = useState(10);
 
   const [wins, setWins] = useState<Record<AppKey, WindowState>>(() => {
@@ -273,12 +274,21 @@ const Desktop: React.FC = () => {
         }
       />
 
-      {mode === "lock" && <LockScreen onLogin={() => setMode("desktop")} />}
+      {(mode === "lock" || (mode === "shutdown" && shutdownConfirmed)) && (
+        <LockScreen onLogin={() => setMode("desktop")} />
+      )}
       {mode === "shutdown" && (
         <ShutdownOverlay
           onFinish={() => {
-            // After “shutdown”, show a quick power off and then go to lock
             setMode("lock");
+            setShutdownConfirmed(false);
+          }}
+          onCancel={() => {
+            setMode("desktop");
+            setShutdownConfirmed(false);
+          }}
+          onConfirmed={() => {
+            setShutdownConfirmed(true);
           }}
         />
       )}
