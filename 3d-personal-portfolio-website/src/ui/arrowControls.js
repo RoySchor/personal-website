@@ -2,7 +2,7 @@ export function createArrowControls({ camera, controls, onMove, onZoom }) {
   const container = document.createElement("div");
   container.style.position = "fixed";
   container.style.top = "60px";
-  container.style.right = "5px"; // Aligned with exit button
+  container.style.right = "10px"; // Aligned with exit button
   container.style.display = "none";
   container.style.zIndex = "10000";
   container.style.userSelect = "none";
@@ -10,9 +10,9 @@ export function createArrowControls({ camera, controls, onMove, onZoom }) {
   // Grid layout: 3x3 with center empty - smaller buttons
   const grid = document.createElement("div");
   grid.style.display = "grid";
-  grid.style.gridTemplateColumns = "40px 40px 40px";
-  grid.style.gridTemplateRows = "40px 40px 40px";
-  grid.style.gap = "8px";
+  grid.style.gridTemplateColumns = "28px 28px 28px";
+  grid.style.gridTemplateRows = "28px 28px 28px";
+  grid.style.gap = "3px";
 
   const createButton = (type, direction, gridArea, label) => {
     const btn = document.createElement("button");
@@ -20,7 +20,7 @@ export function createArrowControls({ camera, controls, onMove, onZoom }) {
     btn.style.border = "2px solid rgba(255, 255, 255, 0.3)";
     btn.style.borderRadius = "10px";
     btn.style.color = "white";
-    btn.style.fontSize = "16px";
+    btn.style.fontSize = "12px";
     btn.style.cursor = "pointer";
     btn.style.display = "flex";
     btn.style.alignItems = "center";

@@ -4,7 +4,7 @@ export function createExitButton(onClick) {
   Object.assign(btn.style, {
     position: "fixed",
     top: "12px",
-    right: "20px",
+    right: "30px",
     zIndex: "99999",
     padding: "8px 12px",
     borderRadius: "10px",
