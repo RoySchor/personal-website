@@ -36,6 +36,11 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
   return (
     <div
       onDoubleClick={onOpen}
+      onClick={() => {
+        if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+          onOpen();
+        }
+      }}
       title={title}
       style={{
         position: "absolute",
