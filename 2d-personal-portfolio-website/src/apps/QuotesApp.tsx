@@ -71,6 +71,8 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
         gap: "var(--quotes-dev-gap)",
         minHeight: "100%",
         background: "var(--win-bg)",
+        overflowY: "auto",
+        WebkitOverflowScrolling: "touch",
       }}
     >
       {/* Title */}
