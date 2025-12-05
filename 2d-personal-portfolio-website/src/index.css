@@ -52,11 +52,12 @@
   /* Quotes App sizing */
   --quotes-title-size: 48px;
   --quotes-subtitle-size: 18px;
+  --quotes-subtitle-max-width: 85%;
   --quotes-button-padding: 16px 48px;
   --quotes-button-font-size: 24px;
   --quotes-quote-size: 20px;
-  --quotes-padding: 40px;
-  --quotes-gap: 30px;
+  --quotes-container-padding: 40px;
+  --quotes-dev-gap: 30px;
   --quotes-quote-box-margin-top: 20px;
 }
 
@@ -104,11 +105,12 @@
     /* Quotes App sizing - mobile */
     --quotes-title-size: 30px;
     --quotes-subtitle-size: 14px;
+    --quotes-subtitle-max-width: 80%;
     --quotes-button-padding: 8px 26px;
     --quotes-button-font-size: 18px;
     --quotes-quote-size: 16px;
-    --quotes-padding: 10px;
-    --quotes-gap: 10px;
+    --quotes-container-padding: 10px 20px;
+    --quotes-dev-gap: 10px;
     --quotes-quote-box-margin-top: 10px;
   }
 }

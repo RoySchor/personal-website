@@ -64,11 +64,11 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
   return (
     <div
       style={{
-        padding: "var(--quotes-padding)",
+        padding: "var(--quotes-container-padding)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: "var(--quotes-gap)",
+        gap: "var(--quotes-dev-gap)",
         minHeight: "100%",
         background: "var(--win-bg)",
       }}
@@ -93,7 +93,7 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
           fontSize: "var(--quotes-subtitle-size)",
           color: "#EEF3DB",
           textAlign: "center",
-          maxWidth: "600px",
+          maxWidth: "var(--quotes-subtitle-max-width)",
           lineHeight: "1.6",
           opacity: 0.9,
         }}
