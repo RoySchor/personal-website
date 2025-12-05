@@ -18,29 +18,17 @@ export function createPreviewFocus({
     viewport?.dispose();
 
     cssRoot.style.pointerEvents = "auto";
-    cssRoot.style.cursor = "pointer";
-    wrapper.style.pointerEvents = "auto";
-    iframeEl.style.pointerEvents = "none";
+    cssRoot.style.cursor = "";
+    wrapper.style.pointerEvents = "none";
+    iframeEl.style.pointerEvents = "auto";
+    iframeEl.style.cursor = "auto";
     cssRoot.style.touchAction = "none";
     wrapper.style.touchAction = "none";
 
-    interactive = false;
+    interactive = true;
 
-    const arm = (ev) => {
-      ev.stopPropagation();
-      iframeEl.style.pointerEvents = "auto";
-      iframeEl.style.cursor = "pointer";
-      wrapper.style.pointerEvents = "none";
-      cssRoot.style.cursor = "";
-      onArmIframe?.();
-      wrapper.removeEventListener("click", arm, true);
-      previewClickArm = null;
-      interactive = true;
-    };
-    previewClickArm = arm;
-    wrapper.addEventListener("click", arm, true);
-
-    onEnter?.({ focused: true, interactive: false });
+    onEnter?.({ focused: true, interactive: true });
+    onArmIframe?.();
   }
 
   function disableAllPointers() {
