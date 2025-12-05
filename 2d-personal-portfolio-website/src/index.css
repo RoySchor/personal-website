@@ -127,6 +127,8 @@
 
 * {
   box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 html,
 body,
@@ -154,6 +156,8 @@ body {
     "Apple Color Emoji",
     "Segoe UI Emoji";
   overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 a {

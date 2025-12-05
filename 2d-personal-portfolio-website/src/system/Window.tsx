@@ -182,6 +182,7 @@ const Window: React.FC<Props> = (props) => {
           overflowY: "auto",
           overflowX: "hidden",
           scrollbarGutter: "stable",
+          overscrollBehavior: "contain",
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-y",
         }}

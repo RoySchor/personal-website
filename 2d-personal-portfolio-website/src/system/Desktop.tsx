@@ -69,7 +69,7 @@ const Desktop: React.FC = () => {
     const windowWidth = isMobile ? 570 : 1120;
     const windowHeight = isMobile ? 335 : 680;
     const x = (screenWidth - windowWidth) / 2;
-    const y = isMobile ? 36 : 45;
+    const y = isMobile ? 40 : 45;
 
     return {
       portfolio: mkWindow("portfolio", x, y, windowWidth, windowHeight, 11),
@@ -95,6 +95,11 @@ const Desktop: React.FC = () => {
   }
 
   function focus(key: AppKey) {
+    const allWindows = Object.values(wins).filter(Boolean) as WindowState[];
+    const maxZ = Math.max(...allWindows.map((w) => w.z));
+
+    if (wins[key] && wins[key].z === maxZ) return;
+
     setZ((prev) => prev + 1);
     setWins((prev) => (prev[key] ? { ...prev, [key]: { ...prev[key]!, z: zCounter + 1 } } : prev));
   }
@@ -112,7 +117,7 @@ const Desktop: React.FC = () => {
       const windowWidth = isMobile ? 605 : 1150;
       const windowHeight = isMobile ? 350 : 700;
       const x = (screenWidth - windowWidth) / 2;
-      const y = isMobile ? 36 : 50;
+      const y = isMobile ? 40 : 50;
 
       return {
         ...prev,
