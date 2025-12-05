@@ -112,7 +112,7 @@
     --quotes-subtitle-size: 14px;
     --quotes-subtitle-max-width: 83%;
     --quotes-button-padding: 8px 26px;
-    --quotes-button-font-size: 16px;
+    --quotes-button-font-size: 18px;
     --quotes-quote-size: 16px;
     --quotes-container-padding: 10px 20px;
     --quotes-dev-gap: 10px;
@@ -135,6 +135,8 @@ body,
 }
 html {
   touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -201,4 +203,8 @@ a:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
   }
+}
+
+.quotes-app-button {
+  touch-action: manipulation;
 }

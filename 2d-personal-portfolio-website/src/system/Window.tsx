@@ -110,6 +110,7 @@ const Window: React.FC<Props> = (props) => {
         background: "var(--win-bg)",
       }}
       onMouseDown={props.onFocus}
+      onTouchStart={props.onFocus}
     >
       {/* Title bar */}
       <div
@@ -175,13 +176,11 @@ const Window: React.FC<Props> = (props) => {
 
       {/* Content */}
       <div
-        onTouchStart={(e) => {
-          e.stopPropagation();
-        }}
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
-          overflow: "auto",
+          overflowY: "auto",
+          overflowX: "hidden",
           scrollbarGutter: "stable",
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-y",
