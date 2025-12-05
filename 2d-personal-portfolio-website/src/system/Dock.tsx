@@ -20,7 +20,7 @@ const Dock: React.FC<DockProps> = ({ apps, openApp, minimizedWindows, restoreWin
         position: "absolute",
         left: "50%",
         transform: "translateX(-50%)",
-        bottom: 10,
+        bottom: 2,
         height: "var(--dock-height)",
         borderRadius: 18,
         padding: "var(--dock-padding)",

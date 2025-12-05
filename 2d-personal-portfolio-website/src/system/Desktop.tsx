@@ -66,10 +66,10 @@ const Desktop: React.FC = () => {
     const screenHeight = window.innerHeight;
     const isMobile = screenWidth <= 1024;
 
-    const windowWidth = isMobile ? Math.min(screenWidth - 40, 600) : 1000;
-    const windowHeight = isMobile ? Math.min(screenHeight - 100, 500) : 640;
+    const windowWidth = isMobile ? 570 : 1120;
+    const windowHeight = isMobile ? 335 : 680;
     const x = (screenWidth - windowWidth) / 2;
-    const y = isMobile ? 60 : 80;
+    const y = isMobile ? 36 : 45;
 
     return {
       portfolio: mkWindow("portfolio", x, y, windowWidth, windowHeight, 11),
@@ -110,10 +110,10 @@ const Desktop: React.FC = () => {
       const screenHeight = window.innerHeight;
       const isMobile = screenWidth <= 1024;
 
-      const windowWidth = isMobile ? Math.min(screenWidth - 40, 600) : 1000;
-      const windowHeight = isMobile ? Math.min(screenHeight - 100, 500) : 640;
-      const x = (screenWidth - windowWidth) / 2 + (Math.random() * 40 - 20);
-      const y = isMobile ? 60 + Math.random() * 20 : 100 + Math.random() * 60;
+      const windowWidth = isMobile ? 605 : 1150;
+      const windowHeight = isMobile ? 350 : 700;
+      const x = (screenWidth - windowWidth) / 2;
+      const y = isMobile ? 36 : 50;
 
       return {
         ...prev,

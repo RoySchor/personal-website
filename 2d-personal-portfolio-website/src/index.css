@@ -17,7 +17,7 @@
   --desktop-icon-top-offset: 64px;
   --desktop-icon-gap: 170px;
   --desktop-icon-font-size: 24px;
-  --desktop-right-offset-row-1: 50px;
+  --desktop-right-offset-row-1: 25px;
   --desktop-right-offset-row-2: 1150px;
   --dock-height: 100px;
   --dock-divider-height: 80px;
@@ -44,6 +44,15 @@
   --window-title-website-icon-size: 32px;
   --window-title-website-font-size: 30px;
   --ui-scale: 1;
+
+  /* Quotes App sizing */
+  --quotes-title-size: 48px;
+  --quotes-subtitle-size: 18px;
+  --quotes-button-padding: 16px 48px;
+  --quotes-button-font-size: 24px;
+  --quotes-quote-size: 20px;
+  --quotes-padding: 40px;
+  --quotes-gap: 30px;
 }
 
 /* Mobile/Tablet - scale everything up */
@@ -54,8 +63,8 @@
     --desktop-icon-top-offset: 48px;
     --desktop-icon-gap: 100px;
     --desktop-icon-font-size: 14px;
-    --desktop-right-offset-row-1: 20px;
-    --desktop-right-offset-row-2: 560px;
+    --desktop-right-offset-row-1: 6px;
+    --desktop-right-offset-row-2: 572px;
     --dock-height: 50px;
     --dock-divider-height: 35px;
     --dock-icon-size: 48px;
@@ -81,6 +90,15 @@
     --window-title-website-icon-size: 24px;
     --window-title-website-font-size: 20px;
     --ui-scale: 1;
+
+    /* Quotes App sizing - mobile */
+    --quotes-title-size: 32px;
+    --quotes-subtitle-size: 14px;
+    --quotes-button-padding: 12px 32px;
+    --quotes-button-font-size: 18px;
+    --quotes-quote-size: 16px;
+    --quotes-padding: 24px;
+    --quotes-gap: 20px;
   }
 }
 
