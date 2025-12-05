@@ -73,7 +73,10 @@ const Window: React.FC<Props> = (props) => {
   }, [props, dragging, resizing]);
 
   const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
+    // Only call preventDefault if it's not a passive event (mostly for MouseEvent here)
+    if (!("touches" in e)) {
+      e.preventDefault();
+    }
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     setDragging(true);
@@ -82,7 +85,9 @@ const Window: React.FC<Props> = (props) => {
   };
 
   const startResize = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
+    if (!("touches" in e)) {
+      e.preventDefault();
+    }
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     setResizing(true);

@@ -106,15 +106,8 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
       </p>
 
       <button
-        onTouchStart={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          getRandomQuote();
-        }}
         onClick={() => {
-          if (!("ontouchstart" in window)) {
-            getRandomQuote();
-          }
+          getRandomQuote();
         }}
         style={{
           background: "#E1F781",
@@ -127,7 +120,7 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
           cursor: "pointer",
           transition: "all 0.2s",
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-          touchAction: "none",
+          touchAction: "manipulation",
           WebkitTapHighlightColor: "transparent",
         }}
         onMouseEnter={(e) => {
