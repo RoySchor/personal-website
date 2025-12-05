@@ -80,7 +80,7 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     const fitWidth = (size.x * 0.5) / Math.tan(hFov * 0.5);
 
     const isSmall = window.innerWidth < 768;
-    const m = (typeof margin === "number" ? margin : 1.06) * (isSmall ? 1.06 : 1);
+    const m = (typeof margin === "number" ? margin : 1.05) * (isSmall ? 1.05 : 1);
     const distance = Math.max(0.25, Math.max(fitHeight, fitWidth) * m);
 
     const toPos = center.clone().addScaledVector(n, distance);
