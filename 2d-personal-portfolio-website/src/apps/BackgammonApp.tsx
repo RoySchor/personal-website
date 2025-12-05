@@ -3,14 +3,16 @@ import React from "react";
 import type { WindowAppProps } from "../system/types";
 
 const BackgammonApp: React.FC<WindowAppProps> = () => {
-  // Use any embeddable free backgammon site; placeholder domain below.
+  const gameUrl = "https://www.247backgammon.org/";
+
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <iframe
         title="Backgammon"
-        src="https://cardgames.io/backgammon/"
+        src={gameUrl}
         style={{ width: "100%", height: "100%", border: 0 }}
-        allow="fullscreen"
+        allow="fullscreen; autoplay; clipboard-read; clipboard-write"
+        allowFullScreen={true}
       />
     </div>
   );
