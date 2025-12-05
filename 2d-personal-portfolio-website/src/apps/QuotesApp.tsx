@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 
+import quotesData from "../data/quotes.json";
 import type { WindowAppProps } from "../system/types";
 
 const QuotesApp: React.FC<WindowAppProps> = () => {
   const [currentQuote, setCurrentQuote] = useState<string | null>(null);
 
-  // Placeholder quotes array - you can add more later
-  const quotes: string[] = [
-    // Add your quotes here later
-  ];
+  const quotes: string[] = quotesData;
 
   const getRandomQuote = () => {
     if (quotes.length === 0) {
@@ -19,6 +17,50 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
     setCurrentQuote(quotes[randomIndex]);
   };
 
+  const formatQuote = (quote: string) => {
+    if (!quote) return null;
+
+    const parts = quote.split(" - ");
+    const elements: React.ReactNode[] = [];
+
+    parts.forEach((part, partIndex) => {
+      if (partIndex > 0) {
+        elements.push(<br key={`br-${partIndex}`} />);
+        part = " - " + part;
+      }
+
+      const lines = part.split("\n");
+
+      lines.forEach((line, lineIndex) => {
+        if (lineIndex > 0) {
+          elements.push(<br key={`ln-${partIndex}-${lineIndex}`} />);
+        }
+
+        const italicRegex = /\*([^*]+)\*/g;
+        let lastIndex = 0;
+        let match;
+
+        while ((match = italicRegex.exec(line)) !== null) {
+          if (match.index > lastIndex) {
+            elements.push(line.substring(lastIndex, match.index));
+          }
+          elements.push(
+            <em key={`em-${partIndex}-${lineIndex}-${match.index}`} style={{ fontStyle: "italic" }}>
+              {match[1]}
+            </em>,
+          );
+          lastIndex = match.index + match[0].length;
+        }
+
+        if (lastIndex < line.length) {
+          elements.push(line.substring(lastIndex));
+        }
+      });
+    });
+
+    return elements;
+  };
+
   return (
     <div
       style={{
@@ -27,7 +69,7 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
         flexDirection: "column",
         alignItems: "center",
         gap: "var(--quotes-gap)",
-        height: "100%",
+        minHeight: "100%",
         background: "var(--win-bg)",
       }}
     >
@@ -56,14 +98,13 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
           opacity: 0.9,
         }}
       >
-        If you know me, you know I love quotes. Whether they're inspiring and thought-provoking,
-        or depressing dreary, I love them all the same.
+        If you know me, you know I love quotes. Whether they're inspiring and thought-provoking, or
+        depressing dreary, I love them all the same.
         <br />
         <br />
         What are you waiting for grab a quote
       </p>
 
-      {/* Button */}
       <button
         onClick={getRandomQuote}
         style={{
@@ -90,20 +131,17 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
         Quote
       </button>
 
-      {/* Quote Display */}
       <div
         style={{
-          marginTop: "20px",
-          padding: "30px",
+          marginTop: "var(--quotes-quote-box-margin-top)",
+          padding: "15px 15px",
           background: "rgba(255, 255, 255, 0.05)",
           borderRadius: "16px",
           border: "1px solid rgba(255, 255, 255, 0.1)",
-          minHeight: "120px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           textAlign: "center",
-          maxWidth: "700px",
           width: "100%",
         }}
       >
@@ -112,11 +150,11 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
             margin: 0,
             fontSize: "var(--quotes-quote-size)",
             color: "#EEF3DB",
-            fontStyle: currentQuote ? "italic" : "normal",
+            fontStyle: "normal",
             lineHeight: "1.8",
           }}
         >
-          {currentQuote || "No Quote Yet :)"}
+          {currentQuote ? formatQuote(currentQuote) : "No Quote Yet :)"}
         </p>
       </div>
     </div>

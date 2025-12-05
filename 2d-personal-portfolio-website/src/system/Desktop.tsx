@@ -63,7 +63,6 @@ const Desktop: React.FC = () => {
   const [wins, setWins] = useState<Record<AppKey, WindowState>>(() => {
     // Boot with Portfolio open - center it on screen
     const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
     const isMobile = screenWidth <= 1024;
 
     const windowWidth = isMobile ? 570 : 1120;
@@ -107,7 +106,6 @@ const Desktop: React.FC = () => {
 
       // Center new windows responsively
       const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
       const isMobile = screenWidth <= 1024;
 
       const windowWidth = isMobile ? 605 : 1150;

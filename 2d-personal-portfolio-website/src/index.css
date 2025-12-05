@@ -11,7 +11,7 @@
   --win-text: #e7e7e7;
   --muted: #ffffff;
 
-  /* Desktop sizes (default) */
+  /* Desktop & dock sizes */
   --desktop-icon-size: 72px;
   --desktop-icon-width: 116px;
   --desktop-icon-top-offset: 64px;
@@ -25,6 +25,8 @@
   --dock-icon-small: 72px;
   --dock-gap: 20px;
   --dock-padding: 10px 34px;
+
+  /* Menubar sizing */
   --menubar-height: 45px;
   --menubar-font-size: 28px;
   --menubar-logo-size: 32px;
@@ -34,6 +36,8 @@
   --menu-bar-dropdown-menu-font-size: 20px;
   --menu-bar-dropdown-menu-item-margin: 20px 10px;
   --menu-bar-dropdown-menu-item-padding: 10px 20px;
+
+  /* Window sizing */
   --window-border-radius: 12px;
   --window-header-height: 42px;
   ---window-header-icon-size: 28px;
@@ -53,11 +57,13 @@
   --quotes-quote-size: 20px;
   --quotes-padding: 40px;
   --quotes-gap: 30px;
+  --quotes-quote-box-margin-top: 20px;
 }
 
 /* Mobile/Tablet - scale everything up */
 @media (max-width: 1024px) {
   :root {
+    /* Desktop & Dock sizing - mobile */
     --desktop-icon-size: 42px;
     --desktop-icon-width: 64px;
     --desktop-icon-top-offset: 48px;
@@ -71,6 +77,8 @@
     --dock-icon-small: 42px;
     --dock-gap: 15px;
     --dock-padding: 5px 20px;
+
+    /* Menubar sizing - mobile */
     --menubar-height: 36px;
     --menubar-font-size: 22px;
     --menubar-logo-size: 26px;
@@ -80,6 +88,8 @@
     --menu-bar-dropdown-menu-font-size: 20px;
     --menu-bar-dropdown-menu-item-margin: 10px 10px;
     --menu-bar-dropdown-menu-item-padding: 5px 20px;
+
+    /* Window sizing - mobile */
     --window-border-radius: 12px;
     --window-header-height: 38px;
     ---window-header-icon-size: 28px;
@@ -92,13 +102,14 @@
     --ui-scale: 1;
 
     /* Quotes App sizing - mobile */
-    --quotes-title-size: 32px;
+    --quotes-title-size: 30px;
     --quotes-subtitle-size: 14px;
-    --quotes-button-padding: 12px 32px;
+    --quotes-button-padding: 8px 26px;
     --quotes-button-font-size: 18px;
     --quotes-quote-size: 16px;
-    --quotes-padding: 24px;
-    --quotes-gap: 20px;
+    --quotes-padding: 10px;
+    --quotes-gap: 10px;
+    --quotes-quote-box-margin-top: 10px;
   }
 }
 
