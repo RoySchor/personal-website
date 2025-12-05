@@ -59,6 +59,10 @@
   --quotes-container-padding: 40px;
   --quotes-dev-gap: 30px;
   --quotes-quote-box-margin-top: 20px;
+
+  /* Lock screen sizing */
+  --lock-screen-font-size: 24px;
+  --lock-screen-button-font-size: 18px;
 }
 
 /* Mobile/Tablet - scale everything up */
@@ -112,6 +116,10 @@
     --quotes-container-padding: 10px 20px;
     --quotes-dev-gap: 10px;
     --quotes-quote-box-margin-top: 10px;
+
+    /* Lock screen sizing - mobile */
+    --lock-screen-font-size: 22px;
+    --lock-screen-button-font-size: 18px;
   }
 }
 
