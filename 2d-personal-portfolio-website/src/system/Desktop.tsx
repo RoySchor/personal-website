@@ -112,7 +112,7 @@ const Desktop: React.FC = () => {
       const windowWidth = isMobile ? 605 : 1150;
       const windowHeight = isMobile ? 350 : 700;
       const x = (screenWidth - windowWidth) / 2;
-      const y = isMobile ? 40 : 50;
+      const y = isMobile ? 46 : 50;
 
       return {
         ...prev,
