@@ -108,7 +108,6 @@ const Window: React.FC<Props> = (props) => {
     <div
       style={{
         position: "absolute",
-        // transform: `translate(${props.x}px, ${props.y}px)`,
         left: props.x,
         top: props.y,
         width: props.w,
@@ -145,7 +144,7 @@ const Window: React.FC<Props> = (props) => {
         <div
           style={{
             position: "absolute",
-            left: 10,
+            left: isMobile ? 28 : 10,
             display: "flex",
             gap: "var(--window-header-icon-gap)",
           }}
