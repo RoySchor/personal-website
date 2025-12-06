@@ -28,12 +28,12 @@ const Window: React.FC<Props> = (props) => {
   const resizeStart = useRef<{ w: number; h: number; mx: number; my: number }>(null);
 
   useEffect(() => {
+    if (!dragging && !resizing) return;
+
     const onMove = (e: MouseEvent | TouchEvent) => {
-      const clientX = "touches" in e ? e.touches[0]?.clientX : e.clientX;
-      const clientY = "touches" in e ? e.touches[0]?.clientY : e.clientY;
-
-      if (!clientX || !clientY) return;
-
+      const clientX = "touches" in e ? e.touches[0]?.clientX : (e as MouseEvent).clientX;
+      const clientY = "touches" in e ? e.touches[0]?.clientY : (e as MouseEvent).clientY;
+      if (clientX == null || clientY == null) return;
       if (dragging && dragStart.current) {
         const dx = clientX - dragStart.current.mx;
         const dy = clientY - dragStart.current.my;
@@ -60,17 +60,17 @@ const Window: React.FC<Props> = (props) => {
       setDragging(false);
       setResizing(false);
     };
-    window.addEventListener("mousemove", onMove);
-    window.addEventListener("mouseup", onUp);
-    window.addEventListener("touchmove", onMove as EventListener);
-    window.addEventListener("touchend", onUp);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mouseup", onUp, { passive: true });
+    window.addEventListener("touchmove", onMove as EventListener, { passive: true });
+    window.addEventListener("touchend", onUp as EventListener, { passive: true });
     return () => {
-      window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("mousemove", onMove as EventListener);
+      window.removeEventListener("mouseup", onUp as EventListener);
       window.removeEventListener("touchmove", onMove as EventListener);
-      window.removeEventListener("touchend", onUp);
+      window.removeEventListener("touchend", onUp as EventListener);
     };
-  }, [props, dragging, resizing]);
+  }, [dragging, resizing, props]);
 
   const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
     if (!("touches" in e)) {
@@ -108,7 +108,9 @@ const Window: React.FC<Props> = (props) => {
     <div
       style={{
         position: "absolute",
-        transform: `translate(${props.x}px, ${props.y}px)`,
+        // transform: `translate(${props.x}px, ${props.y}px)`,
+        left: props.x,
+        top: props.y,
         width: props.w,
         height: props.h,
         zIndex: props.z,
@@ -117,6 +119,7 @@ const Window: React.FC<Props> = (props) => {
         boxShadow: props.active ? "0 10px 24px rgba(0,0,0,0.45)" : "0 6px 16px rgba(0,0,0,0.25)",
         border: "1px solid var(--win-border)",
         background: "var(--win-bg)",
+        willChange: "left, top",
       }}
       onMouseDown={props.onFocus}
     >
@@ -135,6 +138,7 @@ const Window: React.FC<Props> = (props) => {
           cursor: "grab",
           background: "rgba(22,24,29,0.7)",
           position: "relative",
+          touchAction: "none",
         }}
       >
         {/* window traffic lights */}
