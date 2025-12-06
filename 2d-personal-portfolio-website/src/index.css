@@ -98,8 +98,8 @@
     /* Window sizing - mobile */
     --window-border-radius: 12px;
     --window-header-height: 38px;
-    ---window-header-icon-size: 28px;
-    --window-header-icon-gap: 30px;
+    ---window-header-icon-size: 32px;
+    --window-header-icon-gap: 36px;
     --window-min-width: 280px;
     --window-min-height: 180px;
     --window-header-inner-circle-icon-size: 26px;

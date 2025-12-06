@@ -95,11 +95,6 @@ const Desktop: React.FC = () => {
   }
 
   function focus(key: AppKey) {
-    const allWindows = Object.values(wins).filter(Boolean) as WindowState[];
-    const maxZ = Math.max(...allWindows.map((w) => w.z));
-
-    if (wins[key] && wins[key].z === maxZ) return;
-
     setZ((prev) => prev + 1);
     setWins((prev) => (prev[key] ? { ...prev, [key]: { ...prev[key]!, z: zCounter + 1 } } : prev));
   }
