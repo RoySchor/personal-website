@@ -70,16 +70,16 @@
 @media (max-width: 1024px) {
   :root {
     /* Desktop & Dock sizing - mobile */
-    --desktop-icon-size: 42px;
+    --desktop-icon-size: 44px;
     --desktop-icon-width: 64px;
     --desktop-icon-top-offset: 48px;
     --desktop-icon-gap: 100px;
     --desktop-icon-font-size: 16px;
     --desktop-right-offset-row-1: 6px;
     --desktop-right-offset-row-2: 570px;
-    --dock-height: 50px;
+    --dock-height: 54px;
     --dock-divider-height: 35px;
-    --dock-icon-size: 48px;
+    --dock-icon-size: 50px;
     --dock-icon-small: 42px;
     --dock-gap: 15px;
     --dock-padding: 5px 20px;

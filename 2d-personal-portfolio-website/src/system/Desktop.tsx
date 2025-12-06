@@ -9,7 +9,6 @@ import type { AppDefinition, AppKey, OSMode, WindowState, WindowAppProps } from 
 import Window from "./Window";
 // APP COMPONENTS
 import BackgammonApp from "../apps/BackgammonApp";
-import BlogApp from "../apps/BlogApp";
 import PortfolioApp from "../apps/PortfolioApp";
 import QuotesApp from "../apps/QuotesApp";
 // WALLPAPER
@@ -46,13 +45,6 @@ const Desktop: React.FC = () => {
         component: (p) => <QuotesApp {...p} />,
         dockFixed: true,
       },
-      {
-        key: "blog",
-        title: "Blog",
-        icon: iconBlog,
-        component: (p) => <BlogApp {...p} />,
-        dockFixed: true,
-      },
     ],
     [],
   );
@@ -75,7 +67,6 @@ const Desktop: React.FC = () => {
       portfolio: mkWindow("portfolio", x, y, windowWidth, windowHeight, 11),
       backgammon: undefined as unknown as WindowState,
       quotes: undefined as unknown as WindowState,
-      blog: undefined as unknown as WindowState,
     } as unknown as Record<AppKey, WindowState>;
   });
 
@@ -197,7 +188,7 @@ const Desktop: React.FC = () => {
       <DesktopIcon
         title="Blog"
         icon={iconBlog}
-        onOpen={() => openApp("blog")}
+        onOpen={() => openLink("https://storyofroy.wordpress.com/")}
         rightOffset="var(--desktop-right-offset-row-2)"
         topOffset="var(--desktop-icon-top-offset)"
         iconGap="var(--desktop-icon-gap)"
