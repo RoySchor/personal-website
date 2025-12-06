@@ -73,7 +73,6 @@ const Window: React.FC<Props> = (props) => {
   }, [props, dragging, resizing]);
 
   const startDrag = (e: React.MouseEvent | React.TouchEvent) => {
-    // Only call preventDefault if it's not a passive event (mostly for MouseEvent here)
     if (!("touches" in e)) {
       e.preventDefault();
     }
@@ -94,6 +93,16 @@ const Window: React.FC<Props> = (props) => {
     resizeStart.current = { w: props.w, h: props.h, mx: clientX, my: clientY };
     props.onFocus();
   };
+
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 1024 || "ontouchstart" in window);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
     <div
@@ -143,33 +152,16 @@ const Window: React.FC<Props> = (props) => {
             color="#ff5f57"
             onClick={props.onClose}
             icon="close"
-            showIcon={controlsHovered}
+            showIcon={isMobile || controlsHovered}
             iconSize="var(--window-header-inner-circle-icon-size)"
           />
           <WindowControl
             color="#febc2e"
             onClick={props.onMinimize}
             icon="minimize"
-            showIcon={controlsHovered}
+            showIcon={isMobile || controlsHovered}
             iconSize="var(--window-header-inner-circle-icon-size)"
           />
-        </div>
-
-        {/* Centered title and icon */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {props.icon && (
-            <img
-              src={props.icon}
-              style={{
-                borderRadius: "20%",
-                width: "var(--window-title-website-icon-size)",
-                height: "var(--window-title-website-icon-size)",
-              }}
-            />
-          )}
-          <div style={{ fontSize: "var(--window-title-website-font-size)", opacity: 0.9 }}>
-            {props.title}
-          </div>
         </div>
       </div>
 
