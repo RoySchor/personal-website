@@ -153,7 +153,6 @@ const Desktop: React.FC = () => {
   return (
     <div
       onDragStart={(e) => e.preventDefault()}
-      onTouchStart={(e) => console.log("Desktop TouchStart")}
       style={{ position: "absolute", inset: 0, background: "var(--mac-desktop)" }}
     >
       {/* Desktop wallpaper (optional) */}

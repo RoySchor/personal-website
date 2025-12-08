@@ -29,17 +29,6 @@ const Window: React.FC<Props> = (props) => {
 
   useEffect(() => {
     const onMove = (e: MouseEvent | TouchEvent) => {
-      console.log(
-        "Move Event:",
-        "Type:",
-        e.type,
-        "Dragging:",
-        dragging,
-        "Resizing:",
-        resizing,
-        "Touches:",
-        "touches" in e ? e.touches.length : 0,
-      );
       // If we are not dragging/resizing, do not block default behavior
       if (!dragging && !resizing) return;
 
@@ -50,7 +39,6 @@ const Window: React.FC<Props> = (props) => {
       // Only prevent default if we are actively dragging or resizing
       if (e.cancelable) {
         e.preventDefault();
-        console.log("Touch/Move Default Prevented (because dragging/resizing is true)");
       }
 
       if (dragging && dragStart.current) {
@@ -76,7 +64,6 @@ const Window: React.FC<Props> = (props) => {
       }
     };
     const onUp = () => {
-      console.log("Up/End Event. Resetting Dragging and Resizing.");
       setDragging(false);
       setResizing(false);
     };
@@ -135,16 +122,16 @@ const Window: React.FC<Props> = (props) => {
         zIndex: props.z,
         borderRadius: "var(--window-border-radius)",
         overflow: "hidden",
+        overflowY: "scroll",
+        scrollbarGutter: "stable",
+        WebkitOverflowScrolling: "touch",
+        touchAction: "pan-y",
         boxShadow: props.active ? "0 10px 24px rgba(0,0,0,0.45)" : "0 6px 16px rgba(0,0,0,0.25)",
         border: "1px solid var(--win-border)",
         background: "var(--win-bg)",
         willChange: "left, top",
       }}
       onMouseDown={props.onFocus}
-      onTouchStart={(e) => {
-        console.log("Window Root TouchStart: Firing Focus.");
-        props.onFocus();
-      }}
     >
       {/* Title bar */}
       <div
