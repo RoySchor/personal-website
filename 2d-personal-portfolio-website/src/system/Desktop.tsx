@@ -151,10 +151,7 @@ const Desktop: React.FC = () => {
   const openLink = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
 
   return (
-    <div
-      onDragStart={(e) => e.preventDefault()}
-      style={{ position: "absolute", inset: 0, background: "var(--mac-desktop)" }}
-    >
+    <div style={{ position: "absolute", inset: 0, background: "var(--mac-desktop)" }}>
       {/* Desktop wallpaper (optional) */}
       <img
         src={wallpaper}
