@@ -28,16 +28,6 @@ const Window: React.FC<Props> = (props) => {
   const resizeStart = useRef<{ w: number; h: number; mx: number; my: number }>(null);
 
   useEffect(() => {
-    // Debug logging to confirm listener attachment
-    console.log(`[Window Effect] dragging=${dragging}, resizing=${resizing}`);
-
-    if (!dragging && !resizing) {
-       console.log("[Window Effect] No listeners attached");
-       return;
-    }
-
-    console.log("[Window Effect] Attaching global listeners");
-
     const onMove = (e: MouseEvent | TouchEvent) => {
       // If we are not dragging/resizing, do not block default behavior
       if (!dragging && !resizing) return;
@@ -47,9 +37,7 @@ const Window: React.FC<Props> = (props) => {
       if (clientX == null || clientY == null) return;
 
       // Only prevent default if we are actively dragging or resizing
-      if (dragging || resizing) {
-        if (e.cancelable) e.preventDefault();
-      }
+      if (e.cancelable) e.preventDefault();
 
       if (dragging && dragStart.current) {
         const dx = clientX - dragStart.current.mx;
@@ -195,6 +183,8 @@ const Window: React.FC<Props> = (props) => {
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-y",
         }}
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
       >
         {props.children}
       </div>
