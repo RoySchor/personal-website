@@ -29,6 +29,17 @@ const Window: React.FC<Props> = (props) => {
 
   useEffect(() => {
     const onMove = (e: MouseEvent | TouchEvent) => {
+      console.log(
+        "Move Event:",
+        "Type:",
+        e.type,
+        "Dragging:",
+        dragging,
+        "Resizing:",
+        resizing,
+        "Touches:",
+        "touches" in e ? e.touches.length : 0,
+      );
       // If we are not dragging/resizing, do not block default behavior
       if (!dragging && !resizing) return;
 
@@ -37,7 +48,10 @@ const Window: React.FC<Props> = (props) => {
       if (clientX == null || clientY == null) return;
 
       // Only prevent default if we are actively dragging or resizing
-      if (e.cancelable) e.preventDefault();
+      if (e.cancelable) {
+        e.preventDefault();
+        console.log("Touch/Move Default Prevented (because dragging/resizing is true)");
+      }
 
       if (dragging && dragStart.current) {
         const dx = clientX - dragStart.current.mx;
@@ -62,6 +76,7 @@ const Window: React.FC<Props> = (props) => {
       }
     };
     const onUp = () => {
+      console.log("Up/End Event. Resetting Dragging and Resizing.");
       setDragging(false);
       setResizing(false);
     };
@@ -183,8 +198,6 @@ const Window: React.FC<Props> = (props) => {
           WebkitOverflowScrolling: "touch",
           touchAction: "pan-y",
         }}
-        onTouchStart={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
       >
         {props.children}
       </div>

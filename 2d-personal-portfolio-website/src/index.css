@@ -142,7 +142,6 @@ body,
   height: 100%;
 }
 html {
-  touch-action: none; /* Disable default browser handling (zooming, panning) globally */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
