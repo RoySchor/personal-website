@@ -8,6 +8,7 @@ export function createPreviewFocus({
   onExit,
   onArmIframe,
   controls,
+  glRoot,
 }) {
   let focused = false;
   let interactive = false;
@@ -22,14 +23,18 @@ export function createPreviewFocus({
       controls.enabled = false;
     }
 
+    if (glRoot) {
+      glRoot.style.touchAction = "pan-y";
+    }
+
     cssRoot.style.pointerEvents = "auto";
     cssRoot.style.cursor = "";
     wrapper.style.pointerEvents = "none";
     iframeEl.style.pointerEvents = "auto";
     iframeEl.style.cursor = "auto";
     iframeEl.style.touchAction = "pan-y";
-    cssRoot.style.touchAction = "auto";
-    wrapper.style.touchAction = "auto";
+    cssRoot.style.touchAction = "pan-y";
+    wrapper.style.touchAction = "pan-y";
 
     interactive = true;
 
@@ -47,6 +52,10 @@ export function createPreviewFocus({
     iframeEl.style.cursor = "";
     cssRoot.style.touchAction = "";
     wrapper.style.touchAction = "";
+
+    if (glRoot) {
+      glRoot.style.touchAction = "none";
+    }
 
     if (controls) {
       controls.enabled = true;
