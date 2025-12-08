@@ -37,6 +37,8 @@ export default [
         getComputedStyle: "readonly",
         TouchEvent: "readonly",
         EventListener: "readonly",
+        URL: "readonly",
+        ResizeObserver: "readonly",
       },
     },
 

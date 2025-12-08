@@ -13,12 +13,15 @@
 
   /* Desktop & dock sizes */
   --desktop-icon-size: 72px;
+  --desktop-resume-icon-width: 62px;
+  --desktop-resume-icon-height: 72px;
   --desktop-icon-width: 116px;
   --desktop-icon-top-offset: 64px;
   --desktop-icon-gap: 170px;
   --desktop-icon-font-size: 24px;
   --desktop-right-offset-row-1: 25px;
   --desktop-right-offset-row-2: 1150px;
+  --desktop-right-offset-row-3: 1020px;
   --dock-height: 100px;
   --dock-divider-height: 80px;
   --dock-icon-size: 86px;
@@ -70,13 +73,16 @@
 @media (max-width: 1024px) {
   :root {
     /* Desktop & Dock sizing - mobile */
-    --desktop-icon-size: 44px;
+    --desktop-icon-size: 48px;
+    --desktop-resume-icon-width: 40px;
+    --desktop-resume-icon-height: 48px;
     --desktop-icon-width: 64px;
     --desktop-icon-top-offset: 48px;
     --desktop-icon-gap: 100px;
     --desktop-icon-font-size: 16px;
     --desktop-right-offset-row-1: 6px;
     --desktop-right-offset-row-2: 570px;
+    --desktop-right-offset-row-3: 480px;
     --dock-height: 54px;
     --dock-divider-height: 35px;
     --dock-icon-size: 50px;

@@ -11,6 +11,7 @@ import Window from "./Window";
 import BackgammonApp from "../apps/BackgammonApp";
 import PortfolioApp from "../apps/PortfolioApp";
 import QuotesApp from "../apps/QuotesApp";
+import ResumeApp from "../apps/ResumeApp";
 // WALLPAPER
 // ICONS
 import iconBackgammon from "../assets/icons/app-backgammon.webp";
@@ -19,6 +20,7 @@ import iconPortfolio from "../assets/icons/app-portfolio.webp";
 import iconQuotes from "../assets/icons/app-quotes.svg";
 import iconGithub from "../assets/icons/external-github.svg";
 import iconLinkedIn from "../assets/icons/external-linkedin.webp";
+import iconResume from "../assets/icons/resume.webp";
 import wallpaper from "../assets/wallpapers/desktop-wallpaper.webp";
 
 const Desktop: React.FC = () => {
@@ -45,6 +47,13 @@ const Desktop: React.FC = () => {
         component: (p) => <QuotesApp {...p} />,
         dockFixed: true,
       },
+      {
+        key: "resume",
+        title: "Resume",
+        icon: iconResume,
+        component: (p) => <ResumeApp {...p} />,
+        dockFixed: true,
+      },
     ],
     [],
   );
@@ -67,6 +76,7 @@ const Desktop: React.FC = () => {
       portfolio: mkWindow("portfolio", x, y, windowWidth, windowHeight, 11),
       backgammon: undefined as unknown as WindowState,
       quotes: undefined as unknown as WindowState,
+      resume: undefined as unknown as WindowState,
     } as unknown as Record<AppKey, WindowState>;
   });
 
@@ -196,6 +206,15 @@ const Desktop: React.FC = () => {
       />
 
       {/* External-only (not in dock): LinkedIn + GitHub */}
+      <DesktopIcon
+        title="Resume"
+        icon={iconResume}
+        onOpen={() => openApp("resume")}
+        rightOffset="var(--desktop-right-offset-row-3)"
+        topOffset="var(--desktop-icon-top-offset)"
+        iconGap="var(--desktop-icon-gap)"
+        gapMultiplier={0}
+      />
       <DesktopIcon
         title="LinkedIn"
         icon={iconLinkedIn}

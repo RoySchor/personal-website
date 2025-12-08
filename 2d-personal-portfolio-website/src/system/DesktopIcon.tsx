@@ -32,6 +32,7 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
   gapMultiplier,
 }) => {
   const isPortfolio = title === "Portfolio";
+  const isResume = title === "Resume";
 
   return (
     <div
@@ -55,15 +56,15 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
         <img
           src={icon}
           style={{
-            width: "var(--desktop-icon-size)",
-            height: "var(--desktop-icon-size)",
+            width: isResume ? "var(--desktop-resume-icon-width)" : "var(--desktop-icon-size)",
+            height: isResume ? "var(--desktop-resume-icon-height)" : "var(--desktop-icon-size)",
             borderRadius: isPortfolio ? "40%" : "0",
           }}
         />
       </div>
       <div
         style={{
-          marginTop: 8,
+          marginTop: 4,
           fontSize: "var(--desktop-icon-font-size)",
           fontWeight: 600,
           color: "var(--muted)",

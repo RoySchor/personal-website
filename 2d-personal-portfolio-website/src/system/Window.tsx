@@ -31,6 +31,7 @@ const Window: React.FC<Props> = (props) => {
     if (!dragging && !resizing) return;
 
     const onMove = (e: MouseEvent | TouchEvent) => {
+      console.log("[move] event firing", { dragging, resizing });
       const clientX = "touches" in e ? e.touches[0]?.clientX : (e as MouseEvent).clientX;
       const clientY = "touches" in e ? e.touches[0]?.clientY : (e as MouseEvent).clientY;
       if (clientX == null || clientY == null) return;
@@ -95,6 +96,9 @@ const Window: React.FC<Props> = (props) => {
   };
 
   const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    console.log("[state] dragging:", dragging, "resizing:", resizing);
+  }, [dragging, resizing]);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 1024 || "ontouchstart" in window);
@@ -170,6 +174,9 @@ const Window: React.FC<Props> = (props) => {
 
       {/* Content */}
       <div
+        onTouchStart={() => console.log("[content] touchstart")}
+        onTouchMove={() => console.log("[content] touchmove")}
+        onWheel={() => console.log("[content] wheel")}
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
