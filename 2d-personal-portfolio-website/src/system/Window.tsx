@@ -67,9 +67,9 @@ const Window: React.FC<Props> = (props) => {
       setDragging(false);
       setResizing(false);
     };
-    window.addEventListener("mousemove", onMove, { passive: false });
+    window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mouseup", onUp, { passive: true });
-    window.addEventListener("touchmove", onMove as EventListener, { passive: false });
+    window.addEventListener("touchmove", onMove as EventListener, { passive: true });
     window.addEventListener("touchend", onUp as EventListener, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove as EventListener);

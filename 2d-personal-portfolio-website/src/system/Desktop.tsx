@@ -165,32 +165,6 @@ const Desktop: React.FC = () => {
         }}
       />
 
-      {/* 🧪 TEST DIV START */}
-      {/* This element is intentionally taller than the viewport and should scroll */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50px",
-          left: "50px",
-          width: "200px",
-          height: "200px",
-          backgroundColor: "red",
-          overflowY: "scroll", // Must scroll!
-          WebkitOverflowScrolling: "touch",
-          touchAction: "pan-y",
-          zIndex: 100, // Make sure it's on top
-        }}
-      >
-        <div style={{ height: "1000px", color: "white", padding: "10px" }}>
-          This is a TALL TEST DIV. <br />
-          Try to swipe scroll me on mobile. <br />
-          If I scroll, the problem is in the Window component. <br />
-          If I don't scroll, the problem is global. <br />
-          Content continues... (down to 1000px)
-        </div>
-      </div>
-      {/* 🧪 TEST DIV END */}
-
       <MenuBar onShutdown={() => setMode("shutdown")} onLock={() => setMode("lock")} />
 
       {/* Desktop icons on the right */}
