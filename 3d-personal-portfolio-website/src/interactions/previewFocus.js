@@ -7,31 +7,15 @@ export function createPreviewFocus({
   onEnter,
   onExit,
   onArmIframe,
-  controls,
-  glRoot,
 }) {
   let focused = false;
   let interactive = false;
   let previewClickArm = null;
   let viewport = makeEvenViewportSync(ctx);
 
-  const originalDomElement = controls.domElement;
-
   function enablePreview() {
     focused = true;
     viewport?.dispose();
-
-    if (controls) {
-      controls.enabled = false;
-    }
-
-    if (controls && cssRoot) {
-      controls.domElement = cssRoot.domElement;
-    }
-
-    if (glRoot) {
-      glRoot.style.touchAction = "pan-y";
-    }
 
     cssRoot.style.pointerEvents = "auto";
     cssRoot.style.cursor = "";
@@ -58,18 +42,6 @@ export function createPreviewFocus({
     iframeEl.style.cursor = "";
     cssRoot.style.touchAction = "";
     wrapper.style.touchAction = "";
-
-    if (controls && originalDomElement) {
-      controls.domElement = originalDomElement;
-    }
-
-    if (controls) {
-      controls.enabled = true;
-    }
-
-    if (glRoot) {
-      glRoot.style.touchAction = "none";
-    }
 
     cssRoot.style.pointerEvents = "none";
     viewport = makeEvenViewportSync(ctx);

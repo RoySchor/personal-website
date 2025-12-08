@@ -134,8 +134,6 @@ const onAllAssetsLoaded = () => {
     iframeEl,
     makeEvenViewportSync,
     ctx,
-    controls,
-    glRoot: renderer.domElement,
     onEnter: () => {
       viewport?.dispose();
       pinch.attach();
