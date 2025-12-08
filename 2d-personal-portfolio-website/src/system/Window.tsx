@@ -179,7 +179,7 @@ const Window: React.FC<Props> = (props) => {
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
-          overflow: "scroll",
+          overflowX: "hidden",
           overflowY: "scroll",
           scrollbarGutter: "stable",
           WebkitOverflowScrolling: "touch",
