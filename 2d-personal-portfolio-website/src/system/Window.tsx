@@ -31,10 +31,18 @@ const Window: React.FC<Props> = (props) => {
     if (!dragging && !resizing) return;
 
     const onMove = (e: MouseEvent | TouchEvent) => {
-      console.log("[move] event firing", { dragging, resizing });
+      // If we are not dragging/resizing, do not block default behavior
+      if (!dragging && !resizing) return;
+
       const clientX = "touches" in e ? e.touches[0]?.clientX : (e as MouseEvent).clientX;
       const clientY = "touches" in e ? e.touches[0]?.clientY : (e as MouseEvent).clientY;
       if (clientX == null || clientY == null) return;
+
+      // Only prevent default if we are actively dragging or resizing
+      if (dragging || resizing) {
+        if (e.cancelable) e.preventDefault();
+      }
+
       if (dragging && dragStart.current) {
         const dx = clientX - dragStart.current.mx;
         const dy = clientY - dragStart.current.my;
@@ -61,9 +69,9 @@ const Window: React.FC<Props> = (props) => {
       setDragging(false);
       setResizing(false);
     };
-    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mousemove", onMove, { passive: false });
     window.addEventListener("mouseup", onUp, { passive: true });
-    window.addEventListener("touchmove", onMove as EventListener, { passive: true });
+    window.addEventListener("touchmove", onMove as EventListener, { passive: false });
     window.addEventListener("touchend", onUp as EventListener, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove as EventListener);
@@ -96,9 +104,6 @@ const Window: React.FC<Props> = (props) => {
   };
 
   const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    console.log("[state] dragging:", dragging, "resizing:", resizing);
-  }, [dragging, resizing]);
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 1024 || "ontouchstart" in window);
@@ -174,9 +179,6 @@ const Window: React.FC<Props> = (props) => {
 
       {/* Content */}
       <div
-        onTouchStart={() => console.log("[content] touchstart")}
-        onTouchMove={() => console.log("[content] touchmove")}
-        onWheel={() => console.log("[content] wheel")}
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
