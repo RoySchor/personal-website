@@ -106,7 +106,7 @@ const onAllAssetsLoaded = () => {
     return hitboxMesh;
   };
 
-  const laptopHitbox = createExpandedHitbox(laptopRoot, 2.5); // 1.8x larger hitbox
+  const laptopHitbox = createExpandedHitbox(laptopRoot, 2.5);
 
   function isDesc(obj, ancestor) {
     let cur = obj;
@@ -179,7 +179,6 @@ const onAllAssetsLoaded = () => {
         preview.enablePreview();
         transitioning = false;
       })();
-      // setTimeout(() => preview.enablePreview(), 650);
       return;
     }
     if (!focuser.isFocusing() && preview.isFocused()) {
@@ -188,8 +187,6 @@ const onAllAssetsLoaded = () => {
   }
 
   function exitFocus() {
-    // focuser.restore(500);
-    // setTimeout(() => preview.disableAllPointers(), 260);
     transitioning = true;
     (async () => {
       await focuser.restore(500);

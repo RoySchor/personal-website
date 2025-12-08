@@ -22,8 +22,8 @@ export function createPreviewFocus({
     wrapper.style.pointerEvents = "none";
     iframeEl.style.pointerEvents = "auto";
     iframeEl.style.cursor = "auto";
-    cssRoot.style.touchAction = "none";
-    wrapper.style.touchAction = "none";
+    cssRoot.style.touchAction = "auto";
+    wrapper.style.touchAction = "auto";
 
     interactive = true;
 
