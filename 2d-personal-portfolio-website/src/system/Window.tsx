@@ -141,6 +141,10 @@ const Window: React.FC<Props> = (props) => {
         willChange: "left, top",
       }}
       onMouseDown={props.onFocus}
+      onTouchStart={(e) => {
+        console.log("Window Root TouchStart: Firing Focus.");
+        props.onFocus();
+      }}
     >
       {/* Title bar */}
       <div

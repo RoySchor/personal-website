@@ -59,6 +59,7 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
         alignItems: "center",
         background: "#525659",
         overflow: "auto",
+        touchAction: "pan-y",
         padding: "20px 0",
       }}
     >
