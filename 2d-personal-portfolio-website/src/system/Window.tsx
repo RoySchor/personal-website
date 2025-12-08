@@ -157,7 +157,6 @@ const Window: React.FC<Props> = (props) => {
           cursor: "grab",
           background: "rgba(22,24,29,0.7)",
           position: "relative",
-          touchAction: "none",
         }}
       >
         {/* window traffic lights */}
