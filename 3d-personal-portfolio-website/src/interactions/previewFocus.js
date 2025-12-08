@@ -9,7 +9,6 @@ export function createPreviewFocus({
   onArmIframe,
   controls,
   glRoot,
-  cssRoot,
 }) {
   let focused = false;
   let interactive = false;

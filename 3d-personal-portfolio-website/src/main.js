@@ -136,7 +136,6 @@ const onAllAssetsLoaded = () => {
     ctx,
     controls,
     glRoot: renderer.domElement,
-    cssRoot: cssRenderer.domElement,
     onEnter: () => {
       viewport?.dispose();
       pinch.attach();
