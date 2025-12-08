@@ -28,7 +28,15 @@ const Window: React.FC<Props> = (props) => {
   const resizeStart = useRef<{ w: number; h: number; mx: number; my: number }>(null);
 
   useEffect(() => {
-    if (!dragging && !resizing) return;
+    // Debug logging to confirm listener attachment
+    console.log(`[Window Effect] dragging=${dragging}, resizing=${resizing}`);
+
+    if (!dragging && !resizing) {
+       console.log("[Window Effect] No listeners attached");
+       return;
+    }
+
+    console.log("[Window Effect] Attaching global listeners");
 
     const onMove = (e: MouseEvent | TouchEvent) => {
       // If we are not dragging/resizing, do not block default behavior
@@ -185,6 +193,7 @@ const Window: React.FC<Props> = (props) => {
           overflow: "auto",
           scrollbarGutter: "stable",
           WebkitOverflowScrolling: "touch",
+          touchAction: "pan-y",
         }}
       >
         {props.children}
