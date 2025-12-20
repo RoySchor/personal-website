@@ -17,14 +17,14 @@ export function createPreviewFocus({
     focused = true;
     viewport?.dispose();
 
-    cssRoot.style.pointerEvents = "auto";
+    cssRoot.style.pointerEvents = "none";
     cssRoot.style.cursor = "";
-    wrapper.style.pointerEvents = "none";
+    wrapper.style.pointerEvents = "auto";
     iframeEl.style.pointerEvents = "auto";
     iframeEl.style.cursor = "auto";
-    iframeEl.style.touchAction = "pan-y";
-    cssRoot.style.touchAction = "pan-y";
-    wrapper.style.touchAction = "pan-y";
+    iframeEl.style.touchAction = "auto";
+    cssRoot.style.touchAction = "auto";
+    wrapper.style.touchAction = "auto";
 
     interactive = true;
 
@@ -40,6 +40,7 @@ export function createPreviewFocus({
     wrapper.style.pointerEvents = "none";
     iframeEl.style.pointerEvents = "none";
     iframeEl.style.cursor = "";
+    iframeEl.style.touchAction = "";
     cssRoot.style.touchAction = "";
     wrapper.style.touchAction = "";
 

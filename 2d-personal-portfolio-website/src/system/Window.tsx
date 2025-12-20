@@ -190,6 +190,7 @@ const Window: React.FC<Props> = (props) => {
 
       {/* Content */}
       <div
+        className="window-content-scrollable"
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
