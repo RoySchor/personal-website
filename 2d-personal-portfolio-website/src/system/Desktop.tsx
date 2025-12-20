@@ -9,10 +9,9 @@ import type { AppDefinition, AppKey, OSMode, WindowState, WindowAppProps } from 
 import Window from "./Window";
 // APP COMPONENTS
 import BackgammonApp from "../apps/BackgammonApp";
-import PortfolioApp from "../apps/PortfolioApp";
+import PortfolioApp from "../apps/Portfolio";
 import QuotesApp from "../apps/QuotesApp";
 import ResumeApp from "../apps/ResumeApp";
-// WALLPAPER
 // ICONS
 import iconBackgammon from "../assets/icons/app-backgammon.webp";
 import iconBlog from "../assets/icons/app-blog.svg";
