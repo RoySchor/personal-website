@@ -83,6 +83,9 @@ const onAllAssetsLoaded = () => {
   }
   const laptopRoot = getLaptopRoot(screenMesh);
 
+  // Instructions Overlay logic
+  const instructions = document.getElementById("instructions-overlay");
+
   // Create a larger invisible hitbox around the laptop
   const createExpandedHitbox = (targetObject, expandFactor = 1.5) => {
     const bbox = new THREE.Box3().setFromObject(targetObject);
@@ -174,6 +177,7 @@ const onAllAssetsLoaded = () => {
     if (hitLaptop) {
       if (!focuser.isFocusing() && preview.isFocused()) return;
       transitioning = true;
+      if (instructions) instructions.classList.add("hidden");
       (async () => {
         await focuser.focusOn({ centerFrom: screenMesh, orientFrom: cssObject, duration: 650 });
         preview.enablePreview();
@@ -188,6 +192,7 @@ const onAllAssetsLoaded = () => {
 
   function exitFocus() {
     transitioning = true;
+    if (instructions) instructions.classList.remove("hidden");
     (async () => {
       await focuser.restore(500);
       preview.disableAllPointers();

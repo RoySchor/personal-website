@@ -45,11 +45,71 @@
         opacity: 0;
         pointer-events: none;
       }
+
+      #instructions-overlay {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          sans-serif;
+        font-size: 20px;
+        line-height: 1.4;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+        z-index: 10;
+        max-width: 300px;
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+
+      #instructions-overlay.hidden {
+        opacity: 0;
+      }
+
+      .mobile-text {
+        display: none;
+      }
+      .desktop-text {
+        display: inline;
+      }
+
+      @media (max-width: 1024px), (hover: none) {
+        #instructions-overlay {
+          right: 10px;
+          bottom: 10px;
+          font-size: 12px;
+        }
+        .mobile-text {
+          display: inline;
+        }
+        .desktop-text {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body>
     <!-- matrix loader overlay -->
     <canvas id="loader"></canvas>
+
+    <!-- Instructions Overlay -->
+    <div id="instructions-overlay">
+      <span class="desktop-text">Move and zoom with mouse. Press on laptop to explore!</span>
+      <span class="mobile-text">Drag and pinch to move and zoom. Press on laptop to explore!</span>
+    </div>
+
     <!-- three.js canvas -->
     <canvas id="c"></canvas>
 
