@@ -53,7 +53,7 @@ const projects: Project[] = [
     description:
       "I've delved into designing and building user-friendly websites tailored to specific client needs. My focus is on creating sites that are easy to maintain and update with minimal effort.",
     bullets: [
-      "I develope a wide range of projects, from fully automated blogs that generate new pages via a user-friendly guis, to virtual galleries for aspiring artists.",
+      "I develope a wide range of projects, from fully automated blogs that generate new pages via user-friendly GUIs, to virtual galleries for aspiring artists.",
     ],
     media: [
       { src: artByDavGif, caption: "Art By Dav" },

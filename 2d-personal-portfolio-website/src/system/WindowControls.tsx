@@ -11,6 +11,7 @@ interface WindowControlProps {
   icon: "close" | "minimize" | "maximize";
   showIcon: boolean;
   iconSize: CSSPx;
+  isMobile?: boolean;
 }
 
 function toPx(v: CSSPx) {
@@ -23,6 +24,7 @@ const WindowControl: React.FC<WindowControlProps> = ({
   icon,
   showIcon,
   iconSize,
+  isMobile,
 }) => {
   const [hover, setHover] = useState(false);
 
@@ -68,6 +70,16 @@ const WindowControl: React.FC<WindowControlProps> = ({
         transform: hover ? "scale(1.1)" : "scale(1)",
       }}
     >
+      <div
+        style={{
+          position: "absolute",
+          top: isMobile ? -30 : -15,
+          bottom: isMobile ? -30 : -15,
+          left: isMobile ? -30 : -15,
+          right: isMobile ? -30 : -15,
+          zIndex: 1,
+        }}
+      />
       {renderIcon()}
     </div>
   );

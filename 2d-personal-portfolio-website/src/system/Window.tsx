@@ -189,6 +189,7 @@ const Window: React.FC<Props> = (props) => {
             icon="close"
             showIcon={isMobile || controlsHovered}
             iconSize="var(--window-header-inner-circle-icon-size)"
+            isMobile={isMobile}
           />
           <WindowControl
             color="#febc2e"
@@ -196,6 +197,7 @@ const Window: React.FC<Props> = (props) => {
             icon="minimize"
             showIcon={isMobile || controlsHovered}
             iconSize="var(--window-header-inner-circle-icon-size)"
+            isMobile={isMobile}
           />
         </div>
 
