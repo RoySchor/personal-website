@@ -20,13 +20,13 @@ export function createThreeContext(canvasId = "c") {
   // CSS3D Renderer for HTML overlay
   const cssRenderer = new CSS3DRenderer();
   cssRenderer.setSize(window.innerWidth, window.innerHeight);
-  cssRenderer.domElement.id = "css3d-root"; // New
+  cssRenderer.domElement.id = "css3d-root";
   cssRenderer.domElement.style.position = "fixed";
-  cssRenderer.domElement.style.top = "0"; // To remove check first
-  cssRenderer.domElement.style.left = "0"; // To remove check first
+  cssRenderer.domElement.style.top = "0";
+  cssRenderer.domElement.style.left = "0";
   cssRenderer.domElement.style.pointerEvents = "none";
   cssRenderer.domElement.style.inset = "0";
-  cssRenderer.domElement.style.zIndex = "10"; // Make sure it's on top
+  cssRenderer.domElement.style.zIndex = "10";
   document.getElementById("css3d-root")?.remove();
   document.body.appendChild(cssRenderer.domElement);
 

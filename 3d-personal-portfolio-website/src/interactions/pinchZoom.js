@@ -51,21 +51,11 @@ export function createPinchZoom({ camera, controls, cssRoot, glRoot, screenMesh,
   }
 
   function attach() {
-    // Only attach to glRoot (background) to avoid blocking iframe interactions
-    // cssRoot is overlay; if we attach here, we might capture touches meant for the iframe
-    // cssRoot.addEventListener("touchstart", onStart, { passive: false });
-    // cssRoot.addEventListener("touchmove", onMove, { passive: false });
-    // cssRoot.addEventListener("touchend", onEnd, { passive: true });
-
     glRoot.addEventListener("touchstart", onStart, { passive: false });
     glRoot.addEventListener("touchmove", onMove, { passive: false });
     glRoot.addEventListener("touchend", onEnd, { passive: true });
   }
   function detach() {
-    // cssRoot.removeEventListener("touchstart", onStart);
-    // cssRoot.removeEventListener("touchmove", onMove);
-    // cssRoot.removeEventListener("touchend", onEnd);
-
     glRoot.removeEventListener("touchstart", onStart);
     glRoot.removeEventListener("touchmove", onMove);
     glRoot.removeEventListener("touchend", onEnd);

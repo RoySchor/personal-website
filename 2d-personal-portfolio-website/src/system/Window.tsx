@@ -112,6 +112,31 @@ const Window: React.FC<Props> = (props) => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const contentRef = useRef<HTMLDivElement>(null);
+  const touchStart = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStart.current = e.touches[0].clientY;
+    e.stopPropagation();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStart.current === null || !contentRef.current) return;
+    const touchY = e.touches[0].clientY;
+    const deltaY = touchStart.current - touchY;
+
+    // Manually scroll
+    contentRef.current.scrollTop += deltaY;
+
+    // Update start for continuous drag
+    touchStart.current = touchY;
+    e.stopPropagation(); // Prevent window drag
+  };
+
+  const handleTouchEnd = () => {
+    touchStart.current = null;
+  };
+
   return (
     <div
       style={{
@@ -190,15 +215,18 @@ const Window: React.FC<Props> = (props) => {
 
       {/* Content */}
       <div
+        ref={contentRef}
         className="window-content-scrollable"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
           overflowX: "hidden",
           overflowY: "scroll",
           scrollbarGutter: "stable",
-          WebkitOverflowScrolling: "touch",
-          touchAction: "pan-y",
+          touchAction: "none",
         }}
       >
         {props.children}

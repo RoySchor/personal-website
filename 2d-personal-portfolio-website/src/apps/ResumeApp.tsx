@@ -48,43 +48,9 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Manual touch drag handling
-  const touchStart = React.useRef<number | null>(null);
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStart.current = e.touches[0].clientY;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStart.current === null) return;
-    const touchY = e.touches[0].clientY;
-    const deltaY = touchStart.current - touchY;
-
-    // Apply scroll immediately (use manual scroll helper logic)
-    if (containerRef.current) {
-      const scrollable = containerRef.current.closest(".window-content-scrollable");
-      if (scrollable) {
-        scrollable.scrollTop += deltaY;
-      } else {
-        const parent = containerRef.current.parentElement;
-        if (parent) parent.scrollTop += deltaY;
-      }
-    }
-
-    // Update start for continuous drag
-    touchStart.current = touchY;
-  };
-
-  const handleTouchEnd = () => {
-    touchStart.current = null;
-  };
-
   return (
     <div
       ref={containerRef}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
       style={{
         width: "100%",
         height: "100%",
