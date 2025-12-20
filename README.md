@@ -1,4 +1,5 @@
 # personal-website
 This is my new and revamped personal website
 
-![blender-room-scene](https://github.com/user-attachments/assets/c99a6948-0f9e-4d65-a0f3-700e8b4b5487)
+https://github.com/user-attachments/assets/5fb39319-d6fa-4231-9e13-1098808690c5
+
