@@ -5,6 +5,7 @@ import type { WindowAppProps } from "../system/types";
 
 const QuotesApp: React.FC<WindowAppProps> = () => {
   const [currentQuote, setCurrentQuote] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const quotes: string[] = quotesData;
 
@@ -15,6 +16,53 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
     }
     const randomIndex = Math.floor(Math.random() * quotes.length);
     setCurrentQuote(quotes[randomIndex]);
+    setCopied(false);
+  };
+
+  const copyQuote = () => {
+    if (!currentQuote) return;
+
+    // Clean text: remove asterisks completely, replace newlines with spaces
+    const cleanQuote = currentQuote.replace(/\*/g, "").replace(/\n/g, " ");
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(cleanQuote)
+        .then(() => {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        })
+        .catch((err) => {
+          console.error("Clipboard write failed:", err);
+          fallbackCopy(cleanQuote);
+        });
+    } else {
+      fallbackCopy(cleanQuote);
+    }
+  };
+
+  const fallbackCopy = (text: string) => {
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textarea);
+
+      if (successful) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        console.error("Fallback copy failed.");
+      }
+    } catch (err) {
+      console.error("Fallback copy error:", err);
+    }
   };
 
   const formatQuote = (quote: string) => {
@@ -105,28 +153,53 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
         What are you waiting for grab a quote
       </p>
 
-      <button
-        className="quotes-app-button"
-        onClick={() => {
-          getRandomQuote();
-        }}
-        style={{
-          background: "#E1F781",
-          color: "var(--win-bg)",
-          border: "none",
-          borderRadius: "12px",
-          padding: "var(--quotes-button-padding)",
-          fontSize: "var(--quotes-button-font-size)",
-          fontWeight: "600",
-          cursor: "pointer",
-          transition: "all 0.2s",
-          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-          touchAction: "manipulation",
-          WebkitTapHighlightColor: "transparent",
-        }}
-      >
-        Quote
-      </button>
+      <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+        <button
+          className="quotes-app-button"
+          onClick={() => {
+            getRandomQuote();
+          }}
+          style={{
+            background: "#E1F781",
+            color: "var(--win-bg)",
+            border: "none",
+            borderRadius: "12px",
+            padding: "var(--quotes-button-padding)",
+            fontSize: "var(--quotes-button-font-size)",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "all 0.2s",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            touchAction: "manipulation",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          Quote
+        </button>
+
+        {currentQuote && (
+          <button
+            className="quotes-app-button"
+            onClick={copyQuote}
+            style={{
+              background: copied ? "#4ade80" : "rgba(255, 255, 255, 0.1)",
+              color: copied ? "#16181d" : "#EEF3DB",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              borderRadius: "12px",
+              padding: "var(--quotes-button-padding)",
+              fontSize: "var(--quotes-button-font-size)",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "all 0.2s",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+              touchAction: "manipulation",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        )}
+      </div>
 
       <div
         style={{
