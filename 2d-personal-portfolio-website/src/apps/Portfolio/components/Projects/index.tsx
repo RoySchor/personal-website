@@ -4,6 +4,7 @@ import "./styles.css";
 import aroundtheworld50sGif from "../../../../assets/gifs/around-the-world-50s-website.gif";
 import artByDavGif from "../../../../assets/gifs/art-by-dav-website.gif";
 import blenderRoomScene from "../../../../assets/gifs/blender-room-scene.gif";
+import lifeOfRoyBlogGif from "../../../../assets/gifs/life-of-roy-blog.gif";
 import oldPortfolioGif from "../../../../assets/gifs/old-portfolio-website.gif";
 
 interface ProjectLink {
@@ -11,12 +12,17 @@ interface ProjectLink {
   url: string;
 }
 
+interface ProjectMedia {
+  src: string;
+  caption?: string;
+}
+
 interface Project {
   title: string;
   subtitle?: string;
   description?: string;
   bullets?: string[];
-  media?: string[];
+  media?: ProjectMedia[];
   links: ProjectLink[];
 }
 
@@ -25,7 +31,12 @@ const projects: Project[] = [
     title: "Personal Portfolio Website",
     description:
       "royschor.com is my portfolio website—and the site you're on right now. This project was both demanding and incredibly enjoyable to build. It challenged me technically and creatively, and it began when I realized my previous portfolio no longer reflected my style or growth.\n\nWhile searching for inspiration, I noticed that nearly every portfolio followed the same formula: a top navigation bar and endless vertical scrolling. I wanted something different—more creative, more interactive, and most importantly, more me.\n\nI developed this site in my spare time, between work, travel, and personal life, and if you’re reading this now, it means the project is finally complete.",
-    media: [blenderRoomScene],
+    media: [
+      {
+        src: blenderRoomScene,
+        caption: "Blender scene of the 3D website exported as a glb.",
+      },
+    ],
     bullets: [
       "For a brief technical overview (full details are available in the GitHub repository): the website is architected as two distinct layers—a 3D experience and a 2D application.",
       "The 3D layer uses Three.js to render a Blender-authored scene and embeds the 2D site within it via an iframe. The 2D layer itself is a fully standalone React application. Its integration into the 3D environment is achieved using Three.js's CSS renderer, which maps the 2D HTML into 3D space through CSS transforms, creating the illusion of true three-dimensional depth.",
@@ -44,21 +55,30 @@ const projects: Project[] = [
     bullets: [
       "I develope a wide range of projects, from fully automated blogs that generate new pages via a user-friendly guis, to virtual galleries for aspiring artists.",
     ],
-    media: [artByDavGif, aroundtheworld50sGif, oldPortfolioGif],
+    media: [
+      { src: artByDavGif, caption: "Art By Dav" },
+      { src: aroundtheworld50sGif, caption: "Around The World 50s Blog" },
+      { src: oldPortfolioGif, caption: "Old Portfolio Website" },
+      { src: lifeOfRoyBlogGif, caption: "Story of Roy Blog" },
+    ],
     links: [
       {
         label: "Github - aroundtheworld50s repo",
         url: "https://github.com/RoySchor/aroundtheworld50s",
       },
-      { label: "Website - www.aroundtheworld50s.com/", url: "https://www.aroundtheworld50s.com/" },
+      { label: "Website - www.aroundtheworld50s.com", url: "https://www.aroundtheworld50s.com/" },
       { label: "Github - art-by-dav repo", url: "https://github.com/RoySchor/art-by-dav" },
       {
-        label: "Website - art-by-dav.com",
+        label: "Website - www.art-by-dav.com",
         url: "https://royschor.github.io/art-by-dav/",
       },
       {
         label: "Github- old-portfolio repo",
         url: "https://github.com/RoySchor/personalWebsite",
+      },
+      {
+        label: "Website - www.storyofroy.com",
+        url: "https://storyofroy.wordpress.com/",
       },
     ],
   },
@@ -115,11 +135,12 @@ const Projects: React.FC = () => {
 
             {project.media && project.media.length > 0 && (
               <div className={`project-media-grid count-${project.media.length}`}>
-                {project.media.map((src, i) => {
-                  const isBlenderScene = src.includes("blender-room-scene");
+                {project.media.map((item, i) => {
+                  const isBlenderScene = item.src.includes("blender-room-scene");
                   return (
                     <div key={i} className={`media-item ${isBlenderScene ? "blender-scene" : ""}`}>
-                      <img src={src} alt={`${project.title} demo ${i + 1}`} />
+                      <img src={item.src} alt={`${project.title} demo ${i + 1}`} />
+                      {item.caption && <div className="media-caption">{item.caption}</div>}
                     </div>
                   );
                 })}
