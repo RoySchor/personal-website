@@ -31,6 +31,7 @@ export default [
         setTimeout: "readonly",
         performance: "readonly",
         HTMLDivElement: "readonly",
+        HTMLFormElement: "readonly",
         MouseEvent: "readonly",
         Node: "readonly",
         clearTimeout: "readonly",

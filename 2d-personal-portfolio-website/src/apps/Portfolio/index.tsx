@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./styles.css";
 
 import About from "./components/About";
+import Contact from "./components/Contact";
 import Experience from "./components/Experience";
 import Projects from "./components/Projects";
 import Sidebar from "./components/Sidebar";
@@ -66,13 +67,7 @@ const PortfolioApp: React.FC<WindowAppProps> = () => {
         {view === "about" && <About />}
         {view === "experience" && <Experience />}
         {view === "projects" && <Projects />}
-
-        {view !== "about" && view !== "experience" && view !== "projects" && (
-          <div className="content-section">
-            <h1 className="section-header">{view.charAt(0).toUpperCase() + view.slice(1)}</h1>
-            <p>Content coming soon...</p>
-          </div>
-        )}
+        {view === "contact" && <Contact />}
       </div>
     </div>
   );
