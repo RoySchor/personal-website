@@ -1,0 +1,33 @@
+/* Resume Box */
+.resume-box {
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  padding: 20px 0;
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.resume-icon {
+  width: 72px;
+  height: 72px;
+}
+
+.resume-info h3 {
+  margin: 0 0 5px 0;
+  font-size: 22px;
+  font-family: Georgia, serif;
+}
+
+.resume-info a {
+  font-family: "Courier New", Courier, monospace;
+  color: #6b4c9a;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.resume-info a:hover {
+  text-decoration: underline;
+}

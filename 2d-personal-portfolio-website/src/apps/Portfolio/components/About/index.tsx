@@ -1,8 +1,7 @@
 import React from "react";
 
 import "./styles.css";
-import resumeGif from "../../../../assets/gifs/download-resume.gif";
-import resumePdf from "../../../../assets/resume/Schor, Roy Resume.pdf";
+import ResumeBox from "../ResumeBox/ResumeBox";
 
 const About: React.FC = () => {
   return (
@@ -20,16 +19,7 @@ const About: React.FC = () => {
         much as I enjoyed building it!
       </p>
 
-      {/* Resume Box */}
-      <div className="resume-box">
-        <img src={resumeGif} alt="Download Resume" className="resume-icon" />
-        <div className="resume-info">
-          <h3>Looking for my resume?</h3>
-          <a href={resumePdf} download="Schor, Roy Resume.pdf">
-            Click here to download it!
-          </a>
-        </div>
-      </div>
+      <ResumeBox />
 
       <div className="about-me-section">
         <h3>About Me</h3>

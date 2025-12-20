@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./styles.css";
 
 import About from "./components/About";
+import Experience from "./components/Experience";
 import Sidebar from "./components/Sidebar";
 import type { WindowAppProps } from "../../system/types";
 
@@ -62,8 +63,9 @@ const PortfolioApp: React.FC<WindowAppProps> = () => {
       {/* Main Content Area */}
       <div className="portfolio-content">
         {view === "about" && <About />}
+        {view === "experience" && <Experience />}
 
-        {view !== "about" && (
+        {view !== "about" && view !== "experience" && (
           <div className="content-section">
             <h1 className="section-header">{view.charAt(0).toUpperCase() + view.slice(1)}</h1>
             <p>Content coming soon...</p>

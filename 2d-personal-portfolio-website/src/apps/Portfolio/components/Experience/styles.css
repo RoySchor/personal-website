@@ -1,0 +1,125 @@
+.experience-section {
+  width: 100%;
+}
+
+.experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  margin-top: 40px;
+}
+
+.experience-card {
+  position: relative;
+}
+
+.job-header {
+  margin-bottom: 20px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 10px;
+}
+
+.job-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 5px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.job-company {
+  font-size: 48px;
+  font-weight: 900;
+  margin: 0;
+  color: #333;
+  line-height: 1;
+}
+
+.job-period {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 18px;
+  font-weight: 600;
+  color: #666;
+}
+
+.job-role-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.job-role {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: black;
+  font-family: Georgia, serif;
+}
+
+.job-team {
+  font-weight: 500;
+  color: black;
+  font-size: 20px;
+}
+
+.job-location {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
+  color: black;
+}
+
+.job-description {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  color: black;
+  max-width: 800px;
+  font-weight: 500;
+}
+
+.job-bullets {
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: none;
+}
+
+.job-bullets li {
+  position: relative;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  color: black;
+  max-width: 800px;
+}
+
+.job-bullets li::before {
+  content: "•";
+  position: absolute;
+  left: -20px;
+  color: #6b4c9a;
+  font-weight: bold;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .job-company {
+    font-size: 36px;
+  }
+
+  .job-role {
+    font-size: 20px;
+  }
+
+  .job-team {
+    font-size: 18px;
+  }
+
+  .job-period {
+    font-size: 16px;
+  }
+}
