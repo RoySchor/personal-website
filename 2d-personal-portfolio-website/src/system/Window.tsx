@@ -16,6 +16,7 @@ interface Props {
   onMinimize: () => void;
   onMove: (x: number, y: number) => void;
   onResize: (w: number, h: number) => void;
+  headerRight?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -172,6 +173,19 @@ const Window: React.FC<Props> = (props) => {
             iconSize="var(--window-header-inner-circle-icon-size)"
           />
         </div>
+
+        {props.headerRight && (
+          <div
+            style={{
+              position: "absolute",
+              right: 10,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            {props.headerRight}
+          </div>
+        )}
       </div>
 
       {/* Content */}

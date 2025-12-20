@@ -62,23 +62,6 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
         padding: "20px 0",
       }}
     >
-      <div style={{ marginBottom: 20 }}>
-        <a
-          href={resumePdf}
-          download="Schor, Roy Resume.pdf"
-          style={{
-            color: "white",
-            textDecoration: "none",
-            background: "rgba(0,0,0,0.5)",
-            padding: "8px 16px",
-            borderRadius: 4,
-            fontSize: 14,
-          }}
-        >
-          Download PDF
-        </a>
-      </div>
-
       <Document
         file={resumePdf}
         onLoadSuccess={onDocumentLoadSuccess}

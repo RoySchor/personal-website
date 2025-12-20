@@ -21,6 +21,7 @@ import iconQuotes from "../assets/icons/app-quotes.svg";
 import iconGithub from "../assets/icons/external-github.svg";
 import iconLinkedIn from "../assets/icons/external-linkedin.webp";
 import iconResume from "../assets/icons/resume.webp";
+import resumePdf from "../assets/resume/Schor, Roy Resume.pdf";
 import wallpaper from "../assets/wallpapers/desktop-wallpaper.webp";
 
 const Desktop: React.FC = () => {
@@ -246,6 +247,20 @@ const Desktop: React.FC = () => {
             focus: () => focus(w.key),
             setSize: (ww, hh) => setSize(w.key, ww, hh),
           };
+
+          const headerRight =
+            w.key === "resume" ? (
+              <a
+                href={resumePdf}
+                download="Schor, Roy Resume.pdf"
+                className="resume-download-btn"
+                onMouseDown={(e) => e.stopPropagation()} // Prevent drag
+                onTouchStart={(e) => e.stopPropagation()}
+              >
+                Download PDF
+              </a>
+            ) : undefined;
+
           return (
             <Window
               key={w.key}
@@ -269,6 +284,7 @@ const Desktop: React.FC = () => {
               onMinimize={() => minimizeApp(w.key)}
               onMove={(x, y) => setPos(w.key, x, y)}
               onResize={(ww, hh) => setSize(w.key, ww, hh)}
+              headerRight={headerRight}
             >
               {def.component(appProps)}
             </Window>
