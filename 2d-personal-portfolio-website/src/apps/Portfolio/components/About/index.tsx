@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./styles.css";
+import AboutMeImage from "../../../../assets/portfolio-assets/about-me-img.webp";
 import ResumeBox from "../ResumeBox/ResumeBox";
 
 const About: React.FC = () => {
@@ -22,11 +23,14 @@ const About: React.FC = () => {
       <ResumeBox />
 
       <div className="about-me-section">
-        <h3>About Me</h3>
+        <h2>About Me</h2>
         <p className="section-text">
           From a young age, I have always been fascinated by the fact that almost everything we do
           is intertwined with technology.
         </p>
+
+        <img src={AboutMeImage} alt="Roy Schor" className="about-image" />
+
         <p className="section-text">
           My first taste of coding was hand writing Java programs and full classes on paper. I
           almost left the craft when I started studying Finance in college. However, a few of my

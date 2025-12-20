@@ -2,11 +2,23 @@
   width: 100%;
 }
 
+.justworks-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+  max-width: 900px;
+  height: 290px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.54);
+}
+
 .experience-list {
   display: flex;
   flex-direction: column;
   gap: 60px;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .experience-card {
@@ -38,7 +50,7 @@
 
 .job-period {
   font-family: "Courier New", Courier, monospace;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: #666;
 }
@@ -52,7 +64,7 @@
 }
 
 .job-role {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   margin: 0;
   color: black;
@@ -62,18 +74,18 @@
 .job-team {
   font-weight: 500;
   color: black;
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .job-location {
   font-family: "Courier New", Courier, monospace;
-  font-size: 16px;
+  font-size: 18px;
   color: black;
 }
 
 .job-description {
   font-family: "Courier New", Courier, monospace;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 1.6;
   margin-bottom: 20px;
   color: black;
@@ -90,7 +102,7 @@
 .job-bullets li {
   position: relative;
   font-family: "Courier New", Courier, monospace;
-  font-size: 20px;
+  font-size: 24px;
   line-height: 1.6;
   margin-bottom: 12px;
   color: black;
@@ -107,6 +119,11 @@
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
+  .justworks-image {
+    width: 70%;
+    max-width: 800px;
+    height: 190px;
+  }
   .job-company {
     font-size: 36px;
   }

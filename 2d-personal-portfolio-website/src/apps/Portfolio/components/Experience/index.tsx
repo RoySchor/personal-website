@@ -1,6 +1,7 @@
 import React from "react";
 
 import "./styles.css";
+import justworksImg from "../../../../assets/portfolio-assets/justworks-experience-img.webp";
 import ResumeBox from "../ResumeBox/ResumeBox";
 
 interface Job {
@@ -24,8 +25,8 @@ const jobs: Job[] = [
       "I design scalable systems that streamline operations, reduce costs, and drive multimillion-dollar revenue growth.",
     bullets: [
       "Co-architected and deployed a full-stack document workflow integrating DocuSign APIs, automating processes to save 11,000+ operational hours and cut annual costs by $300,000.",
-      "Led, Designed, and implemented a high-performance rates processing tool with dynamic inline editing, efficiently handling 300,000+ customer rates and driving over $30M in revenue.",
-      "Engineered secure and efficient API integrations, including a seamless connection with Justworks' payroll functionality, enabling over 7 million weekly requests across microservices and enhancing system resilience and cross-functional team collaboration.",
+      "Led, Designed, and implemented a high-performance rates processing tool with dynamic inline editing, efficiently handling 300,000+ customer rates and driving over $50M in revenue.",
+      "Engineered secure and efficient API integrations, to unify Justworks payroll functionality, enabling over 7 million weekly requests across all internal micro-services. Enhancing system resilience and cross-functional team collaboration.",
     ],
   },
   {
@@ -35,8 +36,7 @@ const jobs: Job[] = [
     location: "New York, NY",
     period: "June 2023 - August 2023",
     bullets: [
-      "Solved a pertinent issue facing internal customers scoped to be front-end, back-end, and test bench.",
-      "Interviewed stakeholders from multiple teams and wrote a tech discovery based on needs.",
+      "Solved pertinent issues facing internal customers scoped to front-end, back-end, and test bench.",
       "Architected project workflow, developed an MVP, and deployed it to production.",
       "Refined in final weeks of internship to add additional customer-specific needs used weekly by over 4 internal teams to access customer critical information.",
     ],
@@ -48,10 +48,9 @@ const jobs: Job[] = [
     location: "New York, NY",
     period: "June 2022 - August 2022",
     bullets: [
-      "Revamped a legacy production script into a dynamic front-end tool, integrating back-end and testing functionalities to empower cross-functional teams.",
-      "Engineered and deployed a robust Workers’ Compensation feature that enhanced operational productivity.",
-      "Spearheaded 2 company-wide panels and led 2 high-impact intern hackathons, driving innovation.",
-      "Developed an onboarding Slackbot that streamlined new hire integration, significantly reducing ramp-up time and resource investment.",
+      "Revamped a legacy production script into a dynamic front-end tool, integrating back-end and test bench.",
+      "Engineered and deployed a robust Workers' Compensation feature that enhanced operational productivity.",
+      "Spearheaded 2 company-wide panels and led 2 high-impact intern hackathons, driving internal innovation.",
     ],
   },
 ];
@@ -62,6 +61,8 @@ const Experience: React.FC = () => {
       <ResumeBox />
 
       <h1 className="section-header">Experience</h1>
+
+      <img src={justworksImg} alt="Justworks" className="justworks-image" />
 
       <div className="experience-list">
         {jobs.map((job, index) => (
