@@ -69,7 +69,7 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  background-color: #eee;
+  background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,6 +79,10 @@
   width: 100%;
   height: auto;
   display: block;
+}
+
+.media-item.blender-scene img {
+  filter: brightness(1.4);
 }
 
 .project-bullets {

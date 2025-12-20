@@ -3,7 +3,7 @@ import React from "react";
 import "./styles.css";
 import aroundtheworld50sGif from "../../../../assets/gifs/around-the-world-50s-website.gif";
 import artByDavGif from "../../../../assets/gifs/art-by-dav-website.gif";
-import resumeGif from "../../../../assets/gifs/download-resume.gif";
+import blenderRoomScene from "../../../../assets/gifs/blender-room-scene.gif";
 import oldPortfolioGif from "../../../../assets/gifs/old-portfolio-website.gif";
 
 interface ProjectLink {
@@ -25,7 +25,7 @@ const projects: Project[] = [
     title: "Personal Portfolio Website",
     description:
       "royschor.com is my portfolio website—and the site you're on right now. This project was both demanding and incredibly enjoyable to build. It challenged me technically and creatively, and it began when I realized my previous portfolio no longer reflected my style or growth.\n\nWhile searching for inspiration, I noticed that nearly every portfolio followed the same formula: a top navigation bar and endless vertical scrolling. I wanted something different—more creative, more interactive, and most importantly, more me.\n\nI developed this site in my spare time, between work, travel, and personal life, and if you’re reading this now, it means the project is finally complete.",
-    media: [resumeGif],
+    media: [blenderRoomScene],
     bullets: [
       "For a brief technical overview (full details are available in the GitHub repository): the website is architected as two distinct layers—a 3D experience and a 2D application.",
       "The 3D layer uses Three.js to render a Blender-authored scene and embeds the 2D site within it via an iframe. The 2D layer itself is a fully standalone React application. Its integration into the 3D environment is achieved using Three.js's CSS renderer, which maps the 2D HTML into 3D space through CSS transforms, creating the illusion of true three-dimensional depth.",
@@ -115,11 +115,14 @@ const Projects: React.FC = () => {
 
             {project.media && project.media.length > 0 && (
               <div className={`project-media-grid count-${project.media.length}`}>
-                {project.media.map((src, i) => (
-                  <div key={i} className="media-item">
-                    <img src={src} alt={`${project.title} demo ${i + 1}`} />
-                  </div>
-                ))}
+                {project.media.map((src, i) => {
+                  const isBlenderScene = src.includes("blender-room-scene");
+                  return (
+                    <div key={i} className={`media-item ${isBlenderScene ? "blender-scene" : ""}`}>
+                      <img src={src} alt={`${project.title} demo ${i + 1}`} />
+                    </div>
+                  );
+                })}
               </div>
             )}
 
