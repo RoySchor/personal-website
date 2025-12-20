@@ -54,8 +54,14 @@
   grid-template-columns: 1fr;
 }
 
-.project-media-grid.count-2 {
+.project-media-grid.count-3 {
   grid-template-columns: 1fr 1fr;
+}
+
+.project-media-grid.count-3 .media-item:last-child {
+  grid-column: span 2;
+  width: 50%;
+  margin: 0 auto;
 }
 
 .media-item {
@@ -136,7 +142,13 @@
     font-size: 32px;
   }
 
-  .project-media-grid.count-2 {
+  .project-media-grid.count-2,
+  .project-media-grid.count-3 {
     grid-template-columns: 1fr;
+  }
+
+  .project-media-grid.count-3 .media-item:last-child {
+    grid-column: span 1;
+    width: 100%;
   }
 }

@@ -4,6 +4,7 @@ import "./styles.css";
 import aroundtheworld50sGif from "../../../../assets/gifs/around-the-world-50s-website.gif";
 import artByDavGif from "../../../../assets/gifs/art-by-dav-website.gif";
 import resumeGif from "../../../../assets/gifs/download-resume.gif";
+import oldPortfolioGif from "../../../../assets/gifs/old-portfolio-website.gif";
 
 interface ProjectLink {
   label: string;
@@ -43,7 +44,7 @@ const projects: Project[] = [
     bullets: [
       "I develope a wide range of projects, from fully automated blogs that generate new pages via a user-friendly guis, to virtual galleries for aspiring artists.",
     ],
-    media: [artByDavGif, aroundtheworld50sGif],
+    media: [artByDavGif, aroundtheworld50sGif, oldPortfolioGif],
     links: [
       {
         label: "Github - aroundtheworld50s repo",
