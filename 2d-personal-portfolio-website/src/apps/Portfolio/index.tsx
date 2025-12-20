@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import "./styles.css";
 
-import resumePdf from "../../assets/resume/Schor, Roy Resume.pdf";
+import About from "./components/About";
+import Sidebar from "./components/Sidebar";
 import type { WindowAppProps } from "../../system/types";
 
 type View = "landing" | "about" | "experience" | "projects" | "contact";
@@ -17,9 +18,9 @@ const PortfolioApp: React.FC<WindowAppProps> = () => {
     { label: "Contact", value: "contact" },
   ];
 
-  const handleNavClick = (e: React.MouseEvent, val: View) => {
+  const handleNavClick = (e: React.MouseEvent, val: string) => {
     e.preventDefault();
-    setView(val);
+    setView(val as View);
   };
 
   if (view === "landing") {
@@ -52,67 +53,15 @@ const PortfolioApp: React.FC<WindowAppProps> = () => {
   return (
     <div className="portfolio-container inner">
       {/* Left Sidebar */}
-      <div className="portfolio-sidebar">
-        <div className="sidebar-header">
-          <h1 className="sidebar-title">Roy Schor</h1>
-        </div>
-
-        <nav className="sidebar-nav">
-          {navLinks.map((item) => (
-            <a
-              key={item.value}
-              href="#"
-              onClick={(e) => handleNavClick(e, item.value)}
-              className={`sidebar-link ${view === item.value ? "active" : ""}`}
-            >
-              {item.label === "Home" ? "HOME" : item.label}
-            </a>
-          ))}
-        </nav>
-      </div>
+      <Sidebar
+        navLinks={navLinks.map((link) => ({ ...link, value: link.value }))}
+        activeView={view}
+        onNavClick={handleNavClick}
+      />
 
       {/* Main Content Area */}
       <div className="portfolio-content">
-        {view === "about" && (
-          <div className="content-section">
-            <h1 className="section-header">Welcome</h1>
-            <h2 className="section-subheader">I'm Roy Schor</h2>
-
-            <p className="section-text">
-              I'm a software engineer passionate about building immersive and interactive web
-              experiences. Welcome to my digital portfolio!
-            </p>
-
-            <p className="section-text">
-              Feel free to explore my projects, check out my experience, or get in touch. I built
-              this desktop environment to showcase what's possible on the web.
-            </p>
-
-            {/* Resume Box */}
-            <div className="resume-box">
-              <div className="resume-icon">📄</div>
-              <div className="resume-info">
-                <h3>Looking for my resume?</h3>
-                <a href={resumePdf} download="Schor, Roy Resume.pdf">
-                  Click here to download it!
-                </a>
-              </div>
-            </div>
-
-            <div className="about-me-section">
-              <h3>About Me</h3>
-              <p className="section-text">
-                From a young age, I have been fascinated by technology and how things work. This
-                curiosity led me to pursue a career in software engineering, where I can solve
-                complex problems and create useful tools.
-              </p>
-              <p className="section-text">
-                When I'm not coding, you can find me exploring 3D graphics, playing backgammon, or
-                collecting quotes.
-              </p>
-            </div>
-          </div>
-        )}
+        {view === "about" && <About />}
 
         {view !== "about" && (
           <div className="content-section">

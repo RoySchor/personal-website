@@ -65,68 +65,6 @@
   overflow: hidden;
 }
 
-.portfolio-sidebar {
-  width: 200px;
-  background-color: #f7fbfe;
-  padding: 40px 0px 40px 30px;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  border-right: none;
-}
-
-.sidebar-header {
-  margin-bottom: 60px;
-}
-
-.sidebar-title {
-  font-size: 32px;
-  font-weight: 900;
-  margin: 0 0 5px 0;
-  color: #333;
-  line-height: 1;
-}
-
-.sidebar-subtitle {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 16px;
-  font-weight: 600;
-  color: #444;
-  margin: 0;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.sidebar-link {
-  text-decoration: none;
-  color: #666;
-  font-size: 16px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: color 0.2s;
-}
-
-.sidebar-link:hover {
-  color: #6b4c9a;
-}
-
-.sidebar-link.active {
-  color: #6b4c9a;
-  position: relative;
-}
-
-.sidebar-link.active::before {
-  content: "• ";
-  position: absolute;
-  left: -15px;
-  color: #6b4c9a;
-}
-
 .portfolio-content {
   flex: 1;
   padding: 60px 40px;
@@ -134,60 +72,16 @@
   background-color: #f7fbfe;
 }
 
-/* Content Styles */
+/* Placeholder for generic content sections */
+.content-section {
+  width: 100%;
+}
+
 .section-header {
   font-size: 64px;
   font-weight: 900;
   margin: 0 0 10px 0;
   color: #333;
-}
-
-.section-subheader {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 24px;
-  font-weight: 600;
-  margin: 0 0 30px 0;
-  color: #444;
-}
-
-.section-text {
-  font-family: "Courier New", Courier, monospace;
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  max-width: 700px;
-}
-
-/* Resume Box */
-.resume-box {
-  border-top: 1px solid #333;
-  border-bottom: 1px solid #333;
-  padding: 20px 0;
-  margin: 40px 0;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  max-width: 600px;
-}
-
-.resume-icon {
-  font-size: 32px;
-}
-
-.resume-info h3 {
-  margin: 0 0 5px 0;
-  font-size: 20px;
-  font-family: Georgia, serif;
-}
-
-.resume-info a {
-  font-family: "Courier New", Courier, monospace;
-  color: #6b4c9a;
-  text-decoration: none;
-}
-
-.resume-info a:hover {
-  text-decoration: underline;
 }
 
 /* Mobile Responsive Styles */
@@ -212,6 +106,7 @@
   }
   .portfolio-link {
     font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .portfolio-container.inner {
@@ -219,45 +114,6 @@
     height: auto !important;
     overflow: visible;
   }
-
-  .portfolio-sidebar {
-    width: 100%;
-    padding: 20px;
-    border-right: none;
-    border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: #f7fbfe;
-  }
-
-  .sidebar-header {
-    margin-bottom: 15px;
-    text-align: center;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  /* Remove tap highlight color */
-  .portfolio-link,
-  .sidebar-link {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* Hide active dot on mobile */
-  .sidebar-link.active::before {
-    display: none;
-  }
-
 
   .portfolio-content {
     flex: none;
@@ -268,9 +124,5 @@
 
   .section-header {
     font-size: 42px;
-  }
-
-  .section-subheader {
-    font-size: 18px;
   }
 }
