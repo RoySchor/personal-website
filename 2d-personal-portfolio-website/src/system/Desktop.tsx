@@ -148,7 +148,14 @@ const Desktop: React.FC = () => {
   const appMap = Object.fromEntries(apps.map((a) => [a.key, a])) as Record<AppKey, AppDefinition>;
 
   // Desktop external links
-  const openLink = (url: string) => window.open(url, "_blank", "noopener,noreferrer");
+  const openLink = (url: string, forceSameTabOnMobile = false) => {
+    const isMobile = window.innerWidth <= 1024;
+    if (isMobile && forceSameTabOnMobile) {
+      window.open(url, "_top", "noopener,noreferrer");
+    } else {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  };
 
   return (
     <div style={{ position: "absolute", inset: 0, background: "var(--mac-desktop)" }}>
@@ -218,7 +225,7 @@ const Desktop: React.FC = () => {
       <DesktopIcon
         title="LinkedIn"
         icon={iconLinkedIn}
-        onOpen={() => openLink("https://www.linkedin.com/in/roy-schor")}
+        onOpen={() => openLink("https://www.linkedin.com/in/roy-schor", true)}
         rightOffset="var(--desktop-right-offset-row-2)"
         topOffset="var(--desktop-icon-top-offset)"
         iconGap="var(--desktop-icon-gap)"
