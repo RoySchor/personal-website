@@ -52,6 +52,15 @@ Locally, the 3D and 2D apps can be run individually. However, to run the complet
     npm run dev
     ```
 
+### Code Quality
+Both repositories maintain code quality and consistent formatting using **ESLint** and **Prettier**.
+
+To lint and automatically fix formatting issues, run the following command within the directory of the application you are working on:
+
+```bash
+npm run lint:fix
+```
+
 ### Mobile Testing
 To test responsiveness and interactions on mobile devices:
 1.  Start the dev server with host access enabled:
