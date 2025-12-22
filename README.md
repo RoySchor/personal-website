@@ -40,7 +40,7 @@ This is achieved using **Three.js’s** `CSS3DRenderer`, which projects a live 2
 
 Locally, the 3D and 2D apps can be run individually. However, to run the complete project locally, both applications must be started simultaneously.
 
-1.  Open two terminal tabs.
+1.  Open **two terminal tabs**.
 2.  **Terminal 1 - 2D OS Interface**:
     ```bash
     cd 2d-personal-portfolio-website
