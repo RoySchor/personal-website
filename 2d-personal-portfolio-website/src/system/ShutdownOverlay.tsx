@@ -56,11 +56,26 @@ const ShutdownOverlay: React.FC<Props> = ({ onFinish, onCancel, onConfirmed }) =
             padding: "32px 40px",
             borderRadius: 16,
             textAlign: "center",
-            maxWidth: 400,
+            maxWidth: "var(--shutdown-overlay-width)",
           }}
         >
-          <h2 style={{ margin: 0, fontSize: 24, marginBottom: 16 }}>Shutdown</h2>
-          <p style={{ margin: 0, fontSize: 18, marginBottom: 24, opacity: 0.9 }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: "var(--shutdown-overlay-font-size)",
+              marginBottom: 16,
+            }}
+          >
+            Shutdown
+          </h2>
+          <p
+            style={{
+              margin: 0,
+              fontSize: "var(--shutdown-overlay-subtitle-font-size)",
+              marginBottom: 24,
+              opacity: 0.9,
+            }}
+          >
             Are you sure you want to shut down?
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
@@ -72,9 +87,9 @@ const ShutdownOverlay: React.FC<Props> = ({ onFinish, onCancel, onConfirmed }) =
                 border: "1px solid rgba(255,255,255,0.2)",
                 background: "rgba(255,255,255,0.1)",
                 color: "white",
-                fontSize: 16,
+                fontSize: "var(--shutdown-overlay-button-font-size)",
                 cursor: "pointer",
-                fontWeight: 600,
+                fontWeight: "var(--shutdown-overlay-button-font-weight)",
               }}
             >
               Cancel
@@ -87,9 +102,9 @@ const ShutdownOverlay: React.FC<Props> = ({ onFinish, onCancel, onConfirmed }) =
                 border: "none",
                 background: "#ff5f57",
                 color: "white",
-                fontSize: 16,
+                fontSize: "var(--shutdown-overlay-button-font-size)",
                 cursor: "pointer",
-                fontWeight: 600,
+                fontWeight: "var(--shutdown-overlay-button-font-weight)",
               }}
             >
               Shut Down
@@ -110,7 +125,7 @@ const ShutdownOverlay: React.FC<Props> = ({ onFinish, onCancel, onConfirmed }) =
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: phase === "done" ? 5000 : 20000, // Drop below lock screen when done
+        zIndex: phase === "done" ? 5000 : 20000,
         opacity: phase === "done" ? 0 : 1,
         transition: phase === "done" ? "opacity 0.5s ease-in-out" : "none",
         pointerEvents: phase === "done" ? "none" : "auto",

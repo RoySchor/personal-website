@@ -65,9 +65,17 @@
   --quotes-quote-box-margin-top: 20px;
 
   /* Lock screen sizing */
+  --lock-screen-width: 400px;
   --lock-screen-font-size: 24px;
   --lock-screen-subtitle-font-size: 26px;
   --lock-screen-button-font-size: 18px;
+
+  /* Shutdown overlay sizing */
+  --shutdown-overlay-width: 400px;
+  --shutdown-overlay-font-size: 24px;
+  --shutdown-overlay-subtitle-font-size: 26px;
+  --shutdown-overlay-button-font-size: 18px;
+  --shutdown-overlay-button-font-weight: 600;
 }
 
 /* Mobile/Tablet - scale everything up */
@@ -79,7 +87,7 @@
     --desktop-resume-icon-height: 102px;
     --desktop-icon-width: 136px;
     --desktop-icon-top-offset: 108px;
-    --desktop-icon-gap: 220px;
+    --desktop-icon-gap: 240px;
     --desktop-icon-font-size: 40px;
     --desktop-right-offset-row-1: 48px;
     --desktop-right-offset-row-2: 860px;
@@ -102,36 +110,44 @@
     --menu-bar-dropdown-menu-width: 350px;
     --menu-bar-dropdown-menu-font-size: 48px;
     --menu-bar-dropdown-menu-item-font-weight: 400;
-    --menu-bar-dropdown-menu-item-margin: 10px 10px;
+    --menu-bar-dropdown-menu-item-margin: 20px 10px;
     --menu-bar-dropdown-menu-item-padding: 5px 20px;
 
     /* Window sizing - mobile */
     --window-border-radius: 12px;
-    --window-header-height: 42px;
-    ---window-header-icon-size: 34px;
-    --window-header-icon-gap: 36px;
+    --window-header-height: 96px;
+    ---window-header-icon-size: 72px;
+    --window-header-icon-gap: 64px;
     --window-min-width: 280px;
     --window-min-height: 180px;
-    --window-header-inner-circle-icon-size: 26px;
-    --window-title-website-icon-size: 24px;
+    --window-header-inner-circle-icon-size: 54px;
+    --window-title-website-icon-size: 54px;
     --window-title-website-font-size: 20px;
     --ui-scale: 1;
 
     /* Quotes App sizing - mobile */
-    --quotes-title-size: 30px;
-    --quotes-subtitle-size: 14px;
-    --quotes-subtitle-max-width: 83%;
+    --quotes-title-size: 86px;
+    --quotes-subtitle-size: 42px;
+    --quotes-subtitle-max-width: 100%;
     --quotes-button-padding: 8px 26px;
-    --quotes-button-font-size: 18px;
-    --quotes-quote-size: 16px;
-    --quotes-container-padding: 10px 20px;
-    --quotes-dev-gap: 10px;
+    --quotes-button-font-size: 42px;
+    --quotes-quote-size: 42px;
+    --quotes-container-padding: 10px 50px;
+    --quotes-dev-gap: 50px;
     --quotes-quote-box-margin-top: 10px;
 
     /* Lock screen sizing - mobile */
-    --lock-screen-font-size: 22px;
-    --lock-screen-subtitle-font-size: 25px;
-    --lock-screen-button-font-size: 18px;
+    --lock-screen-width: 800px;
+    --lock-screen-font-size: 64px;
+    --lock-screen-subtitle-font-size: 64px;
+    --lock-screen-button-font-size: 64px;
+
+    /* Shutdown overlay sizing */
+    --shutdown-overlay-width: 800px;
+    --shutdown-overlay-font-size: 48px;
+    --shutdown-overlay-subtitle-font-size: 48px;
+    --shutdown-overlay-button-font-size: 42px;
+    --shutdown-overlay-button-font-weight: 600;
   }
 }
 
@@ -244,7 +260,7 @@ a:hover {
 
 @media (max-width: 1024px) {
   .resume-download-btn {
-    padding: 4px 8px;
-    font-size: 24px;
+    padding: 6px 12px;
+    font-size: 46px;
   }
 }

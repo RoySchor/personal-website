@@ -52,7 +52,7 @@ const LockScreen: React.FC<Props> = ({ onLogin }) => {
           left: "50%",
           top: "50%",
           transform: "translate(-50%,-50%)",
-          width: 400,
+          width: "var(--lock-screen-width)",
           fontSize: "var(--lock-screen-font-size)",
           padding: 24,
           borderRadius: 16,
