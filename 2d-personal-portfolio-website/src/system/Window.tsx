@@ -156,9 +156,30 @@ const Window: React.FC<Props> = (props) => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    // Safety check for touches
-    if (touchStart.current === null || !contentRef.current || !e.touches || e.touches.length === 0)
+    // Prevent manual scrolling if text is selected to avoid crashes
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      touchStart.current = null; // Reset touch start to prevent jump on resume
       return;
+    }
+
+    // Safety check for touches
+    if (
+      touchStart.current === null ||
+      !contentRef.current ||
+      !e.touches ||
+      e.touches.length === 0
+    ) {
+      if (e.touches && e.touches.length > 0) {
+        // If we have touches but no start point (e.g. after selection), reset start point
+        touchStart.current = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+        };
+        lastMoveTime.current = Date.now();
+      }
+      return;
+    }
 
     const touchX = e.touches[0].clientX;
     const touchY = e.touches[0].clientY;
