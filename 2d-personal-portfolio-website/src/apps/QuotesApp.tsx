@@ -147,10 +147,10 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
         }}
       >
         If you know me, you know I love quotes. Whether they're inspiring and thought-provoking, or
-        depressing dreary, I love them all the same.
+        depressing and dreary, I love them all the same.
         <br />
         <br />
-        What are you waiting for grab a quote
+        What are you waiting for, grab a quote
       </p>
 
       <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
