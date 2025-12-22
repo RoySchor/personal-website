@@ -110,11 +110,18 @@
 
 @media (max-width: 1024px) {
   .section-header {
-    font-size: 42px;
+    font-size: 79px;
   }
+
   .section-subheader {
-    font-size: 20px;
+    font-size: 52px;
   }
+
+  .section-text {
+    font-size: 38px;
+    font-weight: 550;
+  }
+
   .contact-form-container {
     max-width: 100%;
   }

@@ -118,25 +118,39 @@
 }
 
 /* Mobile Responsive Styles */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .justworks-image {
-    width: 70%;
-    max-width: 800px;
-    height: 190px;
+    margin-bottom: 30px;
   }
   .job-company {
+    font-size: 58px;
+  }
+
+  .job-period {
     font-size: 36px;
   }
 
   .job-role {
-    font-size: 20px;
+    font-size: 32px;
   }
 
   .job-team {
-    font-size: 18px;
+    font-size: 36px;
   }
 
-  .job-period {
-    font-size: 16px;
+  .job-location {
+    font-size: 32px;
+  }
+
+  .job-description {
+    font-size: 36px;
+    font-weight: 550;
+    line-height: 1.8;
+  }
+
+  .job-bullets li {
+    font-size: 36px;
+    font-weight: 550;
+    line-height: 1.8;
   }
 }

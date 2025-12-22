@@ -66,14 +66,14 @@
     width: 100%;
     padding: 20px;
     border-right: none;
-    border-bottom: 1.5px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1.5px solid black;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    /* position: sticky; */
-    /* top: 0; */
-    /* z-index: 100; */
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background-color: #f7fbfe;
   }
 
@@ -82,15 +82,23 @@
     text-align: center;
   }
 
+  .sidebar-title {
+    font-size: 72px;
+  }
+
+  .sidebar-subtitle {
+    font-size: 32px;
+  }
+
   .sidebar-nav {
     flex-direction: row;
-    gap: 20px;
+    gap: 28px;
     flex-wrap: wrap;
     justify-content: center;
   }
 
   .sidebar-link {
-    font-size: 16px;
+    font-size: 29px;
     -webkit-tap-highlight-color: transparent;
   }
 
