@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./styles.css";
 
 import About from "./components/About";
@@ -12,6 +12,19 @@ type View = "landing" | "about" | "experience" | "projects" | "contact";
 
 const PortfolioApp: React.FC<WindowAppProps> = () => {
   const [view, setView] = useState<View>("landing");
+  const contentRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+
+    const scrollableParent = containerRef.current?.closest(".window-content-scrollable");
+    if (scrollableParent) {
+      scrollableParent.scrollTop = 0;
+    }
+  }, [view]);
 
   const navLinks: { label: string; value: View }[] = [
     { label: "Home", value: "landing" },
@@ -28,7 +41,7 @@ const PortfolioApp: React.FC<WindowAppProps> = () => {
 
   if (view === "landing") {
     return (
-      <div className="portfolio-container landing">
+      <div className="portfolio-container landing" ref={containerRef}>
         <div className="portfolio-header">
           <h1 className="portfolio-title">Roy Schor</h1>
           <h2 className="portfolio-subtitle">Software Engineer</h2>
@@ -54,7 +67,7 @@ const PortfolioApp: React.FC<WindowAppProps> = () => {
 
   // Inner Layout (Sidebar + Content)
   return (
-    <div className="portfolio-container inner">
+    <div className="portfolio-container inner" ref={containerRef}>
       {/* Left Sidebar */}
       <Sidebar
         navLinks={navLinks.map((link) => ({ ...link, value: link.value }))}
@@ -63,7 +76,7 @@ const PortfolioApp: React.FC<WindowAppProps> = () => {
       />
 
       {/* Main Content Area */}
-      <div className="portfolio-content">
+      <div className="portfolio-content" ref={contentRef}>
         {view === "about" && <About />}
         {view === "experience" && <Experience />}
         {view === "projects" && <Projects />}
