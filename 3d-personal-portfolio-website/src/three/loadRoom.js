@@ -73,7 +73,11 @@ export function loadRoom(
         const y = horizontalDist * 0.6;
 
         ctx.center = center; // stash for controls post-config
-        camera.position.set(center.x + horizontalDist, center.y + y, center.z - horizontalDist);
+        camera.position.set(
+          center.x + horizontalDist,
+          center.y + y,
+          center.z - horizontalDist,
+        );
         camera.lookAt(center);
 
         resolve({ root, center, isCoarse });

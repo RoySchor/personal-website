@@ -53,11 +53,15 @@ const Window: React.FC<Props> = (props) => {
         const dh = clientY - resizeStart.current.my;
         const minW =
           parseInt(
-            getComputedStyle(document.documentElement).getPropertyValue("--window-min-width"),
+            getComputedStyle(document.documentElement).getPropertyValue(
+              "--window-min-width",
+            ),
           ) || 360;
         const minH =
           parseInt(
-            getComputedStyle(document.documentElement).getPropertyValue("--window-min-height"),
+            getComputedStyle(document.documentElement).getPropertyValue(
+              "--window-min-height",
+            ),
           ) || 220;
         props.onResize(
           Math.max(minW, resizeStart.current.w + dw),
@@ -243,7 +247,9 @@ const Window: React.FC<Props> = (props) => {
         zIndex: props.z,
         borderRadius: "var(--window-border-radius)",
         overflow: "hidden",
-        boxShadow: props.active ? "0 10px 24px rgba(0,0,0,0.45)" : "0 6px 16px rgba(0,0,0,0.25)",
+        boxShadow: props.active
+          ? "0 10px 24px rgba(0,0,0,0.45)"
+          : "0 6px 16px rgba(0,0,0,0.25)",
         border: "1px solid var(--win-border)",
         background: "var(--win-bg)",
         willChange: "left, top",
@@ -345,7 +351,11 @@ const Window: React.FC<Props> = (props) => {
         title="Resize"
       >
         <svg viewBox="0 0 16 16" width="16" height="16">
-          <path d="M2 14L14 2M6 14L14 6M10 14L14 10" stroke="white" strokeOpacity="0.35" />
+          <path
+            d="M2 14L14 2M6 14L14 6M10 14L14 10"
+            stroke="white"
+            strokeOpacity="0.35"
+          />
         </svg>
       </div>
     </div>

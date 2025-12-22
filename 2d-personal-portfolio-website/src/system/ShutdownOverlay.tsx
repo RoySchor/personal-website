@@ -7,7 +7,9 @@ interface Props {
 }
 
 const ShutdownOverlay: React.FC<Props> = ({ onFinish, onCancel, onConfirmed }) => {
-  const [phase, setPhase] = useState<"confirm" | "fade" | "bars" | "black" | "done">("confirm");
+  const [phase, setPhase] = useState<"confirm" | "fade" | "bars" | "black" | "done">(
+    "confirm",
+  );
 
   const handleConfirm = () => {
     onConfirmed();

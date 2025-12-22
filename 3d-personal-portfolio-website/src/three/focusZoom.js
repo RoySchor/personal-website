@@ -59,7 +59,13 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     return done;
   }
 
-  function focusOn({ centerFrom, orientFrom, distanceScale = 0.8, duration = 650, margin = 1.06 }) {
+  function focusOn({
+    centerFrom,
+    orientFrom,
+    distanceScale = 0.8,
+    duration = 650,
+    margin = 1.06,
+  }) {
     if (!centerFrom || !orientFrom) return Promise.resolve();
     let resolveDone;
     const done = new Promise((r) => (resolveDone = r));

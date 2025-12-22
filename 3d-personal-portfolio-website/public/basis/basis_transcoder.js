@@ -1,5 +1,6 @@
 var BASIS = (() => {
-  var _scriptName = typeof document != "undefined" ? document.currentScript?.src : undefined;
+  var _scriptName =
+    typeof document != "undefined" ? document.currentScript?.src : undefined;
   if (typeof __filename != "undefined") _scriptName ||= __filename;
   return function (moduleArg = {}) {
     var moduleRtn;
@@ -154,7 +155,8 @@ var BASIS = (() => {
     }
     function postRun() {
       if (Module["postRun"]) {
-        if (typeof Module["postRun"] == "function") Module["postRun"] = [Module["postRun"]];
+        if (typeof Module["postRun"] == "function")
+          Module["postRun"] = [Module["postRun"]];
         while (Module["postRun"].length) {
           addOnPostRun(Module["postRun"].shift());
         }
@@ -287,9 +289,12 @@ var BASIS = (() => {
         }
       }
       if (!wasmBinaryFile) wasmBinaryFile = findWasmBinary();
-      instantiateAsync(wasmBinary, wasmBinaryFile, info, receiveInstantiationResult).catch(
-        readyPromiseReject,
-      );
+      instantiateAsync(
+        wasmBinary,
+        wasmBinaryFile,
+        info,
+        receiveInstantiationResult,
+      ).catch(readyPromiseReject);
       return {};
     }
     var callRuntimeCallbacks = (callbacks) => {
@@ -440,7 +445,11 @@ var BASIS = (() => {
             read: (ptr) => getterReturnType["fromWireType"](getter(getterContext, ptr)),
             write: (ptr, o) => {
               var destructors = [];
-              setter(setterContext, ptr, setterArgumentType["toWireType"](destructors, o));
+              setter(
+                setterContext,
+                ptr,
+                setterArgumentType["toWireType"](destructors, o),
+              );
               runDestructors(destructors);
             },
           };
@@ -644,7 +653,9 @@ var BASIS = (() => {
         throwInternalError("Both smartPtrType and smartPtr must be specified");
       }
       record.count = { value: 1 };
-      return attachFinalizer(Object.create(prototype, { $$: { value: record, writable: true } }));
+      return attachFinalizer(
+        Object.create(prototype, { $$: { value: record, writable: true } }),
+      );
     };
     function RegisteredPointer_fromWireType(ptr) {
       var rawPointer = this.getPointee(ptr);
@@ -804,7 +815,8 @@ var BASIS = (() => {
       });
     };
     function ClassHandle() {}
-    var createNamedFunction = (name, body) => Object.defineProperty(body, "name", { value: name });
+    var createNamedFunction = (name, body) =>
+      Object.defineProperty(body, "name", { value: name });
     var ensureOverloadTable = (proto, methodName, humanName) => {
       if (undefined === proto[methodName].overloadTable) {
         var prevFunc = proto[methodName];
@@ -1092,7 +1104,9 @@ var BASIS = (() => {
       }
       var fp = makeDynCaller();
       if (typeof fp != "function") {
-        throwBindingError(`unknown function pointer with signature ${signature}: ${rawFunction}`);
+        throwBindingError(
+          `unknown function pointer with signature ${signature}: ${rawFunction}`,
+        );
       }
       return fp;
     };
@@ -1141,7 +1155,9 @@ var BASIS = (() => {
         seen[type] = true;
       }
       types.forEach(visit);
-      throw new UnboundTypeError(`${message}: ` + unboundTypes.map(getTypeName).join([", "]));
+      throw new UnboundTypeError(
+        `${message}: ` + unboundTypes.map(getTypeName).join([", "]),
+      );
     };
     var __embind_register_class = (
       rawType,
@@ -1165,7 +1181,9 @@ var BASIS = (() => {
       rawDestructor = embind__requireFunction(destructorSignature, rawDestructor);
       var legalFunctionName = makeLegalFunctionName(name);
       exposePublicSymbol(legalFunctionName, function () {
-        throwUnboundTypeError(`Cannot construct ${name} due to unbound types`, [baseClassRawType]);
+        throwUnboundTypeError(`Cannot construct ${name} due to unbound types`, [
+          baseClassRawType,
+        ]);
       });
       whenDependentTypesAreResolved(
         [rawType, rawPointerType, rawConstPointerType],
@@ -1213,7 +1231,13 @@ var BASIS = (() => {
             registeredClass.baseClass.__derivedClasses ??= [];
             registeredClass.baseClass.__derivedClasses.push(registeredClass);
           }
-          var referenceConverter = new RegisteredPointer(name, registeredClass, true, false, false);
+          var referenceConverter = new RegisteredPointer(
+            name,
+            registeredClass,
+            true,
+            false,
+            false,
+          );
           var pointerConverter = new RegisteredPointer(
             name + "*",
             registeredClass,
@@ -1258,7 +1282,10 @@ var BASIS = (() => {
           `new_ called with constructor type ${typeof constructor} which is not a function`,
         );
       }
-      var dummy = createNamedFunction(constructor.name || "unknownFunctionName", function () {});
+      var dummy = createNamedFunction(
+        constructor.name || "unknownFunctionName",
+        function () {},
+      );
       dummy.prototype = constructor.prototype;
       var obj = new dummy();
       var r = constructor.apply(obj, argumentList);
@@ -1288,7 +1315,8 @@ var BASIS = (() => {
         "classParam",
       ];
       if (isClassMethodFunc) {
-        invokerFnBody += "var thisWired = classParam['toWireType'](" + dtorStack + ", this);\n";
+        invokerFnBody +=
+          "var thisWired = classParam['toWireType'](" + dtorStack + ", this);\n";
       }
       for (var i = 0; i < argCount - 2; ++i) {
         invokerFnBody +=
@@ -1304,7 +1332,8 @@ var BASIS = (() => {
         args1.push("argType" + i);
       }
       if (isClassMethodFunc) {
-        argsListWired = "thisWired" + (argsListWired.length > 0 ? ", " : "") + argsListWired;
+        argsListWired =
+          "thisWired" + (argsListWired.length > 0 ? ", " : "") + argsListWired;
       }
       invokerFnBody +=
         (returns || isAsync ? "var rv = " : "") +
@@ -1366,7 +1395,12 @@ var BASIS = (() => {
           }
         }
       }
-      let [args, invokerFnBody] = createJsInvoker(argTypes, isClassMethodFunc, returns, isAsync);
+      let [args, invokerFnBody] = createJsInvoker(
+        argTypes,
+        isClassMethodFunc,
+        returns,
+        isAsync,
+      );
       args.push(invokerFnBody);
       var invokerFn = newFunc(Function, args)(...closureArgs);
       return createNamedFunction(humanName, invokerFn);
@@ -1446,7 +1480,10 @@ var BASIS = (() => {
           classType.registeredClass.pureVirtualFunctions.push(methodName);
         }
         function unboundTypesHandler() {
-          throwUnboundTypeError(`Cannot call ${humanName} due to unbound types`, rawArgTypes);
+          throwUnboundTypeError(
+            `Cannot call ${humanName} due to unbound types`,
+            rawArgTypes,
+          );
         }
         var proto = classType.registeredClass.instancePrototype;
         var method = proto[methodName];
@@ -1603,7 +1640,9 @@ var BASIS = (() => {
       var Enum = enumType.constructor;
       var Value = Object.create(enumType.constructor.prototype, {
         value: { value: enumValue },
-        constructor: { value: createNamedFunction(`${enumType.name}_${name}`, function () {}) },
+        constructor: {
+          value: createNamedFunction(`${enumType.name}_${name}`, function () {}),
+        },
       });
       Enum.values[enumValue] = Value;
       Enum[name] = Value;
@@ -1679,9 +1718,13 @@ var BASIS = (() => {
         case 1:
           return signed ? (pointer) => HEAP8[pointer] : (pointer) => HEAPU8[pointer];
         case 2:
-          return signed ? (pointer) => HEAP16[pointer >> 1] : (pointer) => HEAPU16[pointer >> 1];
+          return signed
+            ? (pointer) => HEAP16[pointer >> 1]
+            : (pointer) => HEAPU16[pointer >> 1];
         case 4:
-          return signed ? (pointer) => HEAP32[pointer >> 2] : (pointer) => HEAPU32[pointer >> 2];
+          return signed
+            ? (pointer) => HEAP32[pointer >> 2]
+            : (pointer) => HEAPU32[pointer >> 2];
         default:
           throw new TypeError(`invalid integer width (${width}): ${name}`);
       }
@@ -1904,7 +1947,9 @@ var BASIS = (() => {
                 var charCode = value.charCodeAt(i);
                 if (charCode > 255) {
                   _free(ptr);
-                  throwBindingError("String has UTF-16 code units that do not fit in 8 bits");
+                  throwBindingError(
+                    "String has UTF-16 code units that do not fit in 8 bits",
+                  );
                 }
                 HEAPU8[ptr + i] = charCode;
               }
@@ -1926,7 +1971,8 @@ var BASIS = (() => {
         },
       });
     };
-    var UTF16Decoder = typeof TextDecoder != "undefined" ? new TextDecoder("utf-16le") : undefined;
+    var UTF16Decoder =
+      typeof TextDecoder != "undefined" ? new TextDecoder("utf-16le") : undefined;
     var UTF16ToString = (ptr, maxBytesToRead) => {
       var endPtr = ptr;
       var idx = endPtr >> 1;
@@ -1948,7 +1994,8 @@ var BASIS = (() => {
       if (maxBytesToWrite < 2) return 0;
       maxBytesToWrite -= 2;
       var startPtr = outPtr;
-      var numCharsToWrite = maxBytesToWrite < str.length * 2 ? maxBytesToWrite / 2 : str.length;
+      var numCharsToWrite =
+        maxBytesToWrite < str.length * 2 ? maxBytesToWrite / 2 : str.length;
       for (var i = 0; i < numCharsToWrite; ++i) {
         var codeUnit = str.charCodeAt(i);
         HEAP16[outPtr >> 1] = codeUnit;
@@ -2105,7 +2152,8 @@ var BASIS = (() => {
         toWireType: (destructors, o) => undefined,
       });
     };
-    var __emscripten_memcpy_js = (dest, src, num) => HEAPU8.copyWithin(dest, src, src + num);
+    var __emscripten_memcpy_js = (dest, src, num) =>
+      HEAPU8.copyWithin(dest, src, src + num);
     var emval_returnValue = (returnType, destructorsRef, handle) => {
       var destructors = [];
       var result = returnType["toWireType"](destructors, handle);
@@ -2299,7 +2347,10 @@ var BASIS = (() => {
     init_ClassHandle();
     init_embind();
     init_RegisteredPointer();
-    UnboundTypeError = Module["UnboundTypeError"] = extendError(Error, "UnboundTypeError");
+    UnboundTypeError = Module["UnboundTypeError"] = extendError(
+      Error,
+      "UnboundTypeError",
+    );
     init_emval();
     var wasmImports = {
       K: ___cxa_throw,

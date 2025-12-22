@@ -12,16 +12,18 @@ const Contact: React.FC = () => {
 
     setStatus("sending");
 
-    emailjs.sendForm("service_igi7bjy", "template_6vm1m0m", form.current, "ad8VrPzMcuCyL7Vh3").then(
-      () => {
-        setStatus("success");
-        if (form.current) form.current.reset();
-      },
-      (error) => {
-        console.error("FAILED...", error.text);
-        setStatus("error");
-      },
-    );
+    emailjs
+      .sendForm("service_igi7bjy", "template_6vm1m0m", form.current, "ad8VrPzMcuCyL7Vh3")
+      .then(
+        () => {
+          setStatus("success");
+          if (form.current) form.current.reset();
+        },
+        (error) => {
+          console.error("FAILED...", error.text);
+          setStatus("error");
+        },
+      );
   };
 
   return (
@@ -29,8 +31,8 @@ const Contact: React.FC = () => {
       <h2 className="section-subheader">Have an idea? Want to connect? Let's talk</h2>
 
       <p className="section-text">
-        I am currently employed, however I am always open to side projects and new opportunities to
-        keep my skills sharp. Feel free to reach out!
+        I am currently employed, however I am always open to side projects and new
+        opportunities to keep my skills sharp. Feel free to reach out!
       </p>
 
       <p className="section-text">
@@ -84,7 +86,11 @@ const Contact: React.FC = () => {
             />
           </div>
 
-          <button type="submit" className="contact-submit-btn" disabled={status === "sending"}>
+          <button
+            type="submit"
+            className="contact-submit-btn"
+            disabled={status === "sending"}
+          >
             {status === "sending" ? "Sending..." : "Contact Me"}
           </button>
 
@@ -92,7 +98,9 @@ const Contact: React.FC = () => {
             <p className="status-message success">Message sent successfully!</p>
           )}
           {status === "error" && (
-            <p className="status-message error">Failed to send message. Please try again.</p>
+            <p className="status-message error">
+              Failed to send message. Please try again.
+            </p>
           )}
         </form>
       </div>

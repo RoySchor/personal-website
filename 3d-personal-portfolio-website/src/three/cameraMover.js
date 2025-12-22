@@ -78,7 +78,9 @@ export function createCameraMover({ camera, controls }) {
     const toScreen = screenCenter.clone().sub(camera.position).normalize();
 
     // Zoom in or out along this direction
-    const zoomOffset = toScreen.multiplyScalar(direction === "in" ? ZOOM_AMOUNT : -ZOOM_AMOUNT);
+    const zoomOffset = toScreen.multiplyScalar(
+      direction === "in" ? ZOOM_AMOUNT : -ZOOM_AMOUNT,
+    );
 
     // Animate smooth zoom
     isAnimating = true;

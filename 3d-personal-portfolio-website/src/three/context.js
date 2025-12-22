@@ -36,7 +36,12 @@ export function createThreeContext(canvasId = "c") {
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
 
   // Camera
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.05, 100);
+  const camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.05,
+    100,
+  );
 
   return { renderer, cssRenderer, scene, camera };
 }

@@ -93,7 +93,11 @@ const onAllAssetsLoaded = () => {
     const center = bbox.getCenter(new THREE.Vector3());
 
     const expandedSize = size.clone().multiplyScalar(expandFactor);
-    const hitboxGeom = new THREE.BoxGeometry(expandedSize.x, expandedSize.y, expandedSize.z);
+    const hitboxGeom = new THREE.BoxGeometry(
+      expandedSize.x,
+      expandedSize.y,
+      expandedSize.z,
+    );
     const hitboxMat = new THREE.MeshBasicMaterial({
       transparent: true,
       opacity: 0,
@@ -114,7 +118,10 @@ const onAllAssetsLoaded = () => {
   // Find the speaker
   let speakerRoot = null;
   root.traverse((obj) => {
-    if (obj.name && (obj.name === "Amplifer" || obj.name === "Cartoon_Marshall_Amplifer")) {
+    if (
+      obj.name &&
+      (obj.name === "Amplifer" || obj.name === "Cartoon_Marshall_Amplifer")
+    ) {
       if (obj.name === "Amplifer" || !speakerRoot) {
         speakerRoot = obj;
       }
@@ -251,10 +258,13 @@ const onAllAssetsLoaded = () => {
 
     // Check speaker
     if (speakerRoot) {
-      const speakerHitboxHits = speakerHitbox ? ray.intersect(e, speakerHitbox, false) : [];
+      const speakerHitboxHits = speakerHitbox
+        ? ray.intersect(e, speakerHitbox, false)
+        : [];
       const speakerHits = ray.intersect(e, speakerRoot, true);
       const hitSpeaker =
-        speakerHitboxHits.length > 0 || speakerHits.some((h) => isDesc(h.object, speakerRoot));
+        speakerHitboxHits.length > 0 ||
+        speakerHits.some((h) => isDesc(h.object, speakerRoot));
 
       if (hitSpeaker) {
         // Toggle player
@@ -282,14 +292,19 @@ const onAllAssetsLoaded = () => {
     const hitboxHits = ray.intersect(e, laptopHitbox, false);
     const laptopHits = ray.intersect(e, laptopRoot, true);
 
-    const hitLaptop = hitboxHits.length > 0 || laptopHits.some((h) => isDesc(h.object, laptopRoot));
+    const hitLaptop =
+      hitboxHits.length > 0 || laptopHits.some((h) => isDesc(h.object, laptopRoot));
 
     if (hitLaptop) {
       if (!focuser.isFocusing() && preview.isFocused()) return;
       transitioning = true;
       if (instructions) instructions.classList.add("hidden");
       (async () => {
-        await focuser.focusOn({ centerFrom: screenMesh, orientFrom: cssObject, duration: 650 });
+        await focuser.focusOn({
+          centerFrom: screenMesh,
+          orientFrom: cssObject,
+          duration: 650,
+        });
         preview.enablePreview();
         transitioning = false;
       })();
@@ -316,7 +331,9 @@ const onAllAssetsLoaded = () => {
 
     let overSpeaker = false;
     if (speakerRoot) {
-      const speakerHitboxHits = speakerHitbox ? ray.intersect(e, speakerHitbox, false) : [];
+      const speakerHitboxHits = speakerHitbox
+        ? ray.intersect(e, speakerHitbox, false)
+        : [];
       const speakerHits = ray.intersect(e, speakerRoot, true);
       overSpeaker = speakerHitboxHits.length > 0 || speakerHits.length > 0;
     }

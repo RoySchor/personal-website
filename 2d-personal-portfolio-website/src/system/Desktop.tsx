@@ -80,7 +80,14 @@ const Desktop: React.FC = () => {
     } as unknown as Record<AppKey, WindowState>;
   });
 
-  function mkWindow(key: AppKey, x = 120, y = 120, w = 900, h = 560, z?: number): WindowState {
+  function mkWindow(
+    key: AppKey,
+    x = 120,
+    y = 120,
+    w = 900,
+    h = 560,
+    z?: number,
+  ): WindowState {
     const def = apps.find((a) => a.key === key)!;
     return {
       key,
@@ -97,14 +104,17 @@ const Desktop: React.FC = () => {
 
   function focus(key: AppKey) {
     setZ((prev) => prev + 1);
-    setWins((prev) => (prev[key] ? { ...prev, [key]: { ...prev[key]!, z: zCounter + 1 } } : prev));
+    setWins((prev) =>
+      prev[key] ? { ...prev, [key]: { ...prev[key]!, z: zCounter + 1 } } : prev,
+    );
   }
 
   function openApp(key: AppKey) {
     setZ((prev) => prev + 1);
     setWins((prev) => {
       const exists = prev[key];
-      if (exists) return { ...prev, [key]: { ...exists, minimized: false, z: zCounter + 1 } };
+      if (exists)
+        return { ...prev, [key]: { ...exists, minimized: false, z: zCounter + 1 } };
 
       // Center new windows responsively
       const screenWidth = window.innerWidth;
@@ -145,7 +155,10 @@ const Desktop: React.FC = () => {
     .filter(Boolean)
     .filter((w) => w.minimized) as WindowState[];
 
-  const appMap = Object.fromEntries(apps.map((a) => [a.key, a])) as Record<AppKey, AppDefinition>;
+  const appMap = Object.fromEntries(apps.map((a) => [a.key, a])) as Record<
+    AppKey,
+    AppDefinition
+  >;
 
   // Desktop external links
   const openLink = (url: string, forceSameTabOnMobile = false) => {

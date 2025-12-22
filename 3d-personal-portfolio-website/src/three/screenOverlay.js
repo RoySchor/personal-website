@@ -53,7 +53,9 @@ export function mountScreenOverlay(root, { iframeUrl = "https://example.org" } =
     iframe.style.height = `${targetH}px`;
 
     // Calculate Scale
-    const meshSize = new THREE.Box3().setFromObject(screenMesh).getSize(new THREE.Vector3());
+    const meshSize = new THREE.Box3()
+      .setFromObject(screenMesh)
+      .getSize(new THREE.Vector3());
 
     const s = meshSize.x / targetW;
 

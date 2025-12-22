@@ -78,9 +78,16 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
           </div>
         }
         error={
-          <div style={{ color: "white", padding: 20, fontSize: isMobile ? "64px" : "24px" }}>
+          <div
+            style={{ color: "white", padding: 20, fontSize: isMobile ? "64px" : "24px" }}
+          >
             Failed to load PDF.{" "}
-            <a href={resumePdf} target="_blank" rel="noreferrer" style={{ color: "#2f81f7" }}>
+            <a
+              href={resumePdf}
+              target="_blank"
+              rel="noreferrer"
+              style={{ color: "#2f81f7" }}
+            >
               Download instead.
             </a>
           </div>
@@ -93,7 +100,11 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
           >
             <Page
               pageNumber={index + 1}
-              width={!isMobile && containerWidth ? Math.min(containerWidth - 40, 800) : undefined}
+              width={
+                !isMobile && containerWidth
+                  ? Math.min(containerWidth - 40, 800)
+                  : undefined
+              }
               renderAnnotationLayer={true}
               renderTextLayer={true}
               scale={isMobile ? 3 : 1.7}

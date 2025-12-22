@@ -93,7 +93,10 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
             elements.push(line.substring(lastIndex, match.index));
           }
           elements.push(
-            <em key={`em-${partIndex}-${lineIndex}-${match.index}`} style={{ fontStyle: "italic" }}>
+            <em
+              key={`em-${partIndex}-${lineIndex}-${match.index}`}
+              style={{ fontStyle: "italic" }}
+            >
               {match[1]}
             </em>,
           );
@@ -146,8 +149,8 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
           opacity: 0.9,
         }}
       >
-        If you know me, you know I love quotes. Whether they're inspiring and thought-provoking, or
-        depressing and dreary, I love them all the same.
+        If you know me, you know I love quotes. Whether they're inspiring and
+        thought-provoking, or depressing and dreary, I love them all the same.
         <br />
         <br />
         What are you waiting for, grab a quote

@@ -66,8 +66,14 @@ const projects: Project[] = [
         label: "Github - aroundtheworld50s repo",
         url: "https://github.com/RoySchor/aroundtheworld50s",
       },
-      { label: "Website - www.aroundtheworld50s.com", url: "https://www.aroundtheworld50s.com/" },
-      { label: "Github - art-by-dav repo", url: "https://github.com/RoySchor/art-by-dav" },
+      {
+        label: "Website - www.aroundtheworld50s.com",
+        url: "https://www.aroundtheworld50s.com/",
+      },
+      {
+        label: "Github - art-by-dav repo",
+        url: "https://github.com/RoySchor/art-by-dav",
+      },
       {
         label: "Website - www.art-by-dav.com",
         url: "https://royschor.github.io/art-by-dav/",
@@ -108,7 +114,10 @@ const projects: Project[] = [
       "WordWizz: A multi-game app displaying different Scrabble game versions with a user-friendly display. Available in 3 languages.",
     ],
     links: [
-      { label: "Github - WordWizz Repo", url: "https://github.com/RoySchor/WordWizzScrambleApp" },
+      {
+        label: "Github - WordWizz Repo",
+        url: "https://github.com/RoySchor/WordWizzScrambleApp",
+      },
     ],
     media: [],
   },
@@ -138,9 +147,14 @@ const Projects: React.FC = () => {
                 {project.media.map((item, i) => {
                   const isBlenderScene = item.src.includes("blender-room-scene");
                   return (
-                    <div key={i} className={`media-item ${isBlenderScene ? "blender-scene" : ""}`}>
+                    <div
+                      key={i}
+                      className={`media-item ${isBlenderScene ? "blender-scene" : ""}`}
+                    >
                       <img src={item.src} alt={`${project.title} demo ${i + 1}`} />
-                      {item.caption && <div className="media-caption">{item.caption}</div>}
+                      {item.caption && (
+                        <div className="media-caption">{item.caption}</div>
+                      )}
                     </div>
                   );
                 })}

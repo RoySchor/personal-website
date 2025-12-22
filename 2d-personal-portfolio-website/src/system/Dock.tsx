@@ -9,7 +9,12 @@ interface DockProps {
   restoreWindow: (key: WindowState["key"]) => void;
 }
 
-const Dock: React.FC<DockProps> = ({ apps, openApp, minimizedWindows, restoreWindow }) => {
+const Dock: React.FC<DockProps> = ({
+  apps,
+  openApp,
+  minimizedWindows,
+  restoreWindow,
+}) => {
   const fixed = apps.filter((a) => a.dockFixed);
   const runningMin = minimizedWindows;
 
@@ -62,12 +67,12 @@ const Dock: React.FC<DockProps> = ({ apps, openApp, minimizedWindows, restoreWin
   );
 };
 
-const DockIcon: React.FC<{ title: string; icon: string; onClick: () => void; small?: boolean }> = ({
-  title,
-  icon,
-  onClick,
-  small,
-}) => {
+const DockIcon: React.FC<{
+  title: string;
+  icon: string;
+  onClick: () => void;
+  small?: boolean;
+}> = ({ title, icon, onClick, small }) => {
   const isPortfolio = title === "Portfolio";
 
   return (

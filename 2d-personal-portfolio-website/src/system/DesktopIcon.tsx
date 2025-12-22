@@ -56,8 +56,12 @@ const DesktopIcon: React.FC<DesktopIconProps> = ({
         <img
           src={icon}
           style={{
-            width: isResume ? "var(--desktop-resume-icon-width)" : "var(--desktop-icon-size)",
-            height: isResume ? "var(--desktop-resume-icon-height)" : "var(--desktop-icon-size)",
+            width: isResume
+              ? "var(--desktop-resume-icon-width)"
+              : "var(--desktop-icon-size)",
+            height: isResume
+              ? "var(--desktop-resume-icon-height)"
+              : "var(--desktop-icon-size)",
             borderRadius: isPortfolio ? "40%" : "0",
           }}
         />
