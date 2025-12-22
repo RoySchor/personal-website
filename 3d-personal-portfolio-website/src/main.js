@@ -87,7 +87,7 @@ const onAllAssetsLoaded = () => {
   const instructions = document.getElementById("instructions-overlay");
 
   // Create a larger invisible hitbox around the laptop
-  const createExpandedHitbox = (targetObject, expandFactor = 1.5) => {
+  const createExpandedHitbox = (targetObject, expandFactor = 1.5, name = "hitbox") => {
     const bbox = new THREE.Box3().setFromObject(targetObject);
     const size = bbox.getSize(new THREE.Vector3());
     const center = bbox.getCenter(new THREE.Vector3());
@@ -102,14 +102,85 @@ const onAllAssetsLoaded = () => {
     const hitboxMesh = new THREE.Mesh(hitboxGeom, hitboxMat);
 
     hitboxMesh.position.copy(center);
-    hitboxMesh.name = "laptop_hitbox";
+    hitboxMesh.name = name;
 
     scene.add(hitboxMesh);
 
     return hitboxMesh;
   };
 
-  const laptopHitbox = createExpandedHitbox(laptopRoot, 2.5);
+  const laptopHitbox = createExpandedHitbox(laptopRoot, 2.5, "laptop_hitbox");
+
+  // Find the speaker
+  let speakerRoot = null;
+  root.traverse((obj) => {
+    if (obj.name && (obj.name === "Amplifer" || obj.name === "Cartoon_Marshall_Amplifer")) {
+      if (obj.name === "Amplifer" || !speakerRoot) {
+        speakerRoot = obj;
+      }
+    }
+  });
+
+  const speakerHitbox = speakerRoot
+    ? createExpandedHitbox(speakerRoot, 1.2, "speaker_hitbox")
+    : null;
+
+  // AudioMack Player
+  const audioMackWrapper = document.createElement("div");
+  audioMackWrapper.id = "audiomack-wrapper";
+  Object.assign(audioMackWrapper.style, {
+    position: "fixed",
+    bottom: "20px",
+    left: "20px",
+    zIndex: "100",
+    visibility: "hidden",
+    pointerEvents: "none",
+    opacity: "0",
+    transition: "opacity 0.3s ease, transform 0.3s ease",
+    transform: "translateY(20px)",
+  });
+
+  const amIframeUrl =
+    "https://audiomack.com/embed/mor-avrahami/song/abanibi-extended-mix?background=1";
+
+  audioMackWrapper.innerHTML = `
+    <div style="position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+        <button id="close-audiomack" style="
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: #ffa200;
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        ">×</button>
+        <iframe
+            src="${amIframeUrl}"
+            scrolling="no"
+            width="300"
+            height="252"
+            frameborder="0"
+            title="Abanibi (Extended Mix)"
+            allow="autoplay; encrypted-media">
+        </iframe>
+    </div>
+  `;
+  document.body.appendChild(audioMackWrapper);
+
+  audioMackWrapper.querySelector("#close-audiomack").addEventListener("click", () => {
+    audioMackWrapper.style.visibility = "hidden";
+    audioMackWrapper.style.pointerEvents = "none";
+    audioMackWrapper.style.opacity = "0";
+    audioMackWrapper.style.transform = "translateY(20px)";
+  });
 
   function isDesc(obj, ancestor) {
     let cur = obj;
@@ -170,6 +241,36 @@ const onAllAssetsLoaded = () => {
 
   function clickRoom(e) {
     if (gateIfBusy(e)) return;
+
+    // Check speaker
+    if (speakerRoot) {
+      const speakerHitboxHits = speakerHitbox ? ray.intersect(e, speakerHitbox, false) : [];
+      const speakerHits = ray.intersect(e, speakerRoot, true);
+      const hitSpeaker =
+        speakerHitboxHits.length > 0 || speakerHits.some((h) => isDesc(h.object, speakerRoot));
+
+      if (hitSpeaker) {
+        // Toggle player
+        if (audioMackWrapper.style.visibility === "visible") {
+          // Hide and stop
+          audioMackWrapper.style.visibility = "hidden";
+          audioMackWrapper.style.pointerEvents = "none";
+          audioMackWrapper.style.opacity = "0";
+          audioMackWrapper.style.transform = "translateY(20px)";
+          const iframe = audioMackWrapper.querySelector("iframe");
+          // eslint-disable-next-line no-self-assign
+          iframe.src = iframe.src;
+        } else {
+          // Show and play
+          audioMackWrapper.style.visibility = "visible";
+          audioMackWrapper.style.pointerEvents = "auto";
+          audioMackWrapper.style.opacity = "1";
+          audioMackWrapper.style.transform = "translateY(0)";
+        }
+        return;
+      }
+    }
+
     // Check hitbox first, then check if we're clicking laptop descendants
     const hitboxHits = ray.intersect(e, laptopHitbox, false);
     const laptopHits = ray.intersect(e, laptopRoot, true);
@@ -205,10 +306,18 @@ const onAllAssetsLoaded = () => {
   // hover cursor
   function hoverRoom(e) {
     if (transitioning || focuser.isFocusing()) return;
+
+    let overSpeaker = false;
+    if (speakerRoot) {
+      const speakerHitboxHits = speakerHitbox ? ray.intersect(e, speakerHitbox, false) : [];
+      const speakerHits = ray.intersect(e, speakerRoot, true);
+      overSpeaker = speakerHitboxHits.length > 0 || speakerHits.length > 0;
+    }
+
     const hitboxHits = ray.intersect(e, laptopHitbox, false);
     const laptopHits = ray.intersect(e, laptopRoot, true);
     const overLaptop = hitboxHits.length > 0 || laptopHits.length > 0;
-    const c = overLaptop ? "pointer" : "";
+    const c = overLaptop || overSpeaker ? "pointer" : "";
     renderer.domElement.style.cursor = c;
     cssRenderer.domElement.style.cursor = c;
   }
