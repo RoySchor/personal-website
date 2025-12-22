@@ -291,6 +291,7 @@ const Desktop: React.FC = () => {
               onMove={(x, y) => setPos(w.key, x, y)}
               onResize={(ww, hh) => setSize(w.key, ww, hh)}
               headerRight={headerRight}
+              allowHorizontalScroll={w.key === "resume"}
             >
               {def.component(appProps)}
             </Window>

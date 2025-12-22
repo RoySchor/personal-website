@@ -17,6 +17,7 @@ interface Props {
   onMove: (x: number, y: number) => void;
   onResize: (w: number, h: number) => void;
   headerRight?: React.ReactNode;
+  allowHorizontalScroll?: boolean;
   children: React.ReactNode;
 }
 
@@ -113,23 +114,32 @@ const Window: React.FC<Props> = (props) => {
   }, []);
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const touchStart = useRef<number | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStart.current = e.touches[0].clientY;
+    touchStart.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
     e.stopPropagation();
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (touchStart.current === null || !contentRef.current) return;
+    const touchX = e.touches[0].clientX;
     const touchY = e.touches[0].clientY;
-    const deltaY = touchStart.current - touchY;
+
+    const deltaX = touchStart.current.x - touchX;
+    const deltaY = touchStart.current.y - touchY;
 
     // Manually scroll
     contentRef.current.scrollTop += deltaY;
+    if (props.allowHorizontalScroll) {
+      contentRef.current.scrollLeft += deltaX;
+    }
 
     // Update start for continuous drag
-    touchStart.current = touchY;
+    touchStart.current = { x: touchX, y: touchY };
     e.stopPropagation(); // Prevent window drag
   };
 
@@ -225,7 +235,7 @@ const Window: React.FC<Props> = (props) => {
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
-          overflowX: "hidden",
+          overflowX: props.allowHorizontalScroll ? "auto" : "hidden",
           overflowY: "scroll",
           scrollbarGutter: "stable",
           touchAction: "none",

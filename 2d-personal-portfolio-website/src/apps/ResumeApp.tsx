@@ -56,10 +56,10 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: isMobile ? "flex-start" : "center",
         background: "#525659",
         touchAction: "pan-y",
-        padding: "20px 0",
+        padding: isMobile ? "20px" : "20px 0",
         position: "relative",
       }}
     >
@@ -83,10 +83,10 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
           >
             <Page
               pageNumber={index + 1}
-              width={containerWidth ? Math.min(containerWidth - 40, 800) : undefined}
+              width={!isMobile && containerWidth ? Math.min(containerWidth - 40, 800) : undefined}
               renderAnnotationLayer={true}
               renderTextLayer={true}
-              scale={isMobile ? 1.3 : 1.5}
+              scale={isMobile ? 3 : 1.5}
             />
           </div>
         ))}
