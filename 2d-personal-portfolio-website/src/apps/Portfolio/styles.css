@@ -120,6 +120,7 @@
     padding: 30px 20px;
     overflow: visible;
     height: auto;
+    overscroll-behavior: none;
   }
 
   .section-header {
