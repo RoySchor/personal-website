@@ -18,7 +18,7 @@ export function mountScreenOverlay(root, { iframeUrl = "https://example.org" } =
   wrapper.style.pointerEvents = "none";
 
   const iframe = document.createElement("iframe");
-  iframe.src = iframeUrl; // your /screen app
+  iframe.src = iframeUrl;
   iframe.style.border = "0";
   iframe.style.background = "#111";
   iframe.style.pointerEvents = "none";
@@ -27,24 +27,53 @@ export function mountScreenOverlay(root, { iframeUrl = "https://example.org" } =
   const cssObject = new CSS3DObject(wrapper);
   screenAnchor.add(cssObject);
 
+  // -- Configuration for Mobile Focused State --
+  const MOBILE_WIDTH = 1024;
+  const MOBILE_HEIGHT = 1600;
+  const MOBILE_Y_OFFSET = 0.04;
+
+  let isFocused = false;
+
   const fit = () => {
-    const targetCSSWidth = Math.min(Math.max(window.innerWidth, 640), 1280);
-    const targetCSSHeight = Math.round(targetCSSWidth / ASPECT);
+    // Standard Laptop Mode (Default)
+    let targetW = Math.min(Math.max(window.innerWidth, 640), 1280);
+    let targetH = Math.round(targetW / ASPECT);
+    let offsetY = 0;
 
-    wrapper.style.width = `${targetCSSWidth}px`;
-    wrapper.style.height = `${targetCSSHeight}px`;
-    iframe.style.width = `${targetCSSWidth}px`;
-    iframe.style.height = `${targetCSSHeight}px`;
+    if (isFocused && window.innerWidth <= 1024) {
+      targetW = MOBILE_WIDTH;
+      targetH = MOBILE_HEIGHT;
+      offsetY = MOBILE_Y_OFFSET;
+    }
 
+    // Apply dimensions to DOM
+    wrapper.style.width = `${targetW}px`;
+    wrapper.style.height = `${targetH}px`;
+    iframe.style.width = `${targetW}px`;
+    iframe.style.height = `${targetH}px`;
+
+    // Calculate Scale
     const meshSize = new THREE.Box3().setFromObject(screenMesh).getSize(new THREE.Vector3());
-    const s = meshSize.x / targetCSSWidth;
+
+    const s = meshSize.x / targetW;
 
     cssObject.scale.set(-s, s, 1);
-    cssObject.position.set(0, 0, 0.002);
+    cssObject.position.set(0, offsetY, 0.002);
   };
 
   fit();
   window.addEventListener("resize", fit);
 
-  return { cssObject, iframeEl: iframe, wrapper, screenMesh, screenAnchor, refit: fit };
+  return {
+    cssObject,
+    iframeEl: iframe,
+    wrapper,
+    screenMesh,
+    screenAnchor,
+    refit: fit,
+    setFocused: (val) => {
+      isFocused = val;
+      fit();
+    },
+  };
 }

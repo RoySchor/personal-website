@@ -138,12 +138,14 @@ const onAllAssetsLoaded = () => {
     makeEvenViewportSync,
     ctx,
     onEnter: () => {
+      overlay.setFocused(true);
       viewport?.dispose();
       pinch.attach();
       arrowControls.show();
       exitBtn.style.display = "block";
     },
     onExit: () => {
+      overlay.setFocused(false);
       pinch.detach();
       arrowControls.hide();
       viewport = makeEvenViewportSync(ctx);
