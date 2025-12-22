@@ -106,7 +106,7 @@ export function createMatrixLoader(canvasId = "loader") {
 
   function loop() {
     drawMatrix();
-    drawProgress(); // overlay on top of the rain
+    drawProgress();
     raf = window.requestAnimationFrame(loop);
   }
 

@@ -117,6 +117,7 @@ const Window: React.FC<Props> = (props) => {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (!e.touches || e.touches.length === 0) return;
     touchStart.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
@@ -125,7 +126,10 @@ const Window: React.FC<Props> = (props) => {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (touchStart.current === null || !contentRef.current) return;
+    // Safety check for touches
+    if (touchStart.current === null || !contentRef.current || !e.touches || e.touches.length === 0)
+      return;
+
     const touchX = e.touches[0].clientX;
     const touchY = e.touches[0].clientY;
 
@@ -140,7 +144,11 @@ const Window: React.FC<Props> = (props) => {
 
     // Update start for continuous drag
     touchStart.current = { x: touchX, y: touchY };
-    e.stopPropagation(); // Prevent window drag
+
+    // Only stop propagation if we are successfully manually scrolling
+    if (e.cancelable && (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0)) {
+      e.stopPropagation();
+    }
   };
 
   const handleTouchEnd = () => {
@@ -238,7 +246,6 @@ const Window: React.FC<Props> = (props) => {
           overflowX: props.allowHorizontalScroll ? "auto" : "hidden",
           overflowY: "scroll",
           scrollbarGutter: "stable",
-          touchAction: "none",
         }}
       >
         {props.children}
