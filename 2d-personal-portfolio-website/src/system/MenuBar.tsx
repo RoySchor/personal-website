@@ -147,13 +147,7 @@ const Item: React.FC<{ label: string; onClick: () => void }> = ({ label, onClick
       cursor: "pointer",
       color: "black",
       fontSize: "var(--menu-bar-dropdown-menu-font-size)",
-      fontWeight: 50,
-      textShadow: `
-          -0.5px -0.5px 0 #000,
-          0.5px -0.5px 0 #000,
-          -0.5px  0.5px 0 #000,
-          0.5px  0.5px 0 #000
-        `,
+      fontWeight: "var(--menu-bar-dropdown-menu-item-font-weight)",
     }}
   >
     {label}

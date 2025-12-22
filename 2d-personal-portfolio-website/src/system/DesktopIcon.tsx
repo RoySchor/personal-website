@@ -6,7 +6,7 @@ interface DesktopIconProps {
   title: string;
   icon: string;
   onOpen: () => void;
-  rightOffset: CSSPx; // stack on the right side
+  rightOffset: CSSPx;
   topOffset: CSSPx;
   iconGap: CSSPx;
   gapMultiplier: number;

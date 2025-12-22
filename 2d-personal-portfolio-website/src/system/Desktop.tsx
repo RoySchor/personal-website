@@ -70,7 +70,7 @@ const Desktop: React.FC = () => {
     const windowWidth = isMobile ? 570 : 1120;
     const windowHeight = isMobile ? 335 : 680;
     const x = (screenWidth - windowWidth) / 2;
-    const y = isMobile ? 44 : 45;
+    const y = isMobile ? 450 : 45;
 
     return {
       portfolio: mkWindow("portfolio", x, y, windowWidth, windowHeight, 11),
@@ -113,7 +113,7 @@ const Desktop: React.FC = () => {
       const windowWidth = isMobile ? 605 : 1150;
       const windowHeight = isMobile ? 350 : 700;
       const x = (screenWidth - windowWidth) / 2;
-      const y = isMobile ? 46 : 50;
+      const y = isMobile ? 450 : 50;
 
       return {
         ...prev,

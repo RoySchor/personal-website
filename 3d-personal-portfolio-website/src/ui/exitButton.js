@@ -49,7 +49,7 @@ export function createExitButton(onClick) {
 
       @media (max-width: 1024px) {
         .controls-grid {
-          gap: 8px;
+          gap: 7px;
         }
 
         .exit-button {
