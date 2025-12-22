@@ -1,11 +1,11 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/personal-website/",
+  base: "/",
   server: {
     host: true,
     proxy: {
-      "/personal-website/screen": {
+      "/screen": {
         target: "http://localhost:5174",
         changeOrigin: true,
         secure: false,
