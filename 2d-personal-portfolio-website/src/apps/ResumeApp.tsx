@@ -66,9 +66,19 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
       <Document
         file={resumePdf}
         onLoadSuccess={onDocumentLoadSuccess}
-        loading={<div style={{ color: "white", padding: 20 }}>Loading PDF...</div>}
+        loading={
+          <div
+            style={{
+              color: "white",
+              padding: 20,
+              fontSize: isMobile ? "64px" : "24px",
+            }}
+          >
+            Loading PDF...
+          </div>
+        }
         error={
-          <div style={{ color: "white", padding: 20 }}>
+          <div style={{ color: "white", padding: 20, fontSize: isMobile ? "64px" : "24px" }}>
             Failed to load PDF.{" "}
             <a href={resumePdf} target="_blank" rel="noreferrer" style={{ color: "#2f81f7" }}>
               Download instead.

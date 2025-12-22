@@ -145,8 +145,8 @@ const Window: React.FC<Props> = (props) => {
     // Update start for continuous drag
     touchStart.current = { x: touchX, y: touchY };
 
-    // Only stop propagation if we are successfully manually scrolling
-    if (e.cancelable && (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0)) {
+    if (e.cancelable) {
+      e.preventDefault();
       e.stopPropagation();
     }
   };
@@ -246,6 +246,7 @@ const Window: React.FC<Props> = (props) => {
           overflowX: props.allowHorizontalScroll ? "auto" : "hidden",
           overflowY: "scroll",
           scrollbarGutter: "stable",
+          touchAction: "none",
         }}
       >
         {props.children}

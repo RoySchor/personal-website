@@ -74,4 +74,4 @@ To test responsiveness and interactions on mobile devices:
     ```
      ipconfig getifaddr en0
     ```
-3.  Connect your mobile device to the same network and navigate to the provided IP address in your browser.
+3.  Connect your mobile device to the same wifi-network and navigate to the provided IP address in your browser.
