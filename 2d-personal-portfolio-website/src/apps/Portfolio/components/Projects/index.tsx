@@ -30,7 +30,7 @@ const projects: Project[] = [
   {
     title: "Personal Portfolio Website",
     description:
-      "royschor.com is my portfolio website—and the site you're on right now. This project was both demanding and incredibly enjoyable to build. It challenged me technically and creatively, and it began when I realized my previous portfolio no longer reflected my style or growth.\n\nWhile searching for inspiration, I noticed that nearly every portfolio followed the same formula: a top navigation bar and endless vertical scrolling. I wanted something different—more creative, more interactive, and most importantly, more me.\n\nI developed this site in my spare time, between work, travel, and personal life, and if you’re reading this now, it means the project is finally complete.",
+      "royschor.com is my portfolio website—and the site you're on right now. This project was both demanding and incredibly enjoyable to build. It challenged me technically and creatively, and it began when I realized my previous portfolio no longer reflected my style or growth.\n\nWhile searching for inspiration, I noticed that nearly every portfolio followed the same formula: a top navigation bar and endless vertical scrolling. I wanted something different—more creative, more interactive, and most importantly, more me.\n\nI developed this site in my spare time, between work, travel, and personal life. If you're reading this now, it means the project is finally complete.",
     media: [
       {
         src: blenderRoomScene,
@@ -51,9 +51,9 @@ const projects: Project[] = [
   {
     title: "Website Development",
     description:
-      "I've delved into designing and building user-friendly websites tailored to specific client needs. My focus is on creating sites that are easy to maintain and update with minimal effort.",
+      "I design and build user-friendly websites tailored to specific client needs. My focus is on creating sites that are easy to maintain and update with minimal effort. Here are a few highlights:",
     bullets: [
-      "I develope a wide range of projects, from fully automated blogs that generate new pages via user-friendly GUIs, to virtual galleries for aspiring artists.",
+      "I develop a wide range of projects, from fully automated blogs that generate new pages via user-friendly GUIs, to virtual galleries for aspiring artists.",
     ],
     media: [
       { src: artByDavGif, caption: "Art By Dav" },
