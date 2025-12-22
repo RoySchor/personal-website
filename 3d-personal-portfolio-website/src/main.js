@@ -125,10 +125,10 @@ const onAllAssetsLoaded = () => {
     ? createExpandedHitbox(speakerRoot, 1.2, "speaker_hitbox")
     : null;
 
-  // AudioMack Player
-  const audioMackWrapper = document.createElement("div");
-  audioMackWrapper.id = "audiomack-wrapper";
-  Object.assign(audioMackWrapper.style, {
+  // Music Player
+  const musicWrapper = document.createElement("div");
+  musicWrapper.id = "music-wrapper";
+  Object.assign(musicWrapper.style, {
     position: "fixed",
     bottom: "20px",
     left: "20px",
@@ -140,16 +140,16 @@ const onAllAssetsLoaded = () => {
     transform: "translateY(20px)",
   });
 
-  const amIframeUrl =
-    "https://audiomack.com/embed/mor-avrahami/song/abanibi-extended-mix?background=1";
+  const musicIframeUrl =
+    "https://archive.org/embed/11BachOrchestralSuite3InDBWV1068AirOnTheGString";
 
-  audioMackWrapper.innerHTML = `
-    <div style="position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
-        <button id="close-audiomack" style="
+  musicWrapper.innerHTML = `
+    <div style="position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.5); background: rgba(0,0,0,0.8); border-radius: 4px; padding: 6px;">
+        <button id="close-music" style="
             position: absolute;
             top: -12px;
             right: -12px;
-            background: #ffa200;
+            background: #333;
             color: white;
             border: 2px solid white;
             border-radius: 50%;
@@ -162,24 +162,31 @@ const onAllAssetsLoaded = () => {
             justify-content: center;
             z-index: 10;
         ">×</button>
+        <div style="color: white; font-family: sans-serif; font-size: 12px; margin-bottom: 4px; padding-left: 4px;">
+            Johann Sebastian Bach - Air on the G String
+        </div>
         <iframe
-            src="${amIframeUrl}"
-            scrolling="no"
-            width="300"
-            height="252"
+            src="${musicIframeUrl}"
+            width="600"
+            height="30"
             frameborder="0"
-            title="Abanibi (Extended Mix)"
-            allow="autoplay; encrypted-media">
+            webkitallowfullscreen="true"
+            mozallowfullscreen="true"
+            allowfullscreen>
         </iframe>
     </div>
   `;
-  document.body.appendChild(audioMackWrapper);
+  document.body.appendChild(musicWrapper);
 
-  audioMackWrapper.querySelector("#close-audiomack").addEventListener("click", () => {
-    audioMackWrapper.style.visibility = "hidden";
-    audioMackWrapper.style.pointerEvents = "none";
-    audioMackWrapper.style.opacity = "0";
-    audioMackWrapper.style.transform = "translateY(20px)";
+  musicWrapper.querySelector("#close-music").addEventListener("click", () => {
+    musicWrapper.style.visibility = "hidden";
+    musicWrapper.style.pointerEvents = "none";
+    musicWrapper.style.opacity = "0";
+    musicWrapper.style.transform = "translateY(20px)";
+    const iframe = musicWrapper.querySelector("iframe");
+    // Reset src to stop audio
+    // eslint-disable-next-line no-self-assign
+    iframe.src = iframe.src;
   });
 
   function isDesc(obj, ancestor) {
@@ -251,21 +258,21 @@ const onAllAssetsLoaded = () => {
 
       if (hitSpeaker) {
         // Toggle player
-        if (audioMackWrapper.style.visibility === "visible") {
+        if (musicWrapper.style.visibility === "visible") {
           // Hide and stop
-          audioMackWrapper.style.visibility = "hidden";
-          audioMackWrapper.style.pointerEvents = "none";
-          audioMackWrapper.style.opacity = "0";
-          audioMackWrapper.style.transform = "translateY(20px)";
-          const iframe = audioMackWrapper.querySelector("iframe");
+          musicWrapper.style.visibility = "hidden";
+          musicWrapper.style.pointerEvents = "none";
+          musicWrapper.style.opacity = "0";
+          musicWrapper.style.transform = "translateY(20px)";
+          const iframe = musicWrapper.querySelector("iframe");
           // eslint-disable-next-line no-self-assign
           iframe.src = iframe.src;
         } else {
           // Show and play
-          audioMackWrapper.style.visibility = "visible";
-          audioMackWrapper.style.pointerEvents = "auto";
-          audioMackWrapper.style.opacity = "1";
-          audioMackWrapper.style.transform = "translateY(0)";
+          musicWrapper.style.visibility = "visible";
+          musicWrapper.style.pointerEvents = "auto";
+          musicWrapper.style.opacity = "1";
+          musicWrapper.style.transform = "translateY(0)";
         }
         return;
       }
