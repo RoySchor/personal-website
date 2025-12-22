@@ -122,6 +122,15 @@
     font-weight: 550;
   }
 
+  .form-label {
+    font-size: 42px;
+  }
+
+  .form-input,
+  .form-textarea {
+    font-size: 42px;
+  }
+
   .contact-form-container {
     max-width: 100%;
   }

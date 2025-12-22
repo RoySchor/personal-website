@@ -26,7 +26,6 @@ const Contact: React.FC = () => {
 
   return (
     <div className="content-section">
-      <h1 className="section-header">CONTACT</h1>
       <h2 className="section-subheader">Have an idea? Want to connect? Let's talk</h2>
 
       <p className="section-text">

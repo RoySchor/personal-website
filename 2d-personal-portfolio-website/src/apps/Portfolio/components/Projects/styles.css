@@ -160,7 +160,17 @@
 /* Mobile Responsive Styles */
 @media (max-width: 1024px) {
   .project-title {
-    font-size: 32px;
+    font-size: 64px;
+  }
+
+  .project-subtitle {
+    font-size: 36px;
+    font-weight: 550;
+  }
+
+  .project-description p {
+    font-size: 34px;
+    font-weight: 550;
   }
 
   .project-media-grid.count-2,
@@ -172,5 +182,22 @@
   .project-media-grid.count-3 .media-item:last-child {
     grid-column: span 1;
     width: 100%;
+  }
+
+  .media-caption {
+    font-size: 36px;
+  }
+
+  .project-bullets li {
+    font-size: 36px;
+    font-weight: 550;
+  }
+
+  .project-link-item a {
+    font-size: 36px;
+  }
+
+  .link-arrow {
+    font-size: 36px;
   }
 }
