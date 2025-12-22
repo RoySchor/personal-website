@@ -173,6 +173,11 @@
     font-weight: 550;
   }
 
+  .project-media-grid {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .project-media-grid.count-2,
   .project-media-grid.count-3,
   .project-media-grid.count-4 {

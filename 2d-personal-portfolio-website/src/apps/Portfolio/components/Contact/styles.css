@@ -134,4 +134,8 @@
   .contact-form-container {
     max-width: 100%;
   }
+
+  .contact-submit-btn {
+    font-size: 42px;
+  }
 }
