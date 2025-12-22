@@ -2,15 +2,14 @@ export function createArrowControls({ camera, controls, onMove, onZoom }) {
   const container = document.createElement("div");
   container.className = "arrow-controls";
 
-  // Grid layout: 3x3 with center empty - smaller buttons
+  // Grid layout: handled by CSS now
   const grid = document.createElement("div");
-  grid.style.display = "grid";
-  grid.style.gridTemplateColumns = "30px 30px 30px";
-  grid.style.gridTemplateRows = "30px 30px 30px";
-  grid.style.gap = "4px";
+  grid.className = "controls-grid";
 
-  const createButton = (type, direction, gridArea, label) => {
+  const createButton = (type, direction, className, label) => {
     const btn = document.createElement("button");
+    btn.className = className;
+    // Base styles
     btn.style.background = "rgba(0, 0, 0, 0.7)";
     btn.style.border = "2px solid rgba(255, 255, 255, 0.3)";
     btn.style.borderRadius = "10px";
@@ -20,7 +19,7 @@ export function createArrowControls({ camera, controls, onMove, onZoom }) {
     btn.style.display = "flex";
     btn.style.alignItems = "center";
     btn.style.justifyContent = "center";
-    btn.style.gridArea = gridArea;
+    // Grid area handled by CSS class
     btn.style.touchAction = "none";
     btn.style.transition = "all 0.15s";
     btn.style.backdropFilter = "blur(10px)";
@@ -54,12 +53,13 @@ export function createArrowControls({ camera, controls, onMove, onZoom }) {
   };
 
   // Create buttons in grid positions
-  grid.appendChild(createButton("zoom", "in", "1 / 1 / 2 / 2", "+"));
-  grid.appendChild(createButton("move", "up", "1 / 2 / 2 / 3", "↑"));
-  grid.appendChild(createButton("zoom", "out", "1 / 3 / 2 / 4", "−"));
-  grid.appendChild(createButton("move", "left", "2 / 1 / 3 / 2", "←"));
-  grid.appendChild(createButton("move", "right", "2 / 3 / 3 / 4", "→"));
-  grid.appendChild(createButton("move", "down", "3 / 2 / 4 / 3", "↓"));
+  // Class names map to grid-area names in CSS
+  grid.appendChild(createButton("zoom", "in", "btn-zoom-in", "+"));
+  grid.appendChild(createButton("move", "up", "btn-up", "↑"));
+  grid.appendChild(createButton("zoom", "out", "btn-zoom-out", "−"));
+  grid.appendChild(createButton("move", "left", "btn-left", "←"));
+  grid.appendChild(createButton("move", "right", "btn-right", "→"));
+  grid.appendChild(createButton("move", "down", "btn-down", "↓"));
 
   container.appendChild(grid);
   document.body.appendChild(container);
