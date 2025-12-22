@@ -96,7 +96,7 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
               width={!isMobile && containerWidth ? Math.min(containerWidth - 40, 800) : undefined}
               renderAnnotationLayer={true}
               renderTextLayer={true}
-              scale={isMobile ? 3 : 1.5}
+              scale={isMobile ? 3 : 1.7}
             />
           </div>
         ))}

@@ -115,13 +115,43 @@ const Window: React.FC<Props> = (props) => {
 
   const contentRef = useRef<HTMLDivElement>(null);
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const velocity = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const requestRef = useRef<number | null>(null);
+  const lastMoveTime = useRef<number>(0);
+
+  const momentumLoop = () => {
+    if (!contentRef.current) return;
+
+    // Apply friction
+    velocity.current.x *= 0.95;
+    velocity.current.y *= 0.95;
+
+    // Stop if velocity is low
+    if (Math.abs(velocity.current.x) < 0.5 && Math.abs(velocity.current.y) < 0.5) {
+      return;
+    }
+
+    contentRef.current.scrollTop += velocity.current.y;
+    if (props.allowHorizontalScroll) {
+      contentRef.current.scrollLeft += velocity.current.x;
+    }
+
+    requestRef.current = requestAnimationFrame(momentumLoop);
+  };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (requestRef.current !== null) {
+      cancelAnimationFrame(requestRef.current);
+      requestRef.current = null;
+    }
+    velocity.current = { x: 0, y: 0 };
+
     if (!e.touches || e.touches.length === 0) return;
     touchStart.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
     };
+    lastMoveTime.current = Date.now();
     e.stopPropagation();
   };
 
@@ -132,6 +162,7 @@ const Window: React.FC<Props> = (props) => {
 
     const touchX = e.touches[0].clientX;
     const touchY = e.touches[0].clientY;
+    const now = Date.now();
 
     const deltaX = touchStart.current.x - touchX;
     const deltaY = touchStart.current.y - touchY;
@@ -141,6 +172,18 @@ const Window: React.FC<Props> = (props) => {
     if (props.allowHorizontalScroll) {
       contentRef.current.scrollLeft += deltaX;
     }
+
+    // Update velocity (pixels per frame approx)
+    const dt = now - lastMoveTime.current;
+    if (dt > 0) {
+      const newVx = deltaX;
+      const newVy = deltaY;
+      velocity.current = {
+        x: velocity.current.x * 0.2 + newVx * 0.8,
+        y: velocity.current.y * 0.2 + newVy * 0.8,
+      };
+    }
+    lastMoveTime.current = now;
 
     // Update start for continuous drag
     touchStart.current = { x: touchX, y: touchY };
@@ -153,7 +196,20 @@ const Window: React.FC<Props> = (props) => {
 
   const handleTouchEnd = () => {
     touchStart.current = null;
+
+    // Start momentum if recent movement
+    const timeSinceLastMove = Date.now() - lastMoveTime.current;
+    if (timeSinceLastMove < 50) {
+      requestRef.current = requestAnimationFrame(momentumLoop);
+    }
   };
+
+  // Cleanup animation on unmount
+  useEffect(() => {
+    return () => {
+      if (requestRef.current !== null) cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
 
   return (
     <div
