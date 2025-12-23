@@ -45,7 +45,7 @@ jobs:
         working-directory: 3d-personal-portfolio-website
         run: |
           cat > .env.production << 'EOF'
-          VITE_IFRAME_URL=/personal-website/screen/
+          VITE_IFRAME_URL=/screen/
           EOF
 
       - name: Build 3D project
