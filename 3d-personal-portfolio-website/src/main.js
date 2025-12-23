@@ -1,5 +1,6 @@
 import * as THREE from "three";
 
+import musicUrl from "./assets/air-on-a-g-sring.mp3";
 import roomUrl from "./assets/portfolio-room.glb?url";
 import { createPinchZoom } from "./interactions/pinchZoom.js";
 import { createPreviewFocus } from "./interactions/previewFocus.js";
@@ -147,11 +148,8 @@ const onAllAssetsLoaded = () => {
     transform: "translateY(20px)",
   });
 
-  const musicIframeUrl =
-    "https://archive.org/embed/11BachOrchestralSuite3InDBWV1068AirOnTheGString";
-
   musicWrapper.innerHTML = `
-    <div style="position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.5); background: rgba(0,0,0,0.8); border-radius: 4px; padding: 6px;">
+    <div style="position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.5); background: rgba(0,0,0,0.8); border-radius: 4px; padding: 6px; width: 300px;">
         <button id="close-music" style="
             position: absolute;
             top: -12px;
@@ -172,15 +170,9 @@ const onAllAssetsLoaded = () => {
         <div style="color: white; font-family: sans-serif; font-size: 12px; margin-bottom: 4px; padding-left: 4px;">
             Johann Sebastian Bach - Air on the G String
         </div>
-        <iframe
-            src="${musicIframeUrl}"
-            width="600"
-            height="30"
-            frameborder="0"
-            webkitallowfullscreen="true"
-            mozallowfullscreen="true"
-            allowfullscreen>
-        </iframe>
+        <audio controls style="width: 100%; height: 30px;">
+            <source src="${musicUrl}" type="audio/mpeg">
+        </audio>
     </div>
   `;
   document.body.appendChild(musicWrapper);
@@ -190,10 +182,11 @@ const onAllAssetsLoaded = () => {
     musicWrapper.style.pointerEvents = "none";
     musicWrapper.style.opacity = "0";
     musicWrapper.style.transform = "translateY(20px)";
-    const iframe = musicWrapper.querySelector("iframe");
-    // Reset src to stop audio
-    // eslint-disable-next-line no-self-assign
-    iframe.src = iframe.src;
+    const audio = musicWrapper.querySelector("audio");
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+    }
   });
 
   function isDesc(obj, ancestor) {
@@ -274,9 +267,11 @@ const onAllAssetsLoaded = () => {
           musicWrapper.style.pointerEvents = "none";
           musicWrapper.style.opacity = "0";
           musicWrapper.style.transform = "translateY(20px)";
-          const iframe = musicWrapper.querySelector("iframe");
-          // eslint-disable-next-line no-self-assign
-          iframe.src = iframe.src;
+          const audio = musicWrapper.querySelector("audio");
+          if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+          }
         } else {
           // Show and play
           musicWrapper.style.visibility = "visible";
