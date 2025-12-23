@@ -8,10 +8,7 @@ import resumePdf from "../assets/resume/Schor, Roy Resume.pdf";
 import type { WindowAppProps } from "../system/types";
 
 // Configure worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url,
-).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = "/screen/pdf.worker.min.mjs";
 
 const ResumeApp: React.FC<WindowAppProps> = () => {
   const [numPages, setNumPages] = useState<number>(0);
