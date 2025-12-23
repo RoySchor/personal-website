@@ -64,7 +64,7 @@ const onAllAssetsLoaded = () => {
   controls.update();
   lockAzimuthAroundCurrentView(controls, camera, center, isCoarse);
 
-  const iframeUrl = import.meta.env.VITE_IFRAME_URL || "/screen/";
+  const iframeUrl = import.meta.env.VITE_SCREEN_URL || "/screen/";
 
   const overlay = mountScreenOverlay(root, { iframeUrl });
   if (!overlay) return;
