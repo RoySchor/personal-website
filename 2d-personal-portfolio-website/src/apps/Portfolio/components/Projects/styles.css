@@ -169,8 +169,9 @@
   }
 
   .project-description p {
-    font-size: 34px;
-    font-weight: 550;
+    font-family: "Inter", sans-serif;
+    font-size: 42px;
+    font-weight: 500;
   }
 
   .project-media-grid {
@@ -190,19 +191,20 @@
   }
 
   .media-caption {
-    font-size: 36px;
+    font-size: 38px;
   }
 
   .project-bullets li {
-    font-size: 36px;
-    font-weight: 550;
+    font-family: "Inter", sans-serif;
+    font-size: 42px;
+    font-weight: 500;
   }
 
   .project-link-item a {
-    font-size: 36px;
+    font-size: 38px;
   }
 
   .link-arrow {
-    font-size: 36px;
+    font-size: 38px;
   }
 }

@@ -123,7 +123,7 @@
     margin-bottom: 30px;
   }
   .job-company {
-    font-size: 58px;
+    font-size: 60px;
   }
 
   .job-period {
@@ -131,7 +131,7 @@
   }
 
   .job-role {
-    font-size: 32px;
+    font-size: 34px;
   }
 
   .job-team {
@@ -143,14 +143,16 @@
   }
 
   .job-description {
-    font-size: 36px;
-    font-weight: 550;
+    font-family: "Inter", sans-serif;
+    font-size: 42px;
+    font-weight: 500;
     line-height: 1.8;
   }
 
   .job-bullets li {
-    font-size: 36px;
-    font-weight: 550;
+    font-family: "Inter", sans-serif;
+    font-size: 42px;
+    font-weight: 500;
     line-height: 1.8;
   }
 }

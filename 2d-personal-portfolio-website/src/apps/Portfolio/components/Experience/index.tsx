@@ -25,8 +25,8 @@ const jobs: Job[] = [
       "I design scalable systems that streamline operations, reduce costs, and drive multimillion-dollar revenue growth.",
     bullets: [
       "Co-architected and deployed a full-stack document workflow integrating DocuSign APIs, automating processes to save 11,000+ operational hours and cut annual costs by $300,000.",
-      "Led, Designed, and implemented a high-performance rates processing tool with dynamic inline editing, efficiently handling 300,000+ customer rates and driving over $50M in revenue.",
-      "Engineered secure and efficient API integrations, to unify Justworks payroll functionality, enabling over 7 million weekly requests across all internal micro-services. Enhancing system resilience and cross-functional team collaboration.",
+      "Led, designed, and implemented a high-performance rates processing tool with dynamic inline editing, efficiently handling 300,000+ customer rates and driving over $50M in revenue.",
+      "Engineered secure and efficient API integrations to unify Justworks payroll functionality, enabling over 7 million weekly requests across all internal microservices. Enhancing system resilience and cross-functional team collaboration.",
     ],
   },
   {
@@ -38,7 +38,7 @@ const jobs: Job[] = [
     bullets: [
       "Solved pertinent issues facing internal customers scoped to front-end, back-end, and test bench.",
       "Architected project workflow, developed an MVP, and deployed it to production.",
-      "Refined in final weeks of internship to add additional customer-specific needs used weekly by over 4 internal teams to access customer critical information.",
+      "Used weekly by over 4 internal teams to access customer-critical information.",
     ],
   },
   {
@@ -48,9 +48,8 @@ const jobs: Job[] = [
     location: "New York, NY",
     period: "June 2022 - August 2022",
     bullets: [
-      "Revamped a legacy production script into a dynamic front-end tool, integrating back-end and test bench.",
-      "Engineered and deployed a robust Workers' Compensation feature that enhanced operational productivity.",
-      "Spearheaded 2 company-wide panels and led 2 high-impact intern hackathons, driving internal innovation.",
+      "Revamped a legacy production script into a dynamic front-end Workers' Compensation tool that was integrated with the back-end.",
+      "Spearheaded two company-wide panels and led two high-impact intern hackathons, driving internal innovation.",
     ],
   },
 ];

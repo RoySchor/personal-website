@@ -34,7 +34,7 @@ const projects: Project[] = [
     media: [
       {
         src: blenderRoomScene,
-        caption: "Blender scene of the 3D website exported as a glb.",
+        caption: "Blender scene of the 3D website exported as a GLB.",
       },
     ],
     bullets: [
@@ -43,7 +43,7 @@ const projects: Project[] = [
     ],
     links: [
       {
-        label: "Github - personal-website repository",
+        label: "GitHub - personal-website repository",
         url: "https://github.com/RoySchor/personal-website",
       },
     ],
@@ -63,7 +63,7 @@ const projects: Project[] = [
     ],
     links: [
       {
-        label: "Github - aroundtheworld50s repo",
+        label: "GitHub - aroundtheworld50s repo",
         url: "https://github.com/RoySchor/aroundtheworld50s",
       },
       {
@@ -71,7 +71,7 @@ const projects: Project[] = [
         url: "https://www.aroundtheworld50s.com/",
       },
       {
-        label: "Github - art-by-dav repo",
+        label: "GitHub - art-by-dav repo",
         url: "https://github.com/RoySchor/art-by-dav",
       },
       {
@@ -79,7 +79,7 @@ const projects: Project[] = [
         url: "https://royschor.github.io/art-by-dav/",
       },
       {
-        label: "Github- old-portfolio repo",
+        label: "GitHub - old-portfolio repo",
         url: "https://github.com/RoySchor/personalWebsite",
       },
       {
@@ -92,10 +92,10 @@ const projects: Project[] = [
     title: "Stock Prediction Neural Network",
     subtitle: "Python, Keras, Pandas",
     description:
-      "Created an LSTM Neural Network using TensorFlow and Keras, utilizing Pandas Dataframe. The network continuously predicted the 5th trading day Close value based on the past 4 closing values.\n\nThis project was researched, designed, failed, and redone until reaching the desired goal. Detailed project info and analysis can be found below:",
+      "Created an LSTM Neural Network using TensorFlow and Keras, utilizing Pandas DataFrame. The network continuously predicted the 5th trading day close value based on the past 4 closing values.\n\nThis project was researched, designed, failed, and redone until reaching the desired goal. Detailed project info and analysis can be found below:",
     links: [
       {
-        label: "Github - Stock-Neural-Network Repo",
+        label: "GitHub - Stock-Neural-Network Repo",
         url: "https://github.com/RoySchor/Stock-Neural-Network",
       },
       {
@@ -106,16 +106,16 @@ const projects: Project[] = [
     media: [],
   },
   {
-    title: "Swift App Developer - developed 7 IOS Apps",
+    title: "Swift App Developer - developed 7 iOS Apps",
     description:
-      "Researched, designed, and coded 7 Apps in Swift. Integrating UX & UI skills via backend programming through the colors, graphics, visual design, and layout to create a cohesive app that can be run on IOS devices",
+      "Researched, designed, and coded 7 Apps in Swift. Integrating UX & UI skills via backend programming through the colors, graphics, visual design, and layout to create a cohesive app that can be run on iOS devices.",
     bullets: [
-      "PokerPro: A multiplayer Poker App. The ability to log in and play poker with those on the same wifi network. Utilizes SwiftData and Multiplayer Peer Conectivity",
+      "PokerPro: A multiplayer Poker App. The ability to log in and play poker with those on the same Wi-Fi network. Utilizes SwiftData and Multiplayer Peer Connectivity.",
       "WordWizz: A multi-game app displaying different Scrabble game versions with a user-friendly display. Available in 3 languages.",
     ],
     links: [
       {
-        label: "Github - WordWizz Repo",
+        label: "GitHub - WordWizz Repo",
         url: "https://github.com/RoySchor/WordWizzScrambleApp",
       },
     ],

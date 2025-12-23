@@ -31,7 +31,7 @@ const Contact: React.FC = () => {
       <h2 className="section-subheader">Have an idea? Want to connect? Let's talk</h2>
 
       <p className="section-text">
-        I am currently employed, however I am always open to side projects and new
+        I am currently employed; however, I am always open to side projects and new
         opportunities to keep my skills sharp. Feel free to reach out!
       </p>
 
