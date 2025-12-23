@@ -77,7 +77,8 @@ const DockIcon: React.FC<{
 
   return (
     <button
-      onMouseDown={onClick}
+      type="button"
+      onClick={onClick}
       title={title}
       style={{
         appearance: "none",
