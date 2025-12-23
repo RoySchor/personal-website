@@ -1,5 +1,5 @@
 # Personal Portfolio Website
-# [royschor.com](http://royschor.com/)
+### [royschor.com](http://royschor.com/)
 
 [![website](https://img.shields.io/website?label=website&url=http%3A%2F%2Froyschor.com%2F)](http://royschor.com/)
 
