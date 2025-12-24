@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-import musicUrl from "./assets/air-on-a-g-sring.mp3";
+import musicUrl from "./assets/air-on-a-g-sring.m4a";
 import roomUrl from "./assets/portfolio-room.glb?url";
 import { createPinchZoom } from "./interactions/pinchZoom.js";
 import { createPreviewFocus } from "./interactions/previewFocus.js";
@@ -170,8 +170,8 @@ const onAllAssetsLoaded = () => {
         <div style="color: white; font-family: sans-serif; font-size: 12px; margin-bottom: 4px; padding-left: 4px;">
             Johann Sebastian Bach - Air on the G String
         </div>
-        <audio controls style="width: 100%; height: 30px;">
-            <source src="${musicUrl}" type="audio/mpeg">
+        <audio controls preload="none" style="width: 100%; height: 30px;">
+            <source src="${musicUrl}" type="audio/mp4">
         </audio>
     </div>
   `;
