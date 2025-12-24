@@ -11,7 +11,6 @@ import type { WindowAppProps } from "../system/types";
 pdfjs.GlobalWorkerOptions.workerSrc = "/screen/pdf.worker.min.js";
 
 const ResumeApp: React.FC<WindowAppProps> = () => {
-  const [numPages, setNumPages] = useState<number>(0);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -24,10 +23,6 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
-
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
-    setNumPages(numPages);
-  }
 
   React.useEffect(() => {
     const el = containerRef.current;
@@ -62,7 +57,6 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
     >
       <Document
         file={resumePdf}
-        onLoadSuccess={onDocumentLoadSuccess}
         loading={
           <div
             style={{
@@ -90,25 +84,18 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
           </div>
         }
       >
-        {Array.from(new Array(numPages), (_el, index) => (
-          <div
-            key={`page_${index + 1}`}
-            style={{ marginBottom: 20, boxShadow: "0 4px 8px rgba(0,0,0,0.3)" }}
-          >
-            <Page
-              pageNumber={index + 1}
-              width={
-                !isMobile && containerWidth
-                  ? Math.min(containerWidth - 40, 800)
-                  : undefined
-              }
-              devicePixelRatio={1}
-              renderAnnotationLayer={true}
-              renderTextLayer={true}
-              scale={isMobile ? 3.3 : 1.7}
-            />
-          </div>
-        ))}
+        <div style={{ marginBottom: 20, boxShadow: "0 4px 8px rgba(0,0,0,0.3)" }}>
+          <Page
+            pageNumber={1}
+            width={
+              !isMobile && containerWidth ? Math.min(containerWidth - 40, 800) : undefined
+            }
+            devicePixelRatio={1}
+            renderAnnotationLayer={!isMobile}
+            renderTextLayer={!isMobile}
+            scale={isMobile ? 3.3 : 1.7}
+          />
+        </div>
       </Document>
     </div>
   );
