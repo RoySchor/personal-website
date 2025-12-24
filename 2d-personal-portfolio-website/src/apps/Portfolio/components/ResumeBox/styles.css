@@ -11,8 +11,10 @@
 }
 
 .resume-icon {
-  width: 78px;
-  height: 78px;
+  width: 100%;
+  max-width: 78px;
+  height: auto;
+  display: block;
 }
 
 .resume-info h3 {
@@ -34,8 +36,10 @@
 
 @media (max-width: 1024px) {
   .resume-icon {
-    width: 110px;
-    height: 110px;
+    width: 100%;
+    max-width: 110px;
+    height: auto;
+    display: block;
   }
 
   .resume-info h3 {

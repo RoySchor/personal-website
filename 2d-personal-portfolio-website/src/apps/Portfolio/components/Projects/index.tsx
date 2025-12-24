@@ -1,11 +1,11 @@
 import React from "react";
 
 import "./styles.css";
-import aroundtheworld50sGif from "../../../../assets/gifs/around-the-world-50s-website.gif";
-import artByDavGif from "../../../../assets/gifs/art-by-dav-website.gif";
-import blenderRoomScene from "../../../../assets/gifs/blender-room-scene.gif";
-import lifeOfRoyBlogGif from "../../../../assets/gifs/life-of-roy-blog.gif";
-import oldPortfolioGif from "../../../../assets/gifs/old-portfolio-website.gif";
+import aroundtheworld50sMp4 from "../../../../assets/mp4/around-the-world-50s-website.mp4";
+import artByDavMp4 from "../../../../assets/mp4/art-by-dav-website.mp4";
+import blenderRoomScene from "../../../../assets/mp4/blender-room-scene.mp4";
+import lifeOfRoyBlogMp4 from "../../../../assets/mp4/life-of-roy-blog.mp4";
+import oldPortfolioMp4 from "../../../../assets/mp4/old-portfolio-website.mp4";
 
 interface ProjectLink {
   label: string;
@@ -56,10 +56,10 @@ const projects: Project[] = [
       "I develop a wide range of projects, from fully automated blogs that generate new pages via user-friendly GUIs, to virtual galleries for aspiring artists.",
     ],
     media: [
-      { src: artByDavGif, caption: "Art By Dav" },
-      { src: aroundtheworld50sGif, caption: "Around The World 50s Blog" },
-      { src: oldPortfolioGif, caption: "Old Portfolio Website" },
-      { src: lifeOfRoyBlogGif, caption: "Story of Roy Blog" },
+      { src: artByDavMp4, caption: "Art By Dav" },
+      { src: aroundtheworld50sMp4, caption: "Around The World 50s Blog" },
+      { src: oldPortfolioMp4, caption: "Old Portfolio Website" },
+      { src: lifeOfRoyBlogMp4, caption: "Story of Roy Blog" },
     ],
     links: [
       {
@@ -151,7 +151,16 @@ const Projects: React.FC = () => {
                       key={i}
                       className={`media-item ${isBlenderScene ? "blender-scene" : ""}`}
                     >
-                      <img src={item.src} alt={`${project.title} demo ${i + 1}`} />
+                      <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="media-video"
+                      >
+                        <source src={item.src} type="video/mp4" />
+                      </video>
                       {item.caption && (
                         <div className="media-caption">{item.caption}</div>
                       )}
