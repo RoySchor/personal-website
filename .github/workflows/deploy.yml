@@ -55,6 +55,7 @@ jobs:
       # ---- Bundle 2D into /screen inside 3D dist ----
       - name: Bundle inner site into /screen
         run: |
+          rm -rf 3d-personal-portfolio-website/dist/screen
           mkdir -p 3d-personal-portfolio-website/dist/screen
           cp -R 2d-personal-portfolio-website/dist/* 3d-personal-portfolio-website/dist/screen/
 
