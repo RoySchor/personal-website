@@ -42,17 +42,15 @@ This is achieved using **Three.js’s** `CSS3DRenderer`, which projects a live 2
 
 ## Local Development
 
-Locally, the 3D and 2D apps can be run individually. However, to run the complete project locally, both applications must be started simultaneously.
+Locally, the 3D and 2D apps can be run individually. However, to run the complete project locally, both applications must be started simultaneously. Which is quite simple:
 
-1.  Open **two terminal tabs**.
-2.  **Terminal 1 - 2D OS Interface**:
-    ```bash
-    cd 2d-personal-portfolio-website
-    npm run dev
+1.  Open a terminal
+2.  Run:
     ```
-3.  **Terminal 2 - 3D Environment**:
-    ```bash
-    cd 3d-personal-portfolio-website
+    npm install
+    ```
+3.  Then:
+    ```
     npm run dev
     ```
 
@@ -67,9 +65,9 @@ npm run lint:fix
 
 ### Mobile Testing
 To test responsiveness and interactions on mobile devices:
-1.  Start the dev server with host access enabled:
-    ```bash
-    npm run dev -- --host
+1.  Start the dev server:
+    ```
+    npm run dev
     ```
 2.  Find your machine’s local IP address:
     ```
