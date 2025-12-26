@@ -50,7 +50,6 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
         flexDirection: "column",
         alignItems: isMobile ? "flex-start" : "center",
         background: "#525659",
-        touchAction: "pan-y",
         padding: isMobile ? "20px" : "20px 0",
         position: "relative",
       }}
@@ -93,7 +92,7 @@ const ResumeApp: React.FC<WindowAppProps> = () => {
             devicePixelRatio={1}
             renderAnnotationLayer={!isMobile}
             renderTextLayer={!isMobile}
-            scale={isMobile ? 3.3 : 1.7}
+            scale={isMobile ? 3.5 : 1.7}
           />
         </div>
       </Document>

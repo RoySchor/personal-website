@@ -3,7 +3,7 @@ import React, { useMemo, useState } from "react";
 import DesktopIcon from "./DesktopIcon";
 import Dock from "./Dock";
 import LockScreen from "./LockScreen";
-import MenuBar from "./MenuBar";
+import MenuBar from "./MenuBar/index";
 import ShutdownOverlay from "./ShutdownOverlay";
 import type { AppDefinition, AppKey, OSMode, WindowState, WindowAppProps } from "./types";
 import Window from "./Window";
@@ -112,21 +112,36 @@ const Desktop: React.FC = () => {
   function openApp(key: AppKey) {
     setZ((prev) => prev + 1);
     setWins((prev) => {
+      // Logic for mobile auto-minimize
+      const isMobile = window.innerWidth <= 1024;
+      const newWins = { ...prev };
+
+      // If on mobile, minimize ALL other apps first (single task mode)
+      if (isMobile) {
+        Object.keys(newWins).forEach((k) => {
+          const appKey = k as AppKey;
+          if (newWins[appKey]) {
+            newWins[appKey] = { ...newWins[appKey]!, minimized: true };
+          }
+        });
+      }
+
       const exists = prev[key];
-      if (exists)
-        return { ...prev, [key]: { ...exists, minimized: false, z: zCounter + 1 } };
+      if (exists) {
+        return {
+          ...newWins,
+          [key]: { ...exists, minimized: false, z: zCounter + 1 },
+        };
+      }
 
-      // Center new windows responsively
       const screenWidth = window.innerWidth;
-      const isMobile = screenWidth <= 1024;
-
       const windowWidth = isMobile ? 950 : 1150;
       const windowHeight = isMobile ? 1300 : 700;
       const x = isMobile ? 35 : (screenWidth - windowWidth) / 2;
       const y = isMobile ? 150 : 50;
 
       return {
-        ...prev,
+        ...newWins,
         [key]: mkWindow(key, x, y, windowWidth, windowHeight, zCounter + 1),
       };
     });
@@ -311,14 +326,7 @@ const Desktop: React.FC = () => {
           );
         })}
 
-      <Dock
-        apps={apps}
-        openApp={openApp}
-        minimizedWindows={minimized}
-        restoreWindow={(key) =>
-          setWins((prev) => ({ ...prev, [key]: { ...prev[key]!, minimized: false } }))
-        }
-      />
+      <Dock apps={apps} openApp={openApp} minimizedWindows={minimized} />
 
       {(mode === "lock" || (mode === "shutdown" && shutdownConfirmed)) && (
         <LockScreen onLogin={() => setMode("desktop")} />

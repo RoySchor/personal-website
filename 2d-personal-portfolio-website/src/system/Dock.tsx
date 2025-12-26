@@ -6,15 +6,9 @@ interface DockProps {
   apps: AppDefinition[];
   openApp: (key: AppDefinition["key"]) => void;
   minimizedWindows: WindowState[];
-  restoreWindow: (key: WindowState["key"]) => void;
 }
 
-const Dock: React.FC<DockProps> = ({
-  apps,
-  openApp,
-  minimizedWindows,
-  restoreWindow,
-}) => {
+const Dock: React.FC<DockProps> = ({ apps, openApp, minimizedWindows }) => {
   const fixed = apps.filter((a) => a.dockFixed);
   const runningMin = minimizedWindows;
 
@@ -59,7 +53,7 @@ const Dock: React.FC<DockProps> = ({
           key={w.key}
           title={w.title}
           icon={w.icon}
-          onClick={() => restoreWindow(w.key)}
+          onClick={() => openApp(w.key)}
           small
         />
       ))}

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 
 import WindowControl from "./WindowControls";
 
@@ -73,9 +73,9 @@ const Window: React.FC<Props> = (props) => {
       setDragging(false);
       setResizing(false);
     };
-    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("mousemove", onMove, { passive: false });
     window.addEventListener("mouseup", onUp, { passive: true });
-    window.addEventListener("touchmove", onMove as EventListener, { passive: true });
+    window.addEventListener("touchmove", onMove as EventListener, { passive: false });
     window.addEventListener("touchend", onUp as EventListener, { passive: true });
     return () => {
       window.removeEventListener("mousemove", onMove as EventListener);
@@ -123,7 +123,7 @@ const Window: React.FC<Props> = (props) => {
   const requestRef = useRef<number | null>(null);
   const lastMoveTime = useRef<number>(0);
 
-  const momentumLoop = () => {
+  const momentumLoop = useCallback(() => {
     if (!contentRef.current) return;
 
     // Apply friction
@@ -141,9 +141,9 @@ const Window: React.FC<Props> = (props) => {
     }
 
     requestRef.current = requestAnimationFrame(momentumLoop);
-  };
+  }, [props.allowHorizontalScroll]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  const handleTouchStart = useCallback((e: TouchEvent) => {
     if (requestRef.current !== null) {
       cancelAnimationFrame(requestRef.current);
       requestRef.current = null;
@@ -156,70 +156,72 @@ const Window: React.FC<Props> = (props) => {
       y: e.touches[0].clientY,
     };
     lastMoveTime.current = Date.now();
-    e.stopPropagation();
-  };
+  }, []);
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    // Prevent manual scrolling if text is selected to avoid crashes
-    const selection = window.getSelection();
-    if (selection && selection.toString().length > 0) {
-      touchStart.current = null; // Reset touch start to prevent jump on resume
-      return;
-    }
-
-    // Safety check for touches
-    if (
-      touchStart.current === null ||
-      !contentRef.current ||
-      !e.touches ||
-      e.touches.length === 0
-    ) {
-      if (e.touches && e.touches.length > 0) {
-        // If we have touches but no start point (e.g. after selection), reset start point
-        touchStart.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-        lastMoveTime.current = Date.now();
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      // Prevent manual scrolling if text is selected to avoid crashes/conflicts
+      const selection = window.getSelection();
+      if (selection && !selection.isCollapsed) {
+        touchStart.current = null;
+        return;
       }
-      return;
-    }
 
-    const touchX = e.touches[0].clientX;
-    const touchY = e.touches[0].clientY;
-    const now = Date.now();
+      // Safety check for touches
+      if (
+        touchStart.current === null ||
+        !contentRef.current ||
+        !e.touches ||
+        e.touches.length === 0
+      ) {
+        if (e.touches && e.touches.length > 0) {
+          // If we have touches but no start point (e.g. after selection), reset start point
+          touchStart.current = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+          };
+          lastMoveTime.current = Date.now();
+        }
+        return;
+      }
 
-    const deltaX = touchStart.current.x - touchX;
-    const deltaY = touchStart.current.y - touchY;
+      const touchX = e.touches[0].clientX;
+      const touchY = e.touches[0].clientY;
+      const now = Date.now();
 
-    // Manually scroll
-    contentRef.current.scrollTop += deltaY;
-    if (props.allowHorizontalScroll) {
-      contentRef.current.scrollLeft += deltaX;
-    }
+      const deltaX = touchStart.current.x - touchX;
+      const deltaY = touchStart.current.y - touchY;
 
-    // Update velocity (pixels per frame approx)
-    const dt = now - lastMoveTime.current;
-    if (dt > 0) {
-      const newVx = deltaX;
-      const newVy = deltaY;
-      velocity.current = {
-        x: velocity.current.x * 0.2 + newVx * 0.8,
-        y: velocity.current.y * 0.2 + newVy * 0.8,
-      };
-    }
-    lastMoveTime.current = now;
+      // Manually scroll
+      contentRef.current.scrollTop += deltaY;
+      if (props.allowHorizontalScroll) {
+        contentRef.current.scrollLeft += deltaX;
+      }
 
-    // Update start for continuous drag
-    touchStart.current = { x: touchX, y: touchY };
+      // Update velocity (pixels per frame approx)
+      const dt = now - lastMoveTime.current;
+      if (dt > 0) {
+        const newVx = deltaX;
+        const newVy = deltaY;
+        velocity.current = {
+          x: velocity.current.x * 0.2 + newVx * 0.8,
+          y: velocity.current.y * 0.2 + newVy * 0.8,
+        };
+      }
+      lastMoveTime.current = now;
 
-    if (e.cancelable) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
+      // Update start for continuous drag
+      touchStart.current = { x: touchX, y: touchY };
 
-  const handleTouchEnd = () => {
+      if (e.cancelable) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    [props.allowHorizontalScroll],
+  );
+
+  const handleTouchEnd = useCallback(() => {
     touchStart.current = null;
 
     // Start momentum if recent movement
@@ -227,7 +229,24 @@ const Window: React.FC<Props> = (props) => {
     if (timeSinceLastMove < 50) {
       requestRef.current = requestAnimationFrame(momentumLoop);
     }
-  };
+  }, [momentumLoop]);
+
+  // Attach non-passive listeners to fix mobile scrolling glitch
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    const opts = { passive: false };
+    el.addEventListener("touchstart", handleTouchStart as unknown as EventListener, opts);
+    el.addEventListener("touchmove", handleTouchMove as unknown as EventListener, opts);
+    el.addEventListener("touchend", handleTouchEnd as unknown as EventListener, opts);
+
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart as unknown as EventListener);
+      el.removeEventListener("touchmove", handleTouchMove as unknown as EventListener);
+      el.removeEventListener("touchend", handleTouchEnd as unknown as EventListener);
+    };
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
   // Cleanup animation on unmount
   useEffect(() => {
@@ -320,16 +339,17 @@ const Window: React.FC<Props> = (props) => {
       <div
         ref={contentRef}
         className="window-content-scrollable"
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         style={{
           width: "100%",
           height: `calc(100% - var(--window-header-height))`,
-          overflowX: props.allowHorizontalScroll ? "auto" : "hidden",
-          overflowY: "scroll",
+          overflowX: props.allowHorizontalScroll
+            ? isMobile
+              ? "hidden"
+              : "auto"
+            : "hidden",
+          overflowY: isMobile ? "hidden" : "auto",
           scrollbarGutter: "stable",
-          touchAction: "none",
+          touchAction: isMobile ? "none" : "auto",
         }}
       >
         {props.children}

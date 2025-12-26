@@ -173,7 +173,6 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
             cursor: "pointer",
             transition: "all 0.2s",
             boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-            touchAction: "manipulation",
             WebkitTapHighlightColor: "transparent",
           }}
         >
@@ -195,7 +194,6 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
               cursor: "pointer",
               transition: "all 0.2s",
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
-              touchAction: "manipulation",
               WebkitTapHighlightColor: "transparent",
             }}
           >
