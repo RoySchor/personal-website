@@ -26,13 +26,7 @@ const About: React.FC = () => {
       <div className="about-me-section">
         <h2>About Me</h2>
         <p className="section-text">
-          My first taste of coding was handwriting Java programs and full classes on
-          paper. I almost left the craft when I started studying Finance in college.
-          However, a few of my close friends convinced me to give it another shot.
-        </p>
-
-        <p className="section-text">
-          Outside of technology, I'm happiest when I'm moving, exploring, or somewhere
+          I'm happiest when I'm cooking (mainly eating), exploring, or somewhere
           completely new.
         </p>
 
