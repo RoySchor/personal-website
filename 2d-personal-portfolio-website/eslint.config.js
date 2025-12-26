@@ -24,6 +24,7 @@ export default [
       globals: {
         window: "readonly",
         document: "readonly",
+        Navigator: "readonly",
         navigator: "readonly",
         console: "readonly",
         requestAnimationFrame: "readonly",
@@ -32,6 +33,9 @@ export default [
         performance: "readonly",
         HTMLDivElement: "readonly",
         HTMLFormElement: "readonly",
+        EventTarget: "readonly",
+        EventListenerOrEventListenerObject: "readonly",
+        AddEventListenerOptions: "readonly",
         MouseEvent: "readonly",
         Node: "readonly",
         clearTimeout: "readonly",
@@ -40,6 +44,8 @@ export default [
         EventListener: "readonly",
         URL: "readonly",
         ResizeObserver: "readonly",
+        setInterval: "readonly",
+        clearInterval: "readonly",
       },
     },
 

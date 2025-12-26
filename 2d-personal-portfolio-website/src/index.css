@@ -34,12 +34,26 @@
   --menubar-font-size: 28px;
   --menubar-logo-size: 32px;
   --menubar-gap: 10px;
-  --menu-bar-dropdown-menu-top-gap: 48px;
+  --menu-bar-dropdown-menu-top-gap: 45px;
   --menu-bar-dropdown-menu-width: 220px;
   --menu-bar-dropdown-menu-font-size: 26px;
   --menu-bar-dropdown-menu-item-font-weight: 300;
   --menu-bar-dropdown-menu-item-margin: 20px 10px;
   --menu-bar-dropdown-menu-item-padding: 10px 20px;
+
+  --battery-width: 38px;
+  --battery-height: 24px;
+  --battery-padding: 2px;
+  --battery-border-radius: 3px;
+  --battery-tip-width: 4px;
+  --battery-tip-height: 7px;
+  --battery-margin-right: 30px;
+  --battery-margin-left: 10px;
+
+  /* Battery Dropdown */
+  --battery-dropdown-width: 200px;
+  --battery-dropdown-top-gap: 35px;
+  --battery-dropdown-right-spacing: -70px;
 
   /* Window sizing */
   --window-border-radius: 12px;
@@ -106,12 +120,26 @@
     --menubar-font-size: 48px;
     --menubar-logo-size: 48px;
     --menubar-gap: 10px;
-    --menu-bar-dropdown-menu-top-gap: 82px;
+    --menu-bar-dropdown-menu-top-gap: 78px;
     --menu-bar-dropdown-menu-width: 350px;
     --menu-bar-dropdown-menu-font-size: 48px;
     --menu-bar-dropdown-menu-item-font-weight: 400;
     --menu-bar-dropdown-menu-item-margin: 20px 10px;
     --menu-bar-dropdown-menu-item-padding: 5px 20px;
+
+    --battery-width: 74px;
+    --battery-height: 46px;
+    --battery-padding: 2px;
+    --battery-border-radius: 9px;
+    --battery-tip-width: 6px;
+    --battery-tip-height: 12px;
+    --battery-margin-right: 55px;
+    --battery-margin-left: 55px;
+
+    /* Battery Dropdown */
+    --battery-dropdown-width: 320px;
+    --battery-dropdown-top-gap: 65px;
+    --battery-dropdown-right-spacing: -100px;
 
     /* Window sizing - mobile */
     --window-border-radius: 12px;
