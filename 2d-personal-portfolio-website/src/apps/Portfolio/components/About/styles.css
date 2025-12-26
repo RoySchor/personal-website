@@ -37,14 +37,14 @@
   clear: both;
 }
 
-.about-image {
+.about-me-image {
   float: right;
-  width: 300px;
+  width: 450px;
   height: auto;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   object-fit: cover;
-  margin-left: 40px;
+  margin-left: 20px;
   margin-bottom: 20px;
 }
 
@@ -55,16 +55,22 @@
   }
 
   .section-subheader {
-    font-size: 52px;
+    font-size: 54px;
   }
 
   .section-text {
     font-family: "Inter", sans-serif;
-    font-size: 42px;
+    font-size: 44px;
     font-weight: 500;
   }
 
-  .about-image {
+  .about-me-image {
     width: 500px;
+    margin-left: 15px;
+    margin-bottom: 5px;
+  }
+
+  .st-helens-image {
+    width: 550px;
   }
 }

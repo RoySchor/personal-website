@@ -4,9 +4,9 @@
 [![website](https://img.shields.io/website?label=website&url=http%3A%2F%2Froyschor.com%2F)](http://royschor.com/)
 
 
-> In today’s digital world, how you present yourself matters. Our online identities are constantly tracked, filtered, and distorted. I wanted a space where I could intentionally curate how I’m seen—something that felt personal, memorable, and unmistakably me.
+> In today's digital world, how you present yourself matters. Our online identities are constantly tracked, filtered, and distorted. I wanted a space where I could intentionally curate how I'm seen—something that felt personal, memorable, and unmistakably me.
 
-Most personal websites follow the same pattern: a title at the top, a navbar, and a vertical scroll through content. For a software engineer, that kind of site becomes indistinguishable from millions of similar designs. When someone Googles my name, I didn’t want them to land on *another* portfolio. I wanted the experience to feel different—something that immediately sparks curiosity and leaves a lasting impression.
+Most personal websites follow the same pattern: a title at the top, a navbar, and a vertical scroll through content. For a software engineer, that kind of site becomes indistinguishable from millions of similar designs. When someone Googles my name, I didn't want them to land on *another* portfolio. I wanted the experience to feel different—something that immediately sparks curiosity and leaves a lasting impression.
 
 That goal is what led to the creation of royschor.com.
 
@@ -35,7 +35,7 @@ Because this environment runs directly in the browser, performance was a primary
 ### CSS3DRenderer Integration
 The laptop screen inside the 3D scene is not a static texture — it is a fully interactive web application.
 
-This is achieved using **Three.js’s** `CSS3DRenderer`, which projects a live 2D React application into the 3D world via an `iframe`.
+This is achieved using **Three.js's** `CSS3DRenderer`, which projects a live 2D React application into the 3D world via an `iframe`.
 
 *   **Monorepo Structure**: Both the 3D host and the 2D guest application live in the same repository. This simplifies development and avoids CORS issues that would otherwise arise when embedding an iframe across domains.
 *   **Interaction**: Users can interact directly with the 2D interface — clicking icons, opening windows, and navigating the OS — all through the perspective and distortion of the 3D laptop screen.
@@ -69,7 +69,7 @@ To test responsiveness and interactions on mobile devices:
     ```
     npm run dev
     ```
-2.  Find your machine’s local IP address:
+2.  Find your machine's local IP address:
     ```
      ipconfig getifaddr en0
     ```

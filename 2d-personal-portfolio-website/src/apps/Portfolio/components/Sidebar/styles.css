@@ -64,7 +64,7 @@
 @media (max-width: 1024px) {
   .portfolio-sidebar {
     width: 100%;
-    padding: 20px;
+    padding: 10px;
     border-right: none;
     border-bottom: 1.5px solid black;
     flex-direction: column;
@@ -98,7 +98,7 @@
   }
 
   .sidebar-link {
-    font-size: 29px;
+    font-size: 30px;
     -webkit-tap-highlight-color: transparent;
   }
 
