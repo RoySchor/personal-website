@@ -11,7 +11,7 @@ const BackgammonApp: React.FC<WindowAppProps> = () => {
         title="Backgammon"
         src={gameUrl}
         style={{ width: "100%", height: "100%", border: 0 }}
-        allow="fullscreen; autoplay; clipboard-read; clipboard-write"
+        allow="fullscreen; clipboard-read; clipboard-write"
         allowFullScreen={true}
       />
     </div>
