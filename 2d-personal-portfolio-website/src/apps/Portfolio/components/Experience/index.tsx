@@ -24,9 +24,10 @@ const jobs: Job[] = [
     description:
       "I design scalable systems that streamline operations, reduce costs, and drive multimillion-dollar revenue growth.",
     bullets: [
-      "Co-architected and deployed a full-stack document workflow integrating DocuSign APIs, automating processes to save 11,000+ operational hours and cut annual costs by $300,000.",
-      "Led, designed, and implemented a high-performance rates processing tool with dynamic inline editing, efficiently handling 300,000+ customer rates and driving over $50M in revenue.",
-      "Engineered secure and efficient API integrations to unify Justworks payroll functionality, enabling over 7 million weekly requests across all internal microservices. Enhancing system resilience and cross-functional team collaboration.",
+      "Co-architected and deployed a full-stack Power of Attorney (POA) document workflow integrating DocuSign APIs, automating processes to save 11,000+ operational hours and cut annual costs by ~$300,000.",
+      "Led end-to-end design and implementation of a high-performance rates processing tool with dynamic inline editing, scaling to 300,000+ customer rates and supporting $50M+ in annual revenue.",
+      "Unifying three distinct payroll systems (two domestic, one international) unblocking cross-functional product development and enabling platform extensibility.",
+      "Engineered secure, high-throughput integrations across 8+ microservices (Ruby, Go, SQL), achieving 99%+ request success while handling 20M+ API requests per week.",
     ],
   },
   {

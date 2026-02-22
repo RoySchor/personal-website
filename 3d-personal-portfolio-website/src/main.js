@@ -17,6 +17,26 @@ import { makeEvenViewportSync } from "./three/viewport.js";
 import { createArrowControls } from "./ui/arrowControls.js";
 import { createExitButton } from "./ui/exitButton.js";
 
+const TRACKS = [
+  {
+    id: "youtube-led-zeppelin",
+    title: "Led Zeppelin - Gallows Pole",
+    source: "youtube",
+    youtubeId: "CmxaT37yeOs",
+  },
+  {
+    id: "youtube-beatles",
+    title: "The Beatles - Hey Jude",
+    source: "youtube",
+    youtubeId: "mQER0A0ej0M",
+  },
+  {
+    id: "local-bach",
+    title: "Johann Sebastian Bach - Air on the G String",
+    source: "local",
+  },
+];
+
 // Start Matrix rain overlay
 const matrix = createMatrixLoader("loader");
 matrix.start();
@@ -133,6 +153,71 @@ const onAllAssetsLoaded = () => {
     ? createExpandedHitbox(speakerRoot, 1.2, "speaker_hitbox")
     : null;
 
+  let ytPlayer = null;
+  let ytApiPromise = null;
+  let ytLoadedVideoId = null;
+  const localAudio = new window.Audio(musicUrl);
+  localAudio.preload = "none";
+  let currentTrackIndex = 0;
+  let hasRandomizedTrack = false;
+
+  function loadYouTubeApi() {
+    if (window.YT && window.YT.Player) return Promise.resolve(window.YT);
+    if (ytApiPromise) return ytApiPromise;
+
+    ytApiPromise = new Promise((resolve, reject) => {
+      const existingTag = document.querySelector(
+        'script[src="https://www.youtube.com/iframe_api"]',
+      );
+      if (!existingTag) {
+        const scriptTag = document.createElement("script");
+        scriptTag.src = "https://www.youtube.com/iframe_api";
+        scriptTag.async = true;
+        scriptTag.onerror = () => reject(new Error("Failed to load YouTube API"));
+        document.head.appendChild(scriptTag);
+      }
+
+      const previousReady = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => {
+        if (typeof previousReady === "function") previousReady();
+        resolve(window.YT);
+      };
+
+      const maxWaitMs = 10000;
+      const pollMs = 100;
+      let waited = 0;
+      const timer = window.setInterval(() => {
+        if (window.YT && window.YT.Player) {
+          window.clearInterval(timer);
+          resolve(window.YT);
+          return;
+        }
+        waited += pollMs;
+        if (waited >= maxWaitMs) {
+          window.clearInterval(timer);
+          reject(new Error("Timed out waiting for YouTube API"));
+        }
+      }, pollMs);
+    });
+
+    return ytApiPromise;
+  }
+
+  function getCurrentTrack() {
+    return TRACKS[currentTrackIndex];
+  }
+
+  function stopMusicPlayback() {
+    try {
+      localAudio.pause();
+      localAudio.currentTime = 0;
+    } catch {}
+    if (!ytPlayer) return;
+    try {
+      ytPlayer.stopVideo();
+    } catch {}
+  }
+
   // Music Player
   const musicWrapper = document.createElement("div");
   musicWrapper.id = "music-wrapper";
@@ -167,26 +252,176 @@ const onAllAssetsLoaded = () => {
             justify-content: center;
             z-index: 10;
         ">×</button>
-        <div style="color: white; font-family: sans-serif; font-size: 12px; margin-bottom: 4px; padding-left: 4px;">
-            Johann Sebastian Bach - Air on the G String
+        <div id="music-track-title" style="color: white; font-family: sans-serif; font-size: 12px; margin-bottom: 4px; padding-left: 4px;"></div>
+        <div style="display: flex; gap: 6px;">
+            <button id="music-play" style="flex: 1; height: 30px; border: 0; border-radius: 4px; cursor: pointer;">Play</button>
+            <button id="music-pause" style="flex: 1; height: 30px; border: 0; border-radius: 4px; cursor: pointer;">Pause</button>
+            <button id="music-stop" style="flex: 1; height: 30px; border: 0; border-radius: 4px; cursor: pointer;">Stop</button>
+            <button id="music-next" style="flex: 1; height: 30px; border: 0; border-radius: 4px; cursor: pointer;">Next</button>
         </div>
-        <audio controls preload="none" style="width: 100%; height: 30px;">
-            <source src="${musicUrl}" type="audio/mp4">
-        </audio>
+        <div id="music-status" style="color: #ccc; font-family: sans-serif; font-size: 11px; margin-top: 6px; padding-left: 4px;">
+            Ready
+        </div>
+        <div id="yt-player" style="position: absolute; width: 1px; height: 1px; left: -9999px; top: -9999px; pointer-events: none;"></div>
     </div>
   `;
   document.body.appendChild(musicWrapper);
+
+  const musicStatus = musicWrapper.querySelector("#music-status");
+  const musicTrackTitle = musicWrapper.querySelector("#music-track-title");
+
+  function setMusicStatus(text) {
+    if (musicStatus) musicStatus.textContent = text;
+  }
+
+  function syncTrackTitle() {
+    const currentTrack = getCurrentTrack();
+    if (musicTrackTitle) musicTrackTitle.textContent = currentTrack.title;
+  }
+
+  syncTrackTitle();
+
+  async function ensureYouTubePlayer(initialVideoId) {
+    if (ytPlayer) return ytPlayer;
+    setMusicStatus("Loading player...");
+    const YT = await loadYouTubeApi();
+    return new Promise((resolve) => {
+      ytPlayer = new YT.Player("yt-player", {
+        height: "1",
+        width: "1",
+        videoId: initialVideoId,
+        playerVars: {
+          rel: 0,
+          controls: 0,
+          modestbranding: 1,
+          playsinline: 1,
+        },
+        events: {
+          onReady: () => {
+            setMusicStatus("Ready");
+            resolve(ytPlayer);
+          },
+          onStateChange: (event) => {
+            if (getCurrentTrack().source !== "youtube") return;
+            const state = YT.PlayerState;
+            if (event.data === state.PLAYING) setMusicStatus("Playing");
+            else if (event.data === state.PAUSED) setMusicStatus("Paused");
+            else if (event.data === state.BUFFERING) setMusicStatus("Buffering...");
+            else if (event.data === state.ENDED) setMusicStatus("Ended");
+          },
+        },
+      });
+      ytLoadedVideoId = initialVideoId;
+    });
+  }
+
+  localAudio.addEventListener("play", () => {
+    if (getCurrentTrack().source === "local") setMusicStatus("Playing");
+  });
+
+  localAudio.addEventListener("pause", () => {
+    if (getCurrentTrack().source === "local" && localAudio.currentTime > 0) {
+      setMusicStatus("Paused");
+    }
+  });
+
+  localAudio.addEventListener("waiting", () => {
+    if (getCurrentTrack().source === "local") setMusicStatus("Buffering...");
+  });
+
+  localAudio.addEventListener("ended", () => {
+    if (getCurrentTrack().source === "local") setMusicStatus("Ended");
+  });
+
+  async function playCurrentTrack({ restart = false } = {}) {
+    const currentTrack = getCurrentTrack();
+    syncTrackTitle();
+    setMusicStatus("Loading...");
+
+    if (currentTrack.source === "local") {
+      // Keep sources mutually exclusive.
+      if (ytPlayer) {
+        try {
+          ytPlayer.pauseVideo();
+        } catch {}
+      }
+      if (restart) {
+        try {
+          localAudio.currentTime = 0;
+        } catch {}
+      }
+      try {
+        await localAudio.play();
+      } catch {
+        setMusicStatus("Playback blocked");
+      }
+      return;
+    }
+
+    try {
+      const player = await ensureYouTubePlayer(currentTrack.youtubeId);
+      // Keep sources mutually exclusive.
+      try {
+        localAudio.pause();
+      } catch {}
+      const isDifferentYoutubeTrack = ytLoadedVideoId !== currentTrack.youtubeId;
+      if (isDifferentYoutubeTrack) {
+        player.loadVideoById(currentTrack.youtubeId);
+        ytLoadedVideoId = currentTrack.youtubeId;
+        return;
+      }
+      if (restart) {
+        try {
+          player.seekTo(0, true);
+        } catch {}
+      }
+      player.playVideo();
+    } catch {
+      // If YouTube can't load, force reliable fallback track.
+      currentTrackIndex = TRACKS.findIndex((track) => track.source === "local");
+      syncTrackTitle();
+      setMusicStatus("YouTube unavailable. Playing local track.");
+      try {
+        await localAudio.play();
+      } catch {
+        setMusicStatus("Unable to play local fallback");
+      }
+    }
+  }
+
+  musicWrapper.querySelector("#music-play").addEventListener("click", async () => {
+    await playCurrentTrack();
+  });
+
+  musicWrapper.querySelector("#music-next").addEventListener("click", async () => {
+    currentTrackIndex = (currentTrackIndex + 1) % TRACKS.length;
+    await playCurrentTrack({ restart: true });
+  });
+
+  musicWrapper.querySelector("#music-pause").addEventListener("click", () => {
+    const currentTrack = getCurrentTrack();
+    if (currentTrack.source === "local") {
+      localAudio.pause();
+      return;
+    }
+    if (!ytPlayer) return;
+    try {
+      ytPlayer.pauseVideo();
+    } catch {}
+  });
+
+  musicWrapper.querySelector("#music-stop").addEventListener("click", () => {
+    stopMusicPlayback();
+    setMusicStatus("Stopped");
+  });
 
   musicWrapper.querySelector("#close-music").addEventListener("click", () => {
     musicWrapper.style.visibility = "hidden";
     musicWrapper.style.pointerEvents = "none";
     musicWrapper.style.opacity = "0";
     musicWrapper.style.transform = "translateY(20px)";
-    const audio = musicWrapper.querySelector("audio");
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
+    stopMusicPlayback();
+    setMusicStatus("Stopped");
   });
 
   function isDesc(obj, ancestor) {
@@ -267,17 +502,22 @@ const onAllAssetsLoaded = () => {
           musicWrapper.style.pointerEvents = "none";
           musicWrapper.style.opacity = "0";
           musicWrapper.style.transform = "translateY(20px)";
-          const audio = musicWrapper.querySelector("audio");
-          if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-          }
+          stopMusicPlayback();
+          setMusicStatus("Stopped");
         } else {
           // Show and play
           musicWrapper.style.visibility = "visible";
           musicWrapper.style.pointerEvents = "auto";
           musicWrapper.style.opacity = "1";
           musicWrapper.style.transform = "translateY(0)";
+          if (!hasRandomizedTrack) {
+            currentTrackIndex = Math.floor(Math.random() * TRACKS.length);
+            hasRandomizedTrack = true;
+            syncTrackTitle();
+            playCurrentTrack();
+          } else {
+            syncTrackTitle();
+          }
         }
         return;
       }
@@ -373,6 +613,12 @@ const onAllAssetsLoaded = () => {
 
   if (import.meta.hot) {
     import.meta.hot.dispose(() => {
+      try {
+        stopMusicPlayback();
+      } catch {}
+      try {
+        musicWrapper.remove();
+      } catch {}
       try {
         cssRenderer.domElement.remove();
       } catch {}
