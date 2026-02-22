@@ -21,7 +21,7 @@ import iconGithub from "../assets/icons/external-github.svg";
 import iconLinkedIn from "../assets/icons/external-linkedin.webp";
 import iconResume from "../assets/icons/resume.webp";
 import resumePdf from "../assets/resume/Schor, Roy Resume.pdf";
-import wallpaper from "../assets/wallpapers/dead-sea.jpg";
+import wallpaper from "../assets/wallpapers/dead-sea-wallpaper.jpg";
 
 const Desktop: React.FC = () => {
   const apps: AppDefinition[] = useMemo(
