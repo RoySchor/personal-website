@@ -1,0 +1,78 @@
+name: Deploy Portfolio to GitHub Pages (test)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            2d-personal-portfolio-website/package-lock.json
+            3d-personal-portfolio-website/package-lock.json
+
+      - name: Install 2D dependencies
+        working-directory: 2d-personal-portfolio-website
+        run: npm ci
+
+      - name: Build 2D project
+        working-directory: 2d-personal-portfolio-website
+        run: npm run build
+
+      - name: Install 3D dependencies
+        working-directory: 3d-personal-portfolio-website
+        run: npm ci
+
+      - name: Configure .env.production (3D)
+        working-directory: 3d-personal-portfolio-website
+        run: |
+          cat > .env.production << 'EOF'
+          VITE_SCREEN_URL=/screen/
+          EOF
+
+      - name: Build 3D project
+        working-directory: 3d-personal-portfolio-website
+        run: npm run build
+
+      - name: Bundle inner site into /screen
+        run: |
+          rm -rf 3d-personal-portfolio-website/dist/screen
+          mkdir -p 3d-personal-portfolio-website/dist/screen
+          cp -R 2d-personal-portfolio-website/dist/* 3d-personal-portfolio-website/dist/screen/
+
+      - name: Create SPA 404 fallback (top-level)
+        working-directory: 3d-personal-portfolio-website/dist
+        run: cp index.html 404.html
+
+      - name: Create SPA 404 fallback for /screen
+        working-directory: 3d-personal-portfolio-website/dist/screen
+        run: cp index.html 404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 3d-personal-portfolio-website/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
