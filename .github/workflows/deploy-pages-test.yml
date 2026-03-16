@@ -20,9 +20,6 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: |
-            2d-personal-portfolio-website/package-lock.json
-            3d-personal-portfolio-website/package-lock.json
 
       - name: Install 2D dependencies
         working-directory: 2d-personal-portfolio-website
