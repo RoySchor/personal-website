@@ -8,7 +8,8 @@ import resumePdf from "../assets/resume/Schor, Roy Resume.pdf";
 import type { WindowAppProps } from "../system/types";
 
 // Configure worker
-pdfjs.GlobalWorkerOptions.workerSrc = "/screen/pdf.worker.min.js";
+pdfjs.GlobalWorkerOptions.workerSrc =
+  `${import.meta.env.BASE_URL}screen/pdf.worker.min.js`;
 
 const ResumeApp: React.FC<WindowAppProps> = () => {
   const [containerWidth, setContainerWidth] = useState<number>(0);
