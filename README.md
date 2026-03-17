@@ -1,7 +1,7 @@
 # Personal Portfolio Website
 ### [royschor.com](https://royschor.com/)
 
-[![website](https://img.shields.io/website?label=website&url=http%3A%2F%2Froyschor.com%2F)](https://royschor.com/)
+[![website](https://img.shields.io/website?label=website&url=https%3A%2F%2Froyschor.com%2F)](https://royschor.com/)
 
 
 > In today's digital world, how you present yourself matters. Our online identities are constantly tracked, filtered, and distorted. I wanted a space where I could intentionally curate how I'm seen—something that felt personal, memorable, and unmistakably me.
