@@ -1,14 +1,14 @@
 # Personal Portfolio Website
-### [royschor.com](http://royschor.com/)
+### [royschor.com](https://royschor.com/)
 
-[![website](https://img.shields.io/website?label=website&url=http%3A%2F%2Froyschor.com%2F)](http://royschor.com/)
+[![website](https://img.shields.io/website?label=website&url=http%3A%2F%2Froyschor.com%2F)](https://royschor.com/)
 
 
 > In today's digital world, how you present yourself matters. Our online identities are constantly tracked, filtered, and distorted. I wanted a space where I could intentionally curate how I'm seen—something that felt personal, memorable, and unmistakably me.
 
 Most personal websites follow the same pattern: a title at the top, a navbar, and a vertical scroll through content. For a software engineer, that kind of site becomes indistinguishable from millions of similar designs. When someone Googles my name, I didn't want them to land on *another* portfolio. I wanted the experience to feel different—something that immediately sparks curiosity and leaves a lasting impression.
 
-That goal is what led to the creation of royschor.com.
+That goal is what led to the creation of [royschor.com](https://royschor.com).
 
 ## Overview
 
