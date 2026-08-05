@@ -77,6 +77,9 @@
   --quotes-container-padding: 40px;
   --quotes-dev-gap: 30px;
   --quotes-quote-box-margin-top: 20px;
+  --quotes-form-width: 70%;
+  --quotes-form-height: 440px;
+  --quotes-form-gap: 20px;
 
   /* Lock screen sizing */
   --lock-screen-width: 400px;
@@ -163,6 +166,9 @@
     --quotes-container-padding: 10px 50px;
     --quotes-dev-gap: 50px;
     --quotes-quote-box-margin-top: 10px;
+    --quotes-form-width: 80%;
+    --quotes-form-height: 450px;
+    --quotes-form-gap: 24px;
 
     /* Lock screen sizing - mobile */
     --lock-screen-width: 800px;

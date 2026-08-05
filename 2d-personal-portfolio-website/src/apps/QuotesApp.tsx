@@ -3,9 +3,16 @@ import React, { useState } from "react";
 import quotesData from "../data/quotes.json";
 import type { WindowAppProps } from "../system/types";
 
+// Google Form for quote submissions. `embedded=true` serves the chrome-less
+// version meant for iframes; the same form id is used for the new-tab fallback.
+const QUOTE_FORM_ID = "1FAIpQLSf1MxQN_5ilUloSKBxTo6wrAPlQNCNoT7abceb4D9GH0ee2TQ";
+const QUOTE_FORM_EMBED_URL = `https://docs.google.com/forms/d/e/${QUOTE_FORM_ID}/viewform?embedded=true`;
+const QUOTE_FORM_URL = `https://docs.google.com/forms/d/e/${QUOTE_FORM_ID}/viewform`;
+
 const QuotesApp: React.FC<WindowAppProps> = () => {
   const [currentQuote, setCurrentQuote] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
 
   const quotes: string[] = quotesData;
 
@@ -227,6 +234,78 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
         >
           {currentQuote ? formatQuote(currentQuote) : "No Quote Yet :)"}
         </p>
+      </div>
+
+      {/* Quote submission form */}
+      <div style={{ width: "var(--quotes-form-width)", textAlign: "center" }}>
+        <p
+          style={{
+            margin: "0 0 12px",
+            fontSize: "var(--quotes-subtitle-size)",
+            color: "#EEF3DB",
+            opacity: 0.9,
+          }}
+        >
+          Have a quote you want me to add to the list?
+        </p>
+
+        <button
+          className="quotes-app-button"
+          onClick={() => setFormOpen((open) => !open)}
+          aria-expanded={formOpen}
+          style={{
+            background: "rgba(255, 255, 255, 0.1)",
+            color: "#EEF3DB",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            borderRadius: "12px",
+            padding: "var(--quotes-button-padding)",
+            fontSize: "var(--quotes-button-font-size)",
+            fontWeight: "600",
+            cursor: "pointer",
+            transition: "all 0.2s",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          {formOpen ? "Hide form" : "Submit a quote"}
+        </button>
+
+        {formOpen && (
+          <div style={{ marginTop: "var(--quotes-form-gap)" }}>
+            <iframe
+              src={QUOTE_FORM_EMBED_URL}
+              title="Submit a quote"
+              style={{
+                width: "100%",
+                height: "var(--quotes-form-height)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                borderRadius: "16px",
+                background: "#fff",
+              }}
+            >
+              Loading form…
+            </iframe>
+
+            <p
+              style={{
+                margin: "12px 0 0",
+                fontSize: "var(--quotes-subtitle-size)",
+                color: "#EEF3DB",
+                opacity: 0.7,
+              }}
+            >
+              Form not loading?{" "}
+              <a
+                href={QUOTE_FORM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#E1F781" }}
+              >
+                Open it in a new tab
+              </a>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
