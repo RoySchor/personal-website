@@ -31,7 +31,8 @@ const isValidDeck = (value: unknown, count: number): value is QuoteDeck => {
   if (typeof value !== "object" || value === null) return false;
   const { order, position } = value as Partial<QuoteDeck>;
   if (!Array.isArray(order) || order.length !== count) return false;
-  if (typeof position !== "number" || position < 0 || position > count) return false;
+  if (typeof position !== "number" || !Number.isInteger(position)) return false;
+  if (position < 0 || position > count) return false;
   // Must be a permutation of 0..count-1; anything else means the quote list changed.
   const seen = new Set(order);
   return (
