@@ -248,6 +248,91 @@ const Window: React.FC<Props> = (props) => {
     };
   }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
+  // On mobile the on-screen keyboard covers the lower half of the projected screen, and
+  // the host page can't be scrolled. While a text field is focused, add room below the
+  // content so the user can scroll the field above the keyboard.
+  const [textFieldFocused, setTextFieldFocused] = useState(false);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el || !isMobile) return;
+
+    const isTextField = (target: EventTarget | null): target is HTMLElement =>
+      target instanceof HTMLTextAreaElement ||
+      (target instanceof HTMLInputElement &&
+        !["button", "checkbox", "radio", "submit", "reset"].includes(target.type));
+
+    // Focus the field ourselves with preventScroll; otherwise the browser scrolls the whole
+    // iframe document to reveal it, shifting the entire desktop out of place.
+    // Only a tap should focus; a scroll that starts on a field must not open the keyboard.
+    const TAP_MAX_MOVE_PX = 15;
+    let tapStart: { x: number; y: number } | null = null;
+
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      tapStart = touch ? { x: touch.clientX, y: touch.clientY } : null;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!isTextField(e.target) || e.target === document.activeElement) return;
+      const touch = e.changedTouches[0];
+      if (!tapStart || !touch) return;
+      const moved = Math.hypot(touch.clientX - tapStart.x, touch.clientY - tapStart.y);
+      tapStart = null;
+      if (moved > TAP_MAX_MOVE_PX) {
+        // Suppress the synthesized click so the browser doesn't focus the field either.
+        if (e.cancelable) e.preventDefault();
+        return;
+      }
+      if (e.cancelable) e.preventDefault();
+      e.target.focus({ preventScroll: true });
+    };
+
+    // Backstop: the iframe document itself should never be scrolled.
+    const resetDocumentScroll = () => {
+      if (window.scrollX !== 0 || window.scrollY !== 0) window.scrollTo(0, 0);
+    };
+
+    const onFocusIn = (e: FocusEvent) => {
+      if (!isTextField(e.target)) return;
+      setTextFieldFocused(true);
+    };
+
+    const onFocusOut = (e: FocusEvent) => {
+      if (isTextField(e.relatedTarget)) return;
+      setTextFieldFocused(false);
+    };
+
+    // Focus inside a cross-origin iframe (e.g. the embedded Google Form) never reaches our
+    // listeners; the parent window just blurs with the iframe as the active element.
+    const onWindowBlur = () => {
+      const active = document.activeElement;
+      if (active instanceof HTMLIFrameElement && el.contains(active)) {
+        setTextFieldFocused(true);
+      }
+    };
+    const onWindowFocus = () => {
+      if (!isTextField(document.activeElement)) setTextFieldFocused(false);
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchend", onTouchEnd, { passive: false });
+    window.addEventListener("blur", onWindowBlur);
+    window.addEventListener("focus", onWindowFocus);
+    el.addEventListener("focusin", onFocusIn);
+    el.addEventListener("focusout", onFocusOut);
+    window.addEventListener("scroll", resetDocumentScroll);
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("blur", onWindowBlur);
+      window.removeEventListener("focus", onWindowFocus);
+      window.removeEventListener("scroll", resetDocumentScroll);
+      el.removeEventListener("focusin", onFocusIn);
+      el.removeEventListener("focusout", onFocusOut);
+    };
+  }, [isMobile]);
+
   // Cleanup animation on unmount
   useEffect(() => {
     return () => {
@@ -353,6 +438,7 @@ const Window: React.FC<Props> = (props) => {
         }}
       >
         {props.children}
+        {textFieldFocused && <div aria-hidden style={{ height: "60%" }} />}
       </div>
 
       {/* Resize handle */}

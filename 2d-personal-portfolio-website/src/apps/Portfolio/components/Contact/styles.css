@@ -1,5 +1,7 @@
 .contact-form-container {
   margin-top: 40px;
+  /* The native tap highlight renders offset inside the CSS3D-projected iframe. */
+  -webkit-tap-highlight-color: transparent;
   width: 100%;
   max-width: 600px;
 }
@@ -140,5 +142,10 @@
 
   .contact-submit-btn {
     font-size: 42px;
+  }
+
+  .status-message {
+    font-family: "Inter", sans-serif;
+    font-size: 40px;
   }
 }
