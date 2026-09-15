@@ -9,6 +9,73 @@ const QUOTE_FORM_ID = "1FAIpQLSf1MxQN_5ilUloSKBxTo6wrAPlQNCNoT7abceb4D9GH0ee2TQ"
 const QUOTE_FORM_EMBED_URL = `https://docs.google.com/forms/d/e/${QUOTE_FORM_ID}/viewform?embedded=true`;
 const QUOTE_FORM_URL = `https://docs.google.com/forms/d/e/${QUOTE_FORM_ID}/viewform`;
 
+// Quotes are dealt from a shuffled deck so none repeats until all have been shown.
+// The deck is saved per browser so a reload continues where the visitor left off.
+const QUOTE_DECK_STORAGE_KEY = "quotes-deck";
+
+interface QuoteDeck {
+  order: number[];
+  position: number;
+}
+
+const shuffledIndices = (count: number): number[] => {
+  const order = Array.from({ length: count }, (_, index) => index);
+  for (let index = count - 1; index > 0; index--) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [order[index], order[swapIndex]] = [order[swapIndex], order[index]];
+  }
+  return order;
+};
+
+const isValidDeck = (value: unknown, count: number): value is QuoteDeck => {
+  if (typeof value !== "object" || value === null) return false;
+  const { order, position } = value as Partial<QuoteDeck>;
+  if (!Array.isArray(order) || order.length !== count) return false;
+  if (typeof position !== "number" || position < 0 || position > count) return false;
+  // Must be a permutation of 0..count-1; anything else means the quote list changed.
+  const seen = new Set(order);
+  return (
+    seen.size === count &&
+    order.every((index) => Number.isInteger(index) && index >= 0 && index < count)
+  );
+};
+
+const loadDeck = (count: number): QuoteDeck => {
+  try {
+    const stored: unknown = JSON.parse(
+      window.localStorage.getItem(QUOTE_DECK_STORAGE_KEY) ?? "null",
+    );
+    if (isValidDeck(stored, count)) return stored;
+  } catch {
+    // Storage can be unavailable (private mode, blocked site data); fall back to a fresh deck.
+  }
+  return { order: shuffledIndices(count), position: 0 };
+};
+
+const saveDeck = (deck: QuoteDeck) => {
+  try {
+    window.localStorage.setItem(QUOTE_DECK_STORAGE_KEY, JSON.stringify(deck));
+  } catch {
+    // Not persisting is fine; the deck still works for this session.
+  }
+};
+
+const drawQuoteIndex = (count: number): number => {
+  let deck = loadDeck(count);
+  if (deck.position >= count) {
+    const lastShown = deck.order[count - 1];
+    const order = shuffledIndices(count);
+    // Avoid showing the same quote twice in a row across a reshuffle.
+    if (count > 1 && order[0] === lastShown) {
+      [order[0], order[1]] = [order[1], order[0]];
+    }
+    deck = { order, position: 0 };
+  }
+  const quoteIndex = deck.order[deck.position];
+  saveDeck({ ...deck, position: deck.position + 1 });
+  return quoteIndex;
+};
+
 const QuotesApp: React.FC<WindowAppProps> = () => {
   const [currentQuote, setCurrentQuote] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -21,8 +88,7 @@ const QuotesApp: React.FC<WindowAppProps> = () => {
       setCurrentQuote("Add some quotes to the list!");
       return;
     }
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    setCurrentQuote(quotes[randomIndex]);
+    setCurrentQuote(quotes[drawQuoteIndex(quotes.length)]);
     setCopied(false);
   };
 
