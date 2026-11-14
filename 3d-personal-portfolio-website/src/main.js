@@ -2,6 +2,7 @@ import * as THREE from "three";
 
 import musicUrl from "./assets/air-on-a-g-sring.m4a";
 import roomUrl from "./assets/portfolio-room.glb?url";
+import { createClockHands } from "./interactions/clockHands.js";
 import { createPencilFan } from "./interactions/pencilFan.js";
 import { createPinchZoom } from "./interactions/pinchZoom.js";
 import { createPreviewFocus } from "./interactions/previewFocus.js";
@@ -482,6 +483,7 @@ const onAllAssetsLoaded = () => {
   const roomToys = [
     createPencilFan({ root, ray }),
     createRubiksTurns({ root, ray }),
+    createClockHands({ root, ray }),
   ].filter(Boolean);
   const coffeeSteam = createCoffeeSteam({ root, scene });
   const clearToyHover = () => roomToys.forEach((toy) => toy.clearHover());
@@ -601,6 +603,9 @@ const onAllAssetsLoaded = () => {
   renderer.domElement.addEventListener("pointermove", hoverRoom);
   cssRenderer.domElement.addEventListener("pointermove", hoverRoom);
   renderer.domElement.addEventListener("pointerleave", clearToyHover);
+  // No pointer event fires when switching windows or tabs, so hover would stay on.
+  window.addEventListener("blur", clearToyHover);
+  document.addEventListener("visibilitychange", clearToyHover);
 
   renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
   cssRenderer.domElement.addEventListener("wheel", onWheel, { passive: false });
