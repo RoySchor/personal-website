@@ -477,8 +477,6 @@ const onAllAssetsLoaded = () => {
   const ray = createRaycast(renderer, camera);
 
   const pencilFan = createPencilFan({ root, ray });
-  // Touch browsers emulate hover after a tap, which would leave the pencils stuck out.
-  const canHover = window.matchMedia("(hover: hover)").matches;
 
   function clickRoom(e) {
     if (gateIfBusy(e)) return;
@@ -563,12 +561,14 @@ const onAllAssetsLoaded = () => {
 
   // hover cursor
   function hoverRoom(e) {
+    // Hover is mouse-only: touch has no cursor, and taps would leave the pencils fanned.
+    if (e.pointerType !== "mouse") return;
     if (transitioning || focuser.isFocusing() || preview.isFocused()) {
       pencilFan?.clearHover();
       return;
     }
 
-    const overPencils = canHover && Boolean(pencilFan?.hoverAt(e));
+    const overPencils = Boolean(pencilFan?.hoverAt(e));
 
     let overSpeaker = false;
     if (speakerRoot) {
@@ -589,9 +589,9 @@ const onAllAssetsLoaded = () => {
 
   renderer.domElement.addEventListener("click", clickRoom);
   cssRenderer.domElement.addEventListener("click", clickRoom);
-  renderer.domElement.addEventListener("mousemove", hoverRoom);
-  cssRenderer.domElement.addEventListener("mousemove", hoverRoom);
-  renderer.domElement.addEventListener("mouseleave", () => pencilFan?.clearHover());
+  renderer.domElement.addEventListener("pointermove", hoverRoom);
+  cssRenderer.domElement.addEventListener("pointermove", hoverRoom);
+  renderer.domElement.addEventListener("pointerleave", () => pencilFan?.clearHover());
 
   renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
   cssRenderer.domElement.addEventListener("wheel", onWheel, { passive: false });
@@ -614,7 +614,7 @@ const onAllAssetsLoaded = () => {
   function animate(now = performance.now()) {
     requestAnimationFrame(animate);
     // Clamp so a backgrounded tab doesn't snap animations on return.
-    const dt = Math.min((now - lastFrameTime) / 1000, 0.1);
+    const dt = THREE.MathUtils.clamp((now - lastFrameTime) / 1000, 0, 0.1);
     lastFrameTime = now;
     pencilFan?.update(dt);
     controls.update();
