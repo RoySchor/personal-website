@@ -2,6 +2,7 @@ import * as THREE from "three";
 
 import musicUrl from "./assets/air-on-a-g-sring.m4a";
 import roomUrl from "./assets/portfolio-room.glb?url";
+import { createChairSwivel } from "./interactions/chairSwivel.js";
 import { createClockHands } from "./interactions/clockHands.js";
 import { createOutletSparks } from "./interactions/outletSparks.js";
 import { createPencilFan } from "./interactions/pencilFan.js";
@@ -485,6 +486,7 @@ const onAllAssetsLoaded = () => {
     createPencilFan({ root, ray }),
     createRubiksTurns({ root, ray }),
     createClockHands({ root, ray }),
+    createChairSwivel({ root, ray }),
     createOutletSparks({ root, scene, ray }),
   ].filter(Boolean);
   const coffeeSteam = createCoffeeSteam({ root, scene });
