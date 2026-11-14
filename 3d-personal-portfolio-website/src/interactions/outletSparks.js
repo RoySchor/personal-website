@@ -14,6 +14,9 @@ const ZAP_SECONDS = 0.7;
 const ARC_REFRESH_SECONDS = 0.05;
 const ARC_COUNT = 3;
 const ARC_SEGMENTS = 8;
+// Each arc is ARC_SEGMENTS segments plus a fork of half that, so the count never changes
+// and the arc buffer can be allocated once and rewritten in place.
+const ARC_SEGMENT_TOTAL = ARC_COUNT * (ARC_SEGMENTS + ARC_SEGMENTS / 2);
 // World-space metres.
 const ARC_LENGTH = [0.035, 0.09];
 const ARC_JITTER = 0.008;
@@ -32,16 +35,20 @@ const GLOW_COLOR = 0x6fb8ff;
 const SPARK_COLOR = new THREE.Color(0xffd27a);
 
 export function createOutletSparks({ root, scene, ray }) {
+  // With reduced motion the zap is just a steady glow that fades: no crackle, no sparks.
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const roomCenter = new THREE.Box3().setFromObject(root).getCenter(new THREE.Vector3());
   const outlets = OUTLET_NAMES.map((name) => root.getObjectByName(name))
     .filter(Boolean)
-    .map((object) => describeOutlet(object, roomCenter));
+    .map((object) => describeOutlet(object, roomCenter))
+    .filter(Boolean);
   if (outlets.length === 0) {
     console.warn("outletSparks: no outlets in the room");
     return null;
   }
 
   const floor = root.getObjectByName("FloorPlanks");
+  if (!floor) console.warn("outletSparks: no FloorPlanks; sparks will bounce at y = 0");
   const floorY = floor ? new THREE.Box3().setFromObject(floor).max.y : 0;
 
   const effect = new THREE.Group();
@@ -57,7 +64,11 @@ export function createOutletSparks({ root, scene, ray }) {
     depthWrite: false,
     toneMapped: false,
   });
-  const arcs = new LineSegments2(new LineSegmentsGeometry(), arcMaterial);
+  const arcPositions = new Float32Array(ARC_SEGMENT_TOTAL * 6);
+  const arcs = new LineSegments2(
+    new LineSegmentsGeometry().setPositions(arcPositions),
+    arcMaterial,
+  );
   arcs.frustumCulled = false;
 
   const glowTexture = createDotTexture();
@@ -130,9 +141,16 @@ export function createOutletSparks({ root, scene, ray }) {
   }
 
   function startZap(outlet) {
-    zap = { outlet, elapsed: 0, sinceArcs: Infinity };
+    zap = { outlet, elapsed: 0, sinceArcs: Infinity, glowLevel: 1 };
     glow.position.copy(outlet.faceCenter).addScaledVector(outlet.normal, 0.01);
+    effect.visible = true;
+    arcs.visible = !reducedMotion;
+    if (reducedMotion) return;
+
     for (const spark of sparks) {
+      // Leave sparks from an earlier zap that are still flying and bright.
+      const inFlight = spark.delay <= 0 && spark.age < spark.life * 0.5;
+      if (inFlight) continue;
       spark.position.copy(randomPointOnFace(outlet, 0.5));
       spark.velocity
         .copy(outlet.normal)
@@ -144,7 +162,6 @@ export function createOutletSparks({ root, scene, ray }) {
       spark.age = 0;
       spark.life = THREE.MathUtils.randFloat(...SPARK_LIFE);
     }
-    effect.visible = true;
   }
 
   function update(dt) {
@@ -152,18 +169,28 @@ export function createOutletSparks({ root, scene, ray }) {
     zap.elapsed += dt;
     const progress = Math.min(zap.elapsed / ZAP_SECONDS, 1);
 
+    if (reducedMotion) {
+      glow.material.opacity = 1 - progress;
+      if (progress === 1) {
+        effect.visible = false;
+        zap = null;
+      }
+      return;
+    }
+
     // Arcs crackle for most of the zap, then cut out; the glow fades with them.
     const arcsOn = progress < 0.85;
     arcs.visible = arcsOn;
     zap.sinceArcs += dt;
     if (arcsOn && zap.sinceArcs >= ARC_REFRESH_SECONDS) {
       zap.sinceArcs = 0;
-      arcs.geometry.setPositions(buildArcs(zap.outlet));
+      arcPositions.set(buildArcs(zap.outlet));
+      arcs.geometry.attributes.instanceStart.data.needsUpdate = true;
       arcMaterial.opacity = THREE.MathUtils.randFloat(0.6, 1);
+      // Flicker the glow with the arcs (20 Hz), not every frame (up to 120 Hz).
+      zap.glowLevel = THREE.MathUtils.randFloat(0.5, 1);
     }
-    glow.material.opacity = arcsOn
-      ? THREE.MathUtils.randFloat(0.5, 1) * (1 - progress)
-      : 0;
+    glow.material.opacity = arcsOn ? zap.glowLevel * (1 - progress) : 0;
 
     const sparksAlive = updateSparks(dt);
     if (progress === 1 && !sparksAlive) {
@@ -212,6 +239,10 @@ function describeOutlet(object, roomCenter) {
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
   const thinAxis = ["x", "y", "z"].reduce((a, b) => (size[b] < size[a] ? b : a));
+  if (thinAxis === "y") {
+    console.warn(`outletSparks: "${object.name}" isn't on a wall; skipping it`);
+    return null;
+  }
 
   const normal = new THREE.Vector3();
   normal[thinAxis] = Math.sign(roomCenter[thinAxis] - center[thinAxis]) || 1;
