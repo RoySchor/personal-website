@@ -78,15 +78,8 @@ export function createPencilFan({ root, ray }) {
     }
   }
 
-  // The box test is cheap but ignores what's in front of the holder. Only when it passes,
-  // raycast the room and reject the hit if anything else is closer (e.g. the laptop).
   function isPointedAt(e) {
-    const boxDistance = ray.distanceToBox(e, hitBox);
-    if (boxDistance === null) return false;
-    const [nearest] = ray.intersect(e, root, true);
-    return (
-      !nearest || nearest.distance >= boxDistance || isWithin(nearest.object, holder)
-    );
+    return ray.pointsAt(e, { box: hitBox, target: holder, scene: root });
   }
 
   // Returns true when the pointer is over the pencil holder.
@@ -120,13 +113,6 @@ export function createPencilFan({ root, ray }) {
 
 function isHolderBody(mesh) {
   return !mesh.material?.name?.startsWith(PENCIL_MATERIAL_PREFIX);
-}
-
-function isWithin(object, ancestor) {
-  for (let current = object; current; current = current.parent) {
-    if (current === ancestor) return true;
-  }
-  return false;
 }
 
 function maxY(geometry) {

@@ -19,13 +19,27 @@ export function createRaycast(renderer, camera) {
 
   const boxEntry = new THREE.Vector3();
 
-  // Distance along the pointer ray to where it enters `box`, or null if it misses.
-  function distanceToBox(e, box) {
+  // True when the pointer ray enters `box` and nothing in `scene` other than `target` is in
+  // front of it. The box test is cheap; the full scene raycast only runs when it passes.
+  function pointsAt(e, { box, target, scene }) {
     setMouseFromEvent(e);
     ray.setFromCamera(ndc, camera);
-    const point = ray.ray.intersectBox(box, boxEntry);
-    return point ? point.distanceTo(ray.ray.origin) : null;
+    const entry = ray.ray.intersectBox(box, boxEntry);
+    if (!entry) return false;
+
+    const boxDistance = entry.distanceTo(ray.ray.origin);
+    const [nearest] = ray.intersectObject(scene, true);
+    return (
+      !nearest || nearest.distance >= boxDistance || isWithin(nearest.object, target)
+    );
   }
 
-  return { intersect, distanceToBox };
+  return { intersect, pointsAt };
+}
+
+function isWithin(object, ancestor) {
+  for (let current = object; current; current = current.parent) {
+    if (current === ancestor) return true;
+  }
+  return false;
 }
