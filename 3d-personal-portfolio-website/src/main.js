@@ -2,6 +2,7 @@ import * as THREE from "three";
 
 import musicUrl from "./assets/air-on-a-g-sring.m4a";
 import roomUrl from "./assets/portfolio-room.glb?url";
+import { createClockHands } from "./interactions/clockHands.js";
 import { createPencilFan } from "./interactions/pencilFan.js";
 import { createPinchZoom } from "./interactions/pinchZoom.js";
 import { createPreviewFocus } from "./interactions/previewFocus.js";
@@ -481,6 +482,7 @@ const onAllAssetsLoaded = () => {
   const roomToys = [
     createPencilFan({ root, ray }),
     createRubiksTurns({ root, ray }),
+    createClockHands({ root, ray }),
   ].filter(Boolean);
   const clearToyHover = () => roomToys.forEach((toy) => toy.clearHover());
 
