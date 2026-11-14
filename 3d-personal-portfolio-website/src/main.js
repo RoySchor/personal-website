@@ -603,6 +603,9 @@ const onAllAssetsLoaded = () => {
   renderer.domElement.addEventListener("pointermove", hoverRoom);
   cssRenderer.domElement.addEventListener("pointermove", hoverRoom);
   renderer.domElement.addEventListener("pointerleave", clearToyHover);
+  // No pointer event fires when switching windows or tabs, so hover would stay on.
+  window.addEventListener("blur", clearToyHover);
+  document.addEventListener("visibilitychange", clearToyHover);
 
   renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
   cssRenderer.domElement.addEventListener("wheel", onWheel, { passive: false });

@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+import { easeInOutCubic } from "../util/easing.js";
+
 // The wall clock's hands were modelled with their origins halfway along each hand, so
 // rotating them in place would swing them around their middles. Instead each hand is
 // re-parented, without moving, onto a pivot at the clock's centre, and the pivot turns
@@ -49,7 +51,12 @@ export function createClockHands({ root, ray }) {
   // Seen from the front, a positive turn about an axis pointing away from the viewer is
   // clockwise. 12 o'clock is straight up the wall, 3 o'clock a quarter turn clockwise.
   const clockwiseAxis = front.clone().negate();
-  const twelve = new THREE.Vector3(0, 1, 0).projectOnPlane(front).normalize();
+  const twelve = new THREE.Vector3(0, 1, 0).projectOnPlane(front);
+  if (twelve.lengthSq() < 1e-6) {
+    console.warn("clockHands: the clock face isn't upright, so 12 o'clock is undefined");
+    return null;
+  }
+  twelve.normalize();
   const three = twelve.clone().applyAxisAngle(clockwiseAxis, Math.PI / 2);
 
   const mount = (hand) => mountOnPivot(hand, { center, clockwiseAxis, twelve, three });
@@ -87,7 +94,9 @@ export function createClockHands({ root, ray }) {
   // Returns true when the tap landed on the clock.
   function tapAt(e) {
     if (!isPointedAt(e)) return false;
-    tapSpinUntil = performance.now() + TAP_SPIN_MS;
+    // A mouse click lands while already hovered, which animates on its own; the timed
+    // burst is for touch taps, which never hover.
+    if (!hovered) tapSpinUntil = performance.now() + TAP_SPIN_MS;
     return true;
   }
 
@@ -173,8 +182,4 @@ function farthestVertexFrom(object, point) {
     }
   });
   return farthest;
-}
-
-function easeInOutCubic(t) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }

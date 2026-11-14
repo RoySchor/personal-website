@@ -1,5 +1,6 @@
 import * as THREE from "three";
 
+import { easeInOutCubic } from "../util/easing.js";
 import { toFloatArray } from "../util/geometry.js";
 
 // The cube is a single object, but its cubies and stickers are separate vertex islands
@@ -62,7 +63,9 @@ export function createRubiksTurns({ root, ray }) {
   // Returns true when the tap landed on the cube.
   function tapAt(e) {
     if (!isPointedAt(e)) return false;
-    tapTurnsLeft = TAP_TURNS;
+    // A mouse click lands while already hovered, which animates on its own; the timed
+    // burst is for touch taps, which never hover.
+    if (!hovered) tapTurnsLeft = TAP_TURNS;
     return true;
   }
 
@@ -245,8 +248,4 @@ function rotateVertices(source, target, vertices, u, v, cos, sin) {
     target[i * 3 + u] = a * cos - b * sin;
     target[i * 3 + v] = a * sin + b * cos;
   }
-}
-
-function easeInOutCubic(t) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }

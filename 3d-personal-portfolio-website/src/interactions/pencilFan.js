@@ -97,7 +97,9 @@ export function createPencilFan({ root, ray }) {
   // Returns true when the tap landed on the pencil holder.
   function tapAt(e) {
     if (!isPointedAt(e)) return false;
-    holdUntil = performance.now() + TAP_HOLD_MS;
+    // A mouse click lands while already hovered, which animates on its own; the timed
+    // burst is for touch taps, which never hover.
+    if (!hovered) holdUntil = performance.now() + TAP_HOLD_MS;
     return true;
   }
 
