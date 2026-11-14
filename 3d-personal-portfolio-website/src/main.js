@@ -6,6 +6,7 @@ import { createPencilFan } from "./interactions/pencilFan.js";
 import { createPinchZoom } from "./interactions/pinchZoom.js";
 import { createPreviewFocus } from "./interactions/previewFocus.js";
 import { createRaycast } from "./interactions/raycast.js";
+import { createRubiksTurns } from "./interactions/rubiksTurns.js";
 import { createMatrixLoader } from "./loader.js";
 import { createCameraMover } from "./three/cameraMover.js";
 import { createThreeContext } from "./three/context.js";
@@ -476,7 +477,12 @@ const onAllAssetsLoaded = () => {
 
   const ray = createRaycast(renderer, camera);
 
-  const pencilFan = createPencilFan({ root, ray });
+  // Small objects that react to hover (mouse) and taps (touch).
+  const roomToys = [
+    createPencilFan({ root, ray }),
+    createRubiksTurns({ root, ray }),
+  ].filter(Boolean);
+  const clearToyHover = () => roomToys.forEach((toy) => toy.clearHover());
 
   function clickRoom(e) {
     if (gateIfBusy(e)) return;
@@ -520,7 +526,7 @@ const onAllAssetsLoaded = () => {
       }
     }
 
-    if (!preview.isFocused() && pencilFan?.tapAt(e)) return;
+    if (!preview.isFocused() && roomToys.some((toy) => toy.tapAt(e))) return;
 
     // Check hitbox first, then check if we're clicking laptop descendants
     const hitboxHits = ray.intersect(e, laptopHitbox, false);
@@ -564,11 +570,12 @@ const onAllAssetsLoaded = () => {
     // Hover is mouse-only: touch has no cursor, and taps would leave the pencils fanned.
     if (e.pointerType !== "mouse") return;
     if (transitioning || focuser.isFocusing() || preview.isFocused()) {
-      pencilFan?.clearHover();
+      clearToyHover();
       return;
     }
 
-    const overPencils = Boolean(pencilFan?.hoverAt(e));
+    // Every toy updates its own hover state, so don't short-circuit.
+    const overToy = roomToys.map((toy) => toy.hoverAt(e)).includes(true);
 
     let overSpeaker = false;
     if (speakerRoot) {
@@ -582,7 +589,7 @@ const onAllAssetsLoaded = () => {
     const hitboxHits = ray.intersect(e, laptopHitbox, false);
     const laptopHits = ray.intersect(e, laptopRoot, true);
     const overLaptop = hitboxHits.length > 0 || laptopHits.length > 0;
-    const c = overLaptop || overSpeaker || overPencils ? "pointer" : "";
+    const c = overLaptop || overSpeaker || overToy ? "pointer" : "";
     renderer.domElement.style.cursor = c;
     cssRenderer.domElement.style.cursor = c;
   }
@@ -591,7 +598,7 @@ const onAllAssetsLoaded = () => {
   cssRenderer.domElement.addEventListener("click", clickRoom);
   renderer.domElement.addEventListener("pointermove", hoverRoom);
   cssRenderer.domElement.addEventListener("pointermove", hoverRoom);
-  renderer.domElement.addEventListener("pointerleave", () => pencilFan?.clearHover());
+  renderer.domElement.addEventListener("pointerleave", clearToyHover);
 
   renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
   cssRenderer.domElement.addEventListener("wheel", onWheel, { passive: false });
@@ -616,7 +623,7 @@ const onAllAssetsLoaded = () => {
     // Clamp so a backgrounded tab doesn't snap animations on return.
     const dt = THREE.MathUtils.clamp((now - lastFrameTime) / 1000, 0, 0.1);
     lastFrameTime = now;
-    pencilFan?.update(dt);
+    roomToys.forEach((toy) => toy.update(dt));
     controls.update();
     renderer.render(scene, camera);
     cssRenderer.render(scene, camera);

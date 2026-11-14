@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+import { toFloatArray } from "../util/geometry.js";
+
 // The pencil bodies are merged into the holder's mesh (one primitive per material), so
 // they can't be moved individually. Instead the pencil vertices are deformed: everything
 // rises a little and the tops fan out from the holder's centre axis.
@@ -42,7 +44,7 @@ export function createPencilFan({ root, ray }) {
   const liftLocal = LIFT / holder.getWorldScale(new THREE.Vector3()).y;
 
   const parts = pencilMeshes.map((mesh) => {
-    const rest = toFloatPositions(mesh.geometry);
+    const rest = toFloatArray(mesh.geometry.getAttribute("position"));
     const positions = new THREE.BufferAttribute(rest.slice(), 3);
     positions.setUsage(THREE.DynamicDrawUsage);
     mesh.geometry.setAttribute("position", positions);
@@ -78,15 +80,8 @@ export function createPencilFan({ root, ray }) {
     }
   }
 
-  // The box test is cheap but ignores what's in front of the holder. Only when it passes,
-  // raycast the room and reject the hit if anything else is closer (e.g. the laptop).
   function isPointedAt(e) {
-    const boxDistance = ray.distanceToBox(e, hitBox);
-    if (boxDistance === null) return false;
-    const [nearest] = ray.intersect(e, root, true);
-    return (
-      !nearest || nearest.distance >= boxDistance || isWithin(nearest.object, holder)
-    );
+    return ray.pointsAt(e, { box: hitBox, target: holder, scene: root });
   }
 
   // Returns true when the pointer is over the pencil holder.
@@ -122,27 +117,7 @@ function isHolderBody(mesh) {
   return !mesh.material?.name?.startsWith(PENCIL_MATERIAL_PREFIX);
 }
 
-function isWithin(object, ancestor) {
-  for (let current = object; current; current = current.parent) {
-    if (current === ancestor) return true;
-  }
-  return false;
-}
-
 function maxY(geometry) {
   geometry.computeBoundingBox();
   return geometry.boundingBox.max.y;
-}
-
-// Positions are stored as normalized int16 (KHR_mesh_quantization), which can't go past
-// the original bounds; copy them to floats so the pencils can rise above their tips.
-function toFloatPositions(geometry) {
-  const source = geometry.getAttribute("position");
-  const out = new Float32Array(source.count * 3);
-  for (let i = 0; i < source.count; i++) {
-    out[i * 3] = source.getX(i);
-    out[i * 3 + 1] = source.getY(i);
-    out[i * 3 + 2] = source.getZ(i);
-  }
-  return out;
 }
