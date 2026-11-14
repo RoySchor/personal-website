@@ -1,5 +1,7 @@
 import * as THREE from "three";
 
+import { toFloatArray } from "../util/geometry.js";
+
 // The cube is a single object, but its cubies and stickers are separate vertex islands
 // inside it, laid out on a 3×3×3 grid spanning -1..1 in the cube's local space. A face
 // turn rotates every island in that layer 90° about the cube's centre. The cube keeps
@@ -243,16 +245,6 @@ function rotateVertices(source, target, vertices, u, v, cos, sin) {
     target[i * 3 + u] = a * cos - b * sin;
     target[i * 3 + v] = a * sin + b * cos;
   }
-}
-
-function toFloatArray(attribute) {
-  const out = new Float32Array(attribute.count * 3);
-  for (let i = 0; i < attribute.count; i++) {
-    out[i * 3] = attribute.getX(i);
-    out[i * 3 + 1] = attribute.getY(i);
-    out[i * 3 + 2] = attribute.getZ(i);
-  }
-  return out;
 }
 
 function easeInOutCubic(t) {
