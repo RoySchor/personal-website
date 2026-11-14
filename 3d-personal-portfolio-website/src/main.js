@@ -10,6 +10,7 @@ import { createRaycast } from "./interactions/raycast.js";
 import { createRubiksTurns } from "./interactions/rubiksTurns.js";
 import { createMatrixLoader } from "./loader.js";
 import { createCameraMover } from "./three/cameraMover.js";
+import { createCoffeeSteam } from "./three/coffeeSteam.js";
 import { createThreeContext } from "./three/context.js";
 import { createControls, lockAzimuthAroundCurrentView } from "./three/controls.js";
 import { createFocusZoom } from "./three/focusZoom.js";
@@ -484,6 +485,7 @@ const onAllAssetsLoaded = () => {
     createRubiksTurns({ root, ray }),
     createClockHands({ root, ray }),
   ].filter(Boolean);
+  const coffeeSteam = createCoffeeSteam({ root, scene });
   const clearToyHover = () => roomToys.forEach((toy) => toy.clearHover());
 
   function clickRoom(e) {
@@ -626,6 +628,7 @@ const onAllAssetsLoaded = () => {
     const dt = THREE.MathUtils.clamp((now - lastFrameTime) / 1000, 0, 0.1);
     lastFrameTime = now;
     roomToys.forEach((toy) => toy.update(dt));
+    coffeeSteam?.update(dt);
     controls.update();
     renderer.render(scene, camera);
     cssRenderer.render(scene, camera);
