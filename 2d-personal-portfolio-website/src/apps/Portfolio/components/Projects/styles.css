@@ -80,22 +80,12 @@
   justify-content: flex-start;
 }
 
-.media-item img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
 .media-video {
   width: 100%;
   max-width: 100%;
   height: auto;
   display: block;
   object-fit: cover;
-}
-
-.media-item.blender-scene img {
-  filter: brightness(1.4);
 }
 
 .media-caption {

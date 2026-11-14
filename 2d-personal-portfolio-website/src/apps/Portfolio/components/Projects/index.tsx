@@ -144,29 +144,21 @@ const Projects: React.FC = () => {
 
             {project.media && project.media.length > 0 && (
               <div className={`project-media-grid count-${project.media.length}`}>
-                {project.media.map((item, i) => {
-                  const isBlenderScene = item.src.includes("blender-room-scene");
-                  return (
-                    <div
-                      key={i}
-                      className={`media-item ${isBlenderScene ? "blender-scene" : ""}`}
+                {project.media.map((item, i) => (
+                  <div key={i} className="media-item">
+                    <video
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      preload="metadata"
+                      className="media-video"
                     >
-                      <video
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                        className="media-video"
-                      >
-                        <source src={item.src} type="video/mp4" />
-                      </video>
-                      {item.caption && (
-                        <div className="media-caption">{item.caption}</div>
-                      )}
-                    </div>
-                  );
-                })}
+                      <source src={item.src} type="video/mp4" />
+                    </video>
+                    {item.caption && <div className="media-caption">{item.caption}</div>}
+                  </div>
+                ))}
               </div>
             )}
 

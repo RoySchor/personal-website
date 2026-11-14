@@ -1,4 +1,4 @@
-export function createArrowControls({ camera, controls, onMove, onZoom }) {
+export function createArrowControls({ onMove, onZoom }) {
   const container = document.createElement("div");
   container.className = "arrow-controls";
 
@@ -71,6 +71,5 @@ export function createArrowControls({ camera, controls, onMove, onZoom }) {
     hide: () => {
       container.style.display = "none";
     },
-    element: container,
   };
 }

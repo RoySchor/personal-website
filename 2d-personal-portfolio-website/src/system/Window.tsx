@@ -22,7 +22,6 @@ interface Props {
 }
 
 const Window: React.FC<Props> = (props) => {
-  const headerRef = useRef<HTMLDivElement>(null);
   const [dragging, setDragging] = useState(false);
   const [resizing, setResizing] = useState(false);
   const [controlsHovered, setControlsHovered] = useState(false);
@@ -362,7 +361,6 @@ const Window: React.FC<Props> = (props) => {
     >
       {/* Title bar */}
       <div
-        ref={headerRef}
         onMouseDown={startDrag}
         onTouchStart={startDrag}
         className="mac-blur"

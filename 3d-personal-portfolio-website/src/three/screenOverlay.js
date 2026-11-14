@@ -71,8 +71,6 @@ export function mountScreenOverlay(root, { iframeUrl = "https://example.org" } =
     iframeEl: iframe,
     wrapper,
     screenMesh,
-    screenAnchor,
-    refit: fit,
     setFocused: (val) => {
       isFocused = val;
       fit();

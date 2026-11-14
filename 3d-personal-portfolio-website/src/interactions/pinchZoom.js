@@ -2,14 +2,7 @@ import * as THREE from "three";
 
 import { getScreenBasis } from "../util/screenBasis.js";
 
-export function createPinchZoom({
-  camera,
-  controls,
-  cssRoot,
-  glRoot,
-  screenMesh,
-  cssObject,
-}) {
+export function createPinchZoom({ camera, controls, glRoot, screenMesh, cssObject }) {
   let pinchOn = false;
   let pinchLastDist = 0;
   let baseD = 0;

@@ -5,7 +5,6 @@
   --mac-menubar-text: #fffefe;
   --mac-dock-bg: rgba(115, 114, 109, 0.556);
   --mac-dock-border: rgba(0, 0, 0, 0.08);
-  --win-active: #2f81f7;
   --win-border: rgba(255, 255, 255, 0.08);
   --win-bg: #16181d;
   --win-text: #e7e7e7;
@@ -48,7 +47,6 @@
   --battery-tip-width: 4px;
   --battery-tip-height: 7px;
   --battery-margin-right: 30px;
-  --battery-margin-left: 10px;
 
   /* Battery Dropdown */
   --battery-dropdown-width: 200px;
@@ -63,9 +61,6 @@
   --window-min-width: 360px;
   --window-min-height: 220px;
   --window-header-inner-circle-icon-size: 20px;
-  --window-title-website-icon-size: 32px;
-  --window-title-website-font-size: 30px;
-  --ui-scale: 1;
 
   /* Quotes App sizing */
   --quotes-title-size: 48px;
@@ -137,7 +132,6 @@
     --battery-tip-width: 6px;
     --battery-tip-height: 12px;
     --battery-margin-right: 55px;
-    --battery-margin-left: 55px;
 
     /* Battery Dropdown */
     --battery-dropdown-width: 320px;
@@ -152,9 +146,6 @@
     --window-min-width: 280px;
     --window-min-height: 180px;
     --window-header-inner-circle-icon-size: 54px;
-    --window-title-website-icon-size: 54px;
-    --window-title-website-font-size: 20px;
-    --ui-scale: 1;
 
     /* Quotes App sizing - mobile */
     --quotes-title-size: 86px;
