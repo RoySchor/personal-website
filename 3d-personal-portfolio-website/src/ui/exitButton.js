@@ -52,39 +52,15 @@ export function createExitButton(onClick) {
           gap: 7px;
         }
 
-        .exit-button {
-          top: auto;
-          bottom: 5px;
-          right: 155px;
-        }
         .arrow-controls {
           top: auto;
           bottom: 5px;
           right: 10px;
         }
 
-        /* Mobile Layout: 2 rows */
-        /* Row 1: Up, Down, + (above Left/Right/-) */
-        /* Row 2: Exit, -, Left, Right */
-        /* Note: Exit button is separate DOM element, positioned absolutely.
-           We need to position the Grid so +, - align vertically.
-
-           Target Layout:
-                   Up   Down  +
-           Exit    -    Left  Right
-
-           Wait, "move + to above the - button".
-
-           Current:
-                   Up   Down
-           +   -   Left Right
-
-           New Request:
-           +       Up   Down
-           -       Left Right
-
-           Let's update the grid areas.
-        */
+        /* Mobile: two rows with zoom on the left
+             +   Up    Down
+             -   Left  Right */
         .controls-grid {
           grid-template-columns: 30px 30px 30px;
           grid-template-rows: 30px 30px;
@@ -93,15 +69,13 @@ export function createExitButton(onClick) {
             "zout left right";
         }
 
-        /* Adjust Exit button position if needed */
-        /* Grid width is 3 cols (90) + 2 gaps (16) = 106px wide. */
-        /* Grid is at right: 10px. Left edge is at 116px from right. */
-        /* Exit button needs to be left of that. */
+        /* Sit just left of the grid (3 cols + 2 gaps ≈ 106px wide, at right: 10px). */
         .exit-button {
           top: auto;
           bottom: 5px;
           right: 125px;
         }
+      }
     `;
     document.head.appendChild(style);
   }

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { BiExpand } from "react-icons/bi";
 import { HiMinus } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 
@@ -8,7 +7,7 @@ type CSSPx = number | string;
 interface WindowControlProps {
   color: string;
   onClick?: () => void;
-  icon: "close" | "minimize" | "maximize";
+  icon: "close" | "minimize";
   showIcon: boolean;
   iconSize: CSSPx;
   isMobile?: boolean;
@@ -46,8 +45,6 @@ const WindowControl: React.FC<WindowControlProps> = ({
         return <IoClose style={iconStyle} />;
       case "minimize":
         return <HiMinus style={iconStyle} />;
-      case "maximize":
-        return <BiExpand style={iconStyle} />;
     }
   };
 

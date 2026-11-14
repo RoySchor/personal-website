@@ -128,5 +128,5 @@ export function createMatrixLoader(canvasId = "loader") {
     progress = Number.isFinite(p) ? Math.max(0, Math.min(1, p)) : 0;
   }
 
-  return { start, stop, setProgress, canvas };
+  return { start, stop, setProgress };
 }

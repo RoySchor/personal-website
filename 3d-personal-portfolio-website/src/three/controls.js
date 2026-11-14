@@ -11,7 +11,7 @@ export function createControls(camera, domElement) {
   return controls;
 }
 
-export function lockAzimuthAroundCurrentView(controls, camera, target, isCoarse) {
+export function lockAzimuthAroundCurrentView(controls, camera, target) {
   const startAz = Math.atan2(camera.position.z - target.z, camera.position.x - target.x);
   const halfFan = THREE.MathUtils.degToRad(120);
 

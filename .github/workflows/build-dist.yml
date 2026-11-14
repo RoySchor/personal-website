@@ -33,13 +33,6 @@ jobs:
         working-directory: 3d-personal-portfolio-website
         run: npm ci
 
-      - name: Configure .env.production (3D)
-        working-directory: 3d-personal-portfolio-website
-        run: |
-          cat > .env.production << 'EOF'
-          VITE_SCREEN_URL=/screen/
-          EOF
-
       - name: Build 3D project
         working-directory: 3d-personal-portfolio-website
         run: npm run build

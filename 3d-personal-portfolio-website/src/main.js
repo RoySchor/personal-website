@@ -70,20 +70,18 @@ const onAllAssetsLoaded = () => {
   const cameraMover = createCameraMover({ camera, controls });
 
   const arrowControls = createArrowControls({
-    camera,
-    controls,
     onMove: (direction) => cameraMover.move(direction),
     onZoom: (direction) => cameraMover.zoom(direction),
   });
 
   // load room glb
-  const { root, center, isCoarse } = await loadRoom(ctx, roomUrl, {
+  const { root, center } = await loadRoom(ctx, roomUrl, {
     onProgress,
     onAllAssetsLoaded,
   });
   controls.target.copy(center);
   controls.update();
-  lockAzimuthAroundCurrentView(controls, camera, center, isCoarse);
+  lockAzimuthAroundCurrentView(controls, camera, center);
 
   const iframeUrl = `${import.meta.env.BASE_URL}screen/`;
 
@@ -91,8 +89,8 @@ const onAllAssetsLoaded = () => {
   if (!overlay) return;
   const { screenMesh, iframeEl, wrapper, cssObject } = overlay;
 
-  // Update cameraMover with actual mesh/cssObject
-  cameraMover.setMesh(screenMesh, cssObject);
+  // Arrow controls move relative to the screen's orientation
+  cameraMover.setCssObject(cssObject);
 
   // Find the smallest ancestor that represents the whole laptop
   function getLaptopRoot(node) {
@@ -472,11 +470,9 @@ const onAllAssetsLoaded = () => {
   const pinch = createPinchZoom({
     camera,
     controls,
-    cssRoot: cssRenderer.domElement,
     glRoot: renderer.domElement,
     screenMesh,
     cssObject,
-    shouldBlock: () => transitioning || focuser.isFocusing(),
   });
 
   const ray = createRaycast(renderer, camera);
@@ -631,9 +627,6 @@ const onAllAssetsLoaded = () => {
       try {
         pinch?.detach();
       } catch {}
-      try {
-        preview?.detach?.();
-      } catch {}
 
       // Click listeners
       try {
@@ -657,9 +650,6 @@ const onAllAssetsLoaded = () => {
       } catch {}
       try {
         cssRenderer.domElement.removeEventListener("wheel", onWheel);
-      } catch {}
-      try {
-        window.removeEventListener("resize", viewport?.syncSizesEven);
       } catch {}
     });
   }

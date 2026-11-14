@@ -72,7 +72,6 @@ export function loadRoom(
         const horizontalDist = radius * 1.75 * phoneZoomOutMultiplier;
         const y = horizontalDist * 0.6;
 
-        ctx.center = center; // stash for controls post-config
         camera.position.set(
           center.x + horizontalDist,
           center.y + y,
@@ -80,7 +79,7 @@ export function loadRoom(
         );
         camera.lookAt(center);
 
-        resolve({ root, center, isCoarse });
+        resolve({ root, center });
       },
       undefined,
       (err) => {

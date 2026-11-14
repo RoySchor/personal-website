@@ -7,7 +7,6 @@ export function createCameraMover({ camera, controls }) {
   const ZOOM_AMOUNT = isMobile ? 0.1 : 0.05;
   const ANIMATION_DURATION = 200;
 
-  let screenMesh = null;
   let cssObject = null;
   let isAnimating = false;
 
@@ -112,8 +111,7 @@ export function createCameraMover({ camera, controls }) {
   return {
     move,
     zoom,
-    setMesh: (mesh, css) => {
-      screenMesh = mesh;
+    setCssObject: (css) => {
       cssObject = css;
     },
   };

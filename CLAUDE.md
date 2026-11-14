@@ -35,7 +35,7 @@ The site is a Three.js scene of a hand-modeled Blender room, with a **live React
 - `3d-personal-portfolio-website/` — the host. Vanilla JS + Three.js. `base: "/"`.
 - `2d-personal-portfolio-website/` — the guest. React 19 + TypeScript. `base: "/screen/"`.
 
-They are joined at build time, not by a router: the 2D `dist/` is copied into `3d/dist/screen/`, and `3d/src/main.js` points an iframe at `` `${import.meta.env.BASE_URL}screen/` ``. Same-origin by construction, which is the reason for the monorepo — it avoids CORS on the embedded iframe. The `VITE_IFRAME_URL` / `VITE_SCREEN_URL` env vars in `3d/.env.*` and the deploy workflow are **dead** — nothing reads them.
+They are joined at build time, not by a router: the 2D `dist/` is copied into `3d/dist/screen/`, and `3d/src/main.js` points an iframe at `` `${import.meta.env.BASE_URL}screen/` ``. Same-origin by construction, which is the reason for the monorepo — it avoids CORS on the embedded iframe. There are no env vars for the iframe URL; `BASE_URL` is the only knob.
 
 ### 3D host
 

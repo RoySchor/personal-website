@@ -4,7 +4,6 @@
   --wifi-dropdown-width: 280px;
   --wifi-dropdown-top: 40px;
   --wifi-dropdown-right: -120px;
-  --wifi-item-height: 40px;
 }
 
 @media (max-width: 1024px) {
@@ -13,7 +12,6 @@
     --wifi-dropdown-width: 350px;
     --wifi-dropdown-top: 76px;
     --wifi-dropdown-right: -150px;
-    --wifi-item-height: 60px;
   }
 }
 
