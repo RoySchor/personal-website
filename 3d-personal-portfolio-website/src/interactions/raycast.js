@@ -17,5 +17,11 @@ export function createRaycast(renderer, camera) {
     return ray.intersectObject(object3D, recursive);
   }
 
-  return { intersect };
+  function hitsBox(e, box) {
+    setMouseFromEvent(e);
+    ray.setFromCamera(ndc, camera);
+    return ray.ray.intersectsBox(box);
+  }
+
+  return { intersect, hitsBox };
 }
