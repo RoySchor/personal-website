@@ -20,6 +20,8 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
       target: controls.target.clone(),
       minDist: controls.minDistance,
       maxDist: controls.maxDistance,
+      minAzimuth: controls.minAzimuthAngle,
+      maxAzimuth: controls.maxAzimuthAngle,
       enabled: controls.enabled,
       pointerEvents: cssRoot?.style.pointerEvents || "none",
     };
@@ -38,6 +40,12 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     focusing = true;
     controls.enabled = false;
     cssRoot && (cssRoot.style.pointerEvents = saved.pointerEvents);
+    // controls.update() clamps the camera to the zoomed-in limits, which would pull it
+    // short of the saved view; lift them for the trip back and restore them at the end.
+    controls.minDistance = 0;
+    controls.maxDistance = Infinity;
+    controls.minAzimuthAngle = -Infinity;
+    controls.maxAzimuthAngle = Infinity;
 
     stop();
     animId = requestAnimationFrame(function step(now) {
@@ -52,6 +60,8 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
         focusing = false;
         controls.minDistance = saved.minDist;
         controls.maxDistance = saved.maxDist;
+        controls.minAzimuthAngle = saved.minAzimuth;
+        controls.maxAzimuthAngle = saved.maxAzimuth;
         controls.enabled = saved.enabled;
         resolveDone();
       }
@@ -120,5 +130,41 @@ export function createFocusZoom({ camera, controls, cssRoot }) {
     return done;
   }
 
-  return { focusOn, restore, isFocusing: () => focusing };
+  // Flies to an exact camera pose. The room's azimuth fan is lifted while there, since the
+  // pose may sit outside it (restore() puts it back).
+  function focusAt({ position, target, distance, duration = 650 }) {
+    let resolveDone;
+    const done = new Promise((r) => (resolveDone = r));
+    if (!focusing) save();
+
+    const fromPos = camera.position.clone();
+    const fromTar = controls.target.clone();
+    controls.minAzimuthAngle = -Infinity;
+    controls.maxAzimuthAngle = Infinity;
+    controls.minDistance = Math.min(0.2, distance * 0.5);
+    controls.maxDistance = Math.max(1.0, distance * 1.6);
+
+    const start = performance.now();
+    focusing = true;
+    controls.enabled = false;
+
+    stop();
+    animId = requestAnimationFrame(function step(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const k = ease(t);
+      camera.position.lerpVectors(fromPos, position, k);
+      controls.target.lerpVectors(fromTar, target, k);
+      camera.lookAt(controls.target);
+      controls.update();
+      if (t < 1) animId = requestAnimationFrame(step);
+      else {
+        focusing = false;
+        controls.enabled = true;
+        resolveDone();
+      }
+    });
+    return done;
+  }
+
+  return { focusOn, focusAt, restore, isFocusing: () => focusing };
 }
