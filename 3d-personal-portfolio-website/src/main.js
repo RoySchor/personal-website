@@ -2,6 +2,7 @@ import * as THREE from "three";
 
 import musicUrl from "./assets/air-on-a-g-sring.m4a";
 import roomUrl from "./assets/portfolio-room.glb?url";
+import { createPencilFan } from "./interactions/pencilFan.js";
 import { createPinchZoom } from "./interactions/pinchZoom.js";
 import { createPreviewFocus } from "./interactions/previewFocus.js";
 import { createRaycast } from "./interactions/raycast.js";
@@ -475,6 +476,8 @@ const onAllAssetsLoaded = () => {
 
   const ray = createRaycast(renderer, camera);
 
+  const pencilFan = createPencilFan({ root, ray });
+
   function clickRoom(e) {
     if (gateIfBusy(e)) return;
 
@@ -517,6 +520,8 @@ const onAllAssetsLoaded = () => {
       }
     }
 
+    if (!preview.isFocused() && pencilFan?.tapAt(e)) return;
+
     // Check hitbox first, then check if we're clicking laptop descendants
     const hitboxHits = ray.intersect(e, laptopHitbox, false);
     const laptopHits = ray.intersect(e, laptopRoot, true);
@@ -556,7 +561,14 @@ const onAllAssetsLoaded = () => {
 
   // hover cursor
   function hoverRoom(e) {
-    if (transitioning || focuser.isFocusing()) return;
+    // Hover is mouse-only: touch has no cursor, and taps would leave the pencils fanned.
+    if (e.pointerType !== "mouse") return;
+    if (transitioning || focuser.isFocusing() || preview.isFocused()) {
+      pencilFan?.clearHover();
+      return;
+    }
+
+    const overPencils = Boolean(pencilFan?.hoverAt(e));
 
     let overSpeaker = false;
     if (speakerRoot) {
@@ -570,15 +582,16 @@ const onAllAssetsLoaded = () => {
     const hitboxHits = ray.intersect(e, laptopHitbox, false);
     const laptopHits = ray.intersect(e, laptopRoot, true);
     const overLaptop = hitboxHits.length > 0 || laptopHits.length > 0;
-    const c = overLaptop || overSpeaker ? "pointer" : "";
+    const c = overLaptop || overSpeaker || overPencils ? "pointer" : "";
     renderer.domElement.style.cursor = c;
     cssRenderer.domElement.style.cursor = c;
   }
 
   renderer.domElement.addEventListener("click", clickRoom);
   cssRenderer.domElement.addEventListener("click", clickRoom);
-  renderer.domElement.addEventListener("mousemove", hoverRoom);
-  cssRenderer.domElement.addEventListener("mousemove", hoverRoom);
+  renderer.domElement.addEventListener("pointermove", hoverRoom);
+  cssRenderer.domElement.addEventListener("pointermove", hoverRoom);
+  renderer.domElement.addEventListener("pointerleave", () => pencilFan?.clearHover());
 
   renderer.domElement.addEventListener("wheel", onWheel, { passive: false });
   cssRenderer.domElement.addEventListener("wheel", onWheel, { passive: false });
@@ -597,8 +610,13 @@ const onAllAssetsLoaded = () => {
   }
 
   // render loop
-  function animate() {
+  let lastFrameTime = performance.now();
+  function animate(now = performance.now()) {
     requestAnimationFrame(animate);
+    // Clamp so a backgrounded tab doesn't snap animations on return.
+    const dt = THREE.MathUtils.clamp((now - lastFrameTime) / 1000, 0, 0.1);
+    lastFrameTime = now;
+    pencilFan?.update(dt);
     controls.update();
     renderer.render(scene, camera);
     cssRenderer.render(scene, camera);

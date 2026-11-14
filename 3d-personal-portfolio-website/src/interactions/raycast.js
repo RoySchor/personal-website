@@ -17,5 +17,15 @@ export function createRaycast(renderer, camera) {
     return ray.intersectObject(object3D, recursive);
   }
 
-  return { intersect };
+  const boxEntry = new THREE.Vector3();
+
+  // Distance along the pointer ray to where it enters `box`, or null if it misses.
+  function distanceToBox(e, box) {
+    setMouseFromEvent(e);
+    ray.setFromCamera(ndc, camera);
+    const point = ray.ray.intersectBox(box, boxEntry);
+    return point ? point.distanceTo(ray.ray.origin) : null;
+  }
+
+  return { intersect, distanceToBox };
 }
