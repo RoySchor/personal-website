@@ -2,19 +2,14 @@ export function createPreviewFocus({
   cssRoot,
   wrapper,
   iframeEl,
-  makeEvenViewportSync,
-  ctx,
   onEnter,
   onExit,
   onArmIframe,
 }) {
   let focused = false;
-  let previewClickArm = null;
-  let viewport = makeEvenViewportSync(ctx);
 
   function enablePreview() {
     focused = true;
-    viewport?.dispose();
 
     cssRoot.style.pointerEvents = "none";
     cssRoot.style.cursor = "";
@@ -25,7 +20,7 @@ export function createPreviewFocus({
     cssRoot.style.touchAction = "auto";
     wrapper.style.touchAction = "auto";
 
-    onEnter?.({ focused: true, interactive: true });
+    onEnter?.();
     onArmIframe?.();
   }
 
@@ -40,13 +35,7 @@ export function createPreviewFocus({
     cssRoot.style.touchAction = "";
     wrapper.style.touchAction = "";
 
-    viewport = makeEvenViewportSync(ctx);
-
-    if (previewClickArm) {
-      wrapper.removeEventListener("click", previewClickArm, true);
-      previewClickArm = null;
-    }
-    onExit?.({ focused: false });
+    onExit?.();
   }
 
   return {
