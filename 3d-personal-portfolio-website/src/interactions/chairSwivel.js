@@ -1,6 +1,7 @@
 import * as THREE from "three";
 
 import { easePushAndCoast } from "../util/easing.js";
+import { connectedPieces } from "../util/geometry.js";
 
 // The desk chair is one object, so at load its upper half (seat, back, arms, mechanism,
 // upper gas-lift sleeve) is split into its own meshes and hung from a pivot on the gas
@@ -106,11 +107,13 @@ export function createChairSwivel({ root, ray }) {
 
   function tapAt(e) {
     if (!isPointedAt(e)) return false;
-    const turnDeg = pickTurn(blocked, THREE.MathUtils.radToDeg(angle));
+    // Plan from the nearest whole degree so the chair lands exactly on a checked angle.
+    const startDeg = Math.round(THREE.MathUtils.radToDeg(angle));
+    const turnDeg = pickTurn(blocked, startDeg);
     if (turnDeg === 0) return true;
     swivel = {
       from: angle,
-      to: angle + THREE.MathUtils.degToRad(turnDeg),
+      to: THREE.MathUtils.degToRad(startDeg + turnDeg),
       duration: Math.max(MIN_SWIVEL_SECONDS, Math.abs(turnDeg) * SECONDS_PER_TURN_DEG),
       elapsed: 0,
     };
@@ -131,8 +134,8 @@ export function createChairSwivel({ root, ray }) {
 
 // A random signed turn in whole degrees, MIN–MAX_TURN_DEG long, that never crosses a
 // blocked angle. Falls back to the longest clear turn if nothing that long is free.
-function pickTurn(blocked, currentDeg) {
-  const start = wrapDegrees(Math.round(currentDeg));
+function pickTurn(blocked, startDeg) {
+  const start = wrapDegrees(startDeg);
   const options = [];
   let longest = 0;
   for (const direction of [1, -1]) {
@@ -249,25 +252,6 @@ function pieceBoxes(mesh) {
       );
   }
   return [...boxes.values()];
-}
-
-// Union-find over the triangle indices; returns a function mapping a vertex to its piece.
-function connectedPieces(geometry) {
-  const index = geometry.index;
-  const parent = new Int32Array(geometry.getAttribute("position").count).map((_, i) => i);
-  const find = (i) => {
-    while (parent[i] !== i) {
-      parent[i] = parent[parent[i]];
-      i = parent[i];
-    }
-    return i;
-  };
-  for (let i = 0; i < index.count; i += 3) {
-    const a = find(index.getX(i));
-    parent[find(index.getX(i + 1))] = a;
-    parent[find(index.getX(i + 2))] = find(a);
-  }
-  return find;
 }
 
 // World positions of the vertices a mesh's triangles actually use.

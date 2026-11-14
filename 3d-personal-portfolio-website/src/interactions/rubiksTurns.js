@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
 import { easeInOutCubic } from "../util/easing.js";
-import { toFloatArray } from "../util/geometry.js";
+import { connectedPieces, toFloatArray } from "../util/geometry.js";
 
 // The cube is a single object, but its cubies and stickers are separate vertex islands
 // inside it, laid out on a 3×3×3 grid spanning -1..1 in the cube's local space. A face
@@ -192,30 +192,10 @@ function createPart(mesh) {
   return { positions, normals, restPositions, restNormals, islands };
 }
 
-// Groups vertices into connected pieces using the triangle indices (union-find).
+// Lists the vertices of each connected piece.
 function findIslands(geometry) {
   const vertexCount = geometry.getAttribute("position").count;
-  const parent = new Int32Array(vertexCount).map((_, i) => i);
-  const find = (i) => {
-    while (parent[i] !== i) {
-      parent[i] = parent[parent[i]];
-      i = parent[i];
-    }
-    return i;
-  };
-  const union = (a, b) => {
-    parent[find(a)] = find(b);
-  };
-
-  const index = geometry.index;
-  const indexCount = index ? index.count : vertexCount;
-  const vertexAt = (i) => (index ? index.getX(i) : i);
-  for (let i = 0; i < indexCount; i += 3) {
-    const a = vertexAt(i);
-    union(a, vertexAt(i + 1));
-    union(a, vertexAt(i + 2));
-  }
-
+  const find = connectedPieces(geometry);
   const groups = new Map();
   for (let i = 0; i < vertexCount; i++) {
     const rootIndex = find(i);

@@ -32,9 +32,9 @@ export function createRaycast(renderer, camera) {
     const boxDistance = entry.distanceTo(ray.ray.origin);
     const [nearest] = ray.intersectObject(scene, true);
     const targets = Array.isArray(target) ? target : [target];
-    return (
+    return Boolean(
       (!exact && (!nearest || nearest.distance >= boxDistance)) ||
-      (nearest && targets.some((object) => isWithin(nearest.object, object)))
+      (nearest && targets.some((object) => isWithin(nearest.object, object))),
     );
   }
 

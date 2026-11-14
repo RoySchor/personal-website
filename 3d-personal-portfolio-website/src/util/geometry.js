@@ -10,3 +10,26 @@ export function toFloatArray(attribute) {
   }
   return out;
 }
+
+// Groups vertices into connected pieces using the triangle indices (union-find). Returns a
+// function mapping a vertex index to its piece's representative vertex.
+export function connectedPieces(geometry) {
+  const vertexCount = geometry.getAttribute("position").count;
+  const index = geometry.index;
+  const parent = new Int32Array(vertexCount).map((_, i) => i);
+  const find = (i) => {
+    while (parent[i] !== i) {
+      parent[i] = parent[parent[i]];
+      i = parent[i];
+    }
+    return i;
+  };
+  const indexCount = index ? index.count : vertexCount;
+  const vertexAt = (i) => (index ? index.getX(i) : i);
+  for (let i = 0; i < indexCount; i += 3) {
+    const a = find(vertexAt(i));
+    parent[find(vertexAt(i + 1))] = a;
+    parent[find(vertexAt(i + 2))] = find(a);
+  }
+  return find;
+}
