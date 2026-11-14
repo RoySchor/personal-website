@@ -21,8 +21,9 @@ export function createRaycast(renderer, camera) {
 
   // True when the pointer ray enters `box` and nothing in `scene` other than `target` (an
   // object or a list of them) is in front of it. The box test is cheap; the full scene
-  // raycast only runs when it passes.
-  function pointsAt(e, { box, target, scene }) {
+  // raycast only runs when it passes. By default empty space inside the box counts, which
+  // makes small objects easy to hit; `exact` requires the ray to hit the target itself.
+  function pointsAt(e, { box, target, scene, exact = false }) {
     setMouseFromEvent(e);
     ray.setFromCamera(ndc, camera);
     const entry = ray.ray.intersectBox(box, boxEntry);
@@ -31,10 +32,9 @@ export function createRaycast(renderer, camera) {
     const boxDistance = entry.distanceTo(ray.ray.origin);
     const [nearest] = ray.intersectObject(scene, true);
     const targets = Array.isArray(target) ? target : [target];
-    return (
-      !nearest ||
-      nearest.distance >= boxDistance ||
-      targets.some((object) => isWithin(nearest.object, object))
+    return Boolean(
+      (!exact && (!nearest || nearest.distance >= boxDistance)) ||
+      (nearest && targets.some((object) => isWithin(nearest.object, object))),
     );
   }
 
