@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export type AppKey = "portfolio" | "backgammon" | "quotes" | "resume";
+export type AppKey = "portfolio" | "quotes" | "resume";
 
 export interface AppDefinition {
   key: AppKey;

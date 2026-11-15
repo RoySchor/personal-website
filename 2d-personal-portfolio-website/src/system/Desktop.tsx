@@ -8,12 +8,10 @@ import ShutdownOverlay from "./ShutdownOverlay";
 import type { AppDefinition, AppKey, OSMode, WindowState, WindowAppProps } from "./types";
 import Window from "./Window";
 // APP COMPONENTS
-import BackgammonApp from "../apps/BackgammonApp";
 import PortfolioApp from "../apps/Portfolio";
 import QuotesApp from "../apps/QuotesApp";
 import ResumeApp from "../apps/ResumeApp";
 // ICONS
-import iconBackgammon from "../assets/icons/app-backgammon.webp";
 import iconBlog from "../assets/icons/app-blog.svg";
 import iconPortfolio from "../assets/icons/app-portfolio.webp";
 import iconQuotes from "../assets/icons/app-quotes.svg";
@@ -31,13 +29,6 @@ const Desktop: React.FC = () => {
         title: "Portfolio",
         icon: iconPortfolio,
         component: (p) => <PortfolioApp {...p} />,
-        dockFixed: true,
-      },
-      {
-        key: "backgammon",
-        title: "Backgammon",
-        icon: iconBackgammon,
-        component: (p) => <BackgammonApp {...p} />,
         dockFixed: true,
       },
       {
@@ -74,7 +65,6 @@ const Desktop: React.FC = () => {
 
     return {
       portfolio: mkWindow("portfolio", x, y, windowWidth, windowHeight, 11),
-      backgammon: undefined as unknown as WindowState,
       quotes: undefined as unknown as WindowState,
       resume: undefined as unknown as WindowState,
     } as unknown as Record<AppKey, WindowState>;
@@ -213,22 +203,13 @@ const Desktop: React.FC = () => {
         gapMultiplier={0}
       />
       <DesktopIcon
-        title="Shesh Besh"
-        icon={iconBackgammon}
-        onOpen={() => openApp("backgammon")}
-        rightOffset="var(--desktop-right-offset-row-1)"
-        topOffset="var(--desktop-icon-top-offset)"
-        iconGap="var(--desktop-icon-gap)"
-        gapMultiplier={1}
-      />
-      <DesktopIcon
         title="Quotes"
         icon={iconQuotes}
         onOpen={() => openApp("quotes")}
         rightOffset="var(--desktop-right-offset-row-1)"
         topOffset="var(--desktop-icon-top-offset)"
         iconGap="var(--desktop-icon-gap)"
-        gapMultiplier={2.1}
+        gapMultiplier={1}
       />
       <DesktopIcon
         title="Blog"
