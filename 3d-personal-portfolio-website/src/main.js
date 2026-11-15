@@ -19,6 +19,7 @@ import { createControls, lockAzimuthAroundCurrentView } from "./three/controls.j
 import { createFocusZoom } from "./three/focusZoom.js";
 import { addLights } from "./three/lights.js";
 import { loadRoom } from "./three/loadRoom.js";
+import { createMonitorTerminal } from "./three/monitorTerminal.js";
 import { mountScreenOverlay } from "./three/screenOverlay.js";
 import { makeEvenViewportSync } from "./three/viewport.js";
 import { createArrowControls } from "./ui/arrowControls.js";
@@ -505,6 +506,7 @@ const onAllAssetsLoaded = () => {
     backgammon,
   ].filter(Boolean);
   const coffeeSteam = createCoffeeSteam({ root, scene });
+  const monitorTerminal = createMonitorTerminal({ root, scene, camera });
   const clearToyHover = () => roomToys.forEach((toy) => toy.clearHover());
 
   function clickRoom(e) {
@@ -701,6 +703,7 @@ const onAllAssetsLoaded = () => {
     lastFrameTime = now;
     roomToys.forEach((toy) => toy.update(dt));
     coffeeSteam?.update(dt);
+    monitorTerminal?.update(dt);
     controls.update();
     renderer.render(scene, camera);
     cssRenderer.render(scene, camera);
