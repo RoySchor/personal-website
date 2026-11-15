@@ -47,7 +47,7 @@ const GRAIN_LIGHT = [255, 226, 180];
 const CRACK = [30, 15, 6];
 // Longer quotes would need lettering too small to read on the planks; the laptop app still
 // shows those.
-const MAX_QUOTE_CHARS = 190;
+const MAX_QUOTE_CHARS = 201;
 const RTL_TEXT = /[\u0590-\u08ff]/;
 
 const QUOTES = quoteStrings
