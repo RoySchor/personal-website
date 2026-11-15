@@ -40,10 +40,13 @@ const FONT_WEIGHT = 700;
 const INK = "rgba(28, 15, 6, 0.93)";
 // A faint light edge under each letter, so the ink reads as burned into the wood.
 const INK_HIGHLIGHT = "rgba(255, 232, 196, 0.16)";
-// Warm, mid-tone planks; set on the plank's own material too so its edges match the face.
-const PLANK_COLORS = ["#a5713f", "#9a6838", "#a06d3c"];
-const GRAIN_DARK = [58, 32, 14];
-const GRAIN_LIGHT = [255, 226, 180];
+// Golden oak, each plank a slightly different board; set on the plank's own material too so
+// its edges match the face.
+const PLANK_COLORS = ["#b5844a", "#aa7a43", "#b07f47"];
+const GRAIN_DARK = [64, 38, 16];
+const GRAIN_LIGHT = [255, 222, 165];
+const PORE = [44, 26, 12];
+const MINERAL = [52, 44, 38];
 const CRACK = [30, 15, 6];
 // Longer quotes would need lettering too small to read on the planks; the laptop app still
 // shows those.
@@ -177,14 +180,28 @@ function drawWood(ctx, canvas, baseColor, random) {
   ctx.fillStyle = baseColor;
   ctx.fillRect(0, 0, width, height);
 
-  // Real grain runs roughly parallel: every line follows one gentle plank-wide wave, plus
-  // a small wobble of its own.
+  // The tone drifts lighter and darker along a board's length.
+  const drift = ctx.createLinearGradient(0, 0, width, 0);
+  for (let stop = 0; stop <= 5; stop++) {
+    const tone = random() < 0.5 ? GRAIN_DARK : GRAIN_LIGHT;
+    drift.addColorStop(stop / 5, rgba(tone, random() * 0.09));
+  }
+  ctx.fillStyle = drift;
+  ctx.fillRect(0, 0, width, height);
+
+  // Fibres: random noise stretched along the plank reads as the streaky, uneven figure of
+  // sawn oak. A coarse layer for broad streaks, a fine one for the fibres themselves.
+  drawFibres(ctx, width, height, random, { columns: 20, alpha: 0.2 });
+  drawFibres(ctx, width, height, random, { columns: 140, alpha: 0.14 });
+
+  // Straight grain runs roughly parallel: every line follows one gentle plank-wide wave,
+  // plus a small wobble of its own.
   const wave = {
-    amplitude: height * (0.03 + random() * 0.05),
-    frequency: ((0.4 + random() * 0.8) * Math.PI * 2) / width,
+    amplitude: height * (0.02 + random() * 0.04),
+    frequency: ((0.3 + random() * 0.6) * Math.PI * 2) / width,
     phase: random() * Math.PI * 2,
   };
-  const knot = random() < 0.6 ? makeKnot(width, height, random) : null;
+  const knot = random() < 0.5 ? makeKnot(width, height, random) : null;
   const grainY = (x, y0, wobble) => {
     let y =
       y0 +
@@ -193,61 +210,103 @@ function drawWood(ctx, canvas, baseColor, random) {
     if (knot) y += bowAroundKnot(x, y, knot);
     return y;
   };
-
-  // Soft growth rings first, then the fine dark grain lines over them.
-  for (let i = 0; i < 14; i++) {
+  // Soft, wide growth-ring bands first, then the fine dark grain lines over them.
+  for (let i = 0; i < 10; i++) {
     strokeGrain(ctx, width, grainY, -height * 0.2 + random() * height * 1.4, random, {
-      color: random() < 0.5 ? rgba(GRAIN_DARK, 0.035) : rgba(GRAIN_LIGHT, 0.04),
-      lineWidth: 4 + random() * 8,
+      color: rgba(GRAIN_DARK, 0.04 + random() * 0.03),
+      lineWidth: 5 + random() * 9,
     });
   }
-  for (let i = 0; i < 46; i++) {
+  for (let i = 0; i < 55; i++) {
     strokeGrain(ctx, width, grainY, -height * 0.2 + random() * height * 1.4, random, {
-      color: rgba(GRAIN_DARK, 0.07 + random() * 0.12),
-      lineWidth: 0.6 + random() * 1.3,
+      color: rgba(GRAIN_DARK, 0.06 + random() * 0.14),
+      lineWidth: 0.5 + random() * 1.4,
     });
   }
 
-  // Pores: short dashes along the grain that give the surface its texture.
-  for (let i = 0; i < 650; i++) {
+  // Flat-sawn oak's "cathedral": nested arches where the saw cut across the growth rings.
+  if (random() < 0.8) drawCathedral(ctx, width, height, random);
+
+  // Oak's open pores: dense short dark dashes along the grain.
+  for (let i = 0; i < 1100; i++) {
     const x = random() * width;
     const y = grainY(x, random() * height, { amplitude: 0, frequency: 0, phase: 0 });
-    const length = 3 + random() * 11;
-    ctx.strokeStyle = rgba(GRAIN_DARK, 0.08 + random() * 0.14);
-    ctx.lineWidth = 0.8 + random() * 0.8;
+    const length = 3 + random() * 15;
+    ctx.strokeStyle = rgba(PORE, 0.1 + random() * 0.22);
+    ctx.lineWidth = 0.6 + random() * 0.9;
     ctx.beginPath();
     ctx.moveTo(x, y);
-    ctx.lineTo(x + length, y + (random() - 0.5));
+    ctx.lineTo(x + length, y + (random() - 0.5) * 0.8);
+    ctx.stroke();
+  }
+
+  // Ray flecks: tiny pale marks lying across the grain.
+  for (let i = 0; i < 220; i++) {
+    const x = random() * width;
+    const y = random() * height;
+    const length = 2 + random() * 5;
+    const angle = Math.PI / 2 + (random() - 0.5) * 0.8;
+    ctx.strokeStyle = rgba(GRAIN_LIGHT, 0.08 + random() * 0.1);
+    ctx.lineWidth = 1 + random();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(angle) * length, y + Math.sin(angle) * length);
+    ctx.stroke();
+  }
+
+  // A dark mineral streak now and then, the grey-brown stain old oak picks up.
+  if (random() < 0.6) {
+    const y0 = height * (0.15 + random() * 0.7);
+    const from = width * random() * 0.6;
+    const length = width * (0.2 + random() * 0.3);
+    ctx.strokeStyle = rgba(MINERAL, 0.1 + random() * 0.08);
+    ctx.lineWidth = 2 + random() * 4;
+    ctx.lineCap = "round";
+    ctx.beginPath();
+    for (let x = from; x <= from + length; x += 8) {
+      const y = grainY(x, y0, { amplitude: 0, frequency: 0, phase: 0 });
+      if (x === from) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
     ctx.stroke();
   }
 
   if (knot) drawKnot(ctx, knot);
 
-  // Hairline cracks: a couple of checks splitting in from the plank's ends, and a few tiny
-  // ones in the face, all running with the grain.
-  const checks = 1 + Math.floor(random() * 2);
+  // Weathered cracks, all running with the grain: checks splitting in from the plank's
+  // ends, now and then a long split down the board, and hairlines scattered in the face.
+  const checks = 2 + Math.floor(random() * 2);
   for (let i = 0; i < checks; i++) {
     const fromLeft = random() < 0.5;
     drawCrack(ctx, random, {
       x: fromLeft ? 0 : width,
-      y: height * (0.2 + random() * 0.6),
+      y: height * (0.15 + random() * 0.7),
       direction: fromLeft ? 1 : -1,
-      length: width * (0.07 + random() * 0.12),
-      thickness: 1.8 + random() * 1.2,
+      length: width * (0.17 + random() * 0.26),
+      thickness: 4.6 + random() * 3.2,
     });
   }
-  const hairlines = 2 + Math.floor(random() * 3);
+  if (random() < 0.45) {
+    drawCrack(ctx, random, {
+      x: width * (0.1 + random() * 0.3),
+      y: height * (0.2 + random() * 0.6),
+      direction: 1,
+      length: width * (0.45 + random() * 0.35),
+      thickness: 3 + random() * 1.7,
+    });
+  }
+  const hairlines = 5 + Math.floor(random() * 4);
   for (let i = 0; i < hairlines; i++) {
     drawCrack(ctx, random, {
-      x: width * (0.08 + random() * 0.84),
-      y: height * (0.12 + random() * 0.76),
+      x: width * (0.05 + random() * 0.9),
+      y: height * (0.1 + random() * 0.8),
       direction: random() < 0.5 ? 1 : -1,
-      length: width * (0.02 + random() * 0.04),
-      thickness: 0.8 + random() * 0.7,
+      length: width * (0.045 + random() * 0.095),
+      thickness: 1.7 + random() * 1.4,
     });
   }
 
-  // Slightly darker, worn edges and ends.
+  // Darker, weathered edges and ends.
   const edge = (x0, y0, x1, y1, alpha) => {
     const gradient = ctx.createLinearGradient(x0, y0, x1, y1);
     gradient.addColorStop(0, rgba(GRAIN_DARK, alpha));
@@ -255,10 +314,75 @@ function drawWood(ctx, canvas, baseColor, random) {
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
   };
-  edge(0, 0, 0, height * 0.09, 0.22);
-  edge(0, height, 0, height * 0.91, 0.22);
-  edge(0, 0, width * 0.035, 0, 0.28);
-  edge(width, 0, width * 0.965, 0, 0.28);
+  edge(0, 0, 0, height * 0.1, 0.26);
+  edge(0, height, 0, height * 0.9, 0.26);
+  edge(0, 0, width * 0.04, 0, 0.32);
+  edge(width, 0, width * 0.96, 0, 0.32);
+}
+
+// Per-row noise on a narrow canvas, stretched to the plank's full width: each row becomes a
+// long streak of slightly lighter or darker fibre.
+function drawFibres(ctx, width, height, random, { columns, alpha }) {
+  const noise = document.createElement("canvas");
+  noise.width = columns;
+  noise.height = height;
+  const noiseCtx = noise.getContext("2d");
+  if (!noiseCtx) return;
+  const image = noiseCtx.createImageData(columns, height);
+  let previousRow = new Float32Array(columns).fill(0.5);
+  for (let y = 0; y < height; y++) {
+    const row = new Float32Array(columns);
+    for (let x = 0; x < columns; x++) {
+      // Lean on the row above so streaks are a few pixels thick, not single-pixel lines.
+      row[x] = previousRow[x] * 0.55 + random() * 0.45;
+      const value = row[x] - 0.5;
+      const [r, g, b] = value < 0 ? GRAIN_DARK : GRAIN_LIGHT;
+      const i = (y * columns + x) * 4;
+      image.data[i] = r;
+      image.data[i + 1] = g;
+      image.data[i + 2] = b;
+      image.data[i + 3] = Math.min(255, Math.abs(value) * 2 * 255 * alpha * 2.2);
+    }
+    previousRow = row;
+  }
+  noiseCtx.putImageData(image, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(noise, 0, 0, width, height);
+}
+
+// Nested parabolas opening along the plank, each a little further out than the last, with
+// a soft darker band beside every line like oak's dense latewood.
+function drawCathedral(ctx, width, height, random) {
+  const direction = random() < 0.5 ? 1 : -1;
+  const tipX = width * (0.2 + random() * 0.6);
+  const centerY = height * (0.3 + random() * 0.4);
+  const spread = height * (0.1 + random() * 0.08);
+  const rings = 6 + Math.floor(random() * 5);
+  let reach = 0;
+  for (let ring = 0; ring < rings; ring++) {
+    reach += width * (0.018 + random() * 0.022);
+    const wobble = { amplitude: 1 + random() * 2, phase: random() * Math.PI * 2 };
+    const points = [];
+    for (let y = -height * 0.3; y <= height * 1.3; y += 4) {
+      const dy = y - centerY;
+      const x =
+        tipX +
+        direction * (reach - (dy * dy) / (2 * spread)) +
+        wobble.amplitude * Math.sin(y * 0.05 + wobble.phase);
+      points.push([x, y]);
+    }
+    const trace = () => {
+      ctx.beginPath();
+      points.forEach(([x, y], i) => (i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)));
+      ctx.stroke();
+    };
+    ctx.strokeStyle = rgba(GRAIN_DARK, 0.05 + random() * 0.04);
+    ctx.lineWidth = 6 + random() * 8;
+    trace();
+    ctx.strokeStyle = rgba(GRAIN_DARK, 0.14 + random() * 0.14);
+    ctx.lineWidth = 1 + random() * 1.6;
+    trace();
+  }
 }
 
 function strokeGrain(ctx, width, grainY, y0, random, { color, lineWidth }) {
@@ -321,7 +445,10 @@ function drawCrack(ctx, random, { x, y, direction, length, thickness }) {
     const step = 3 + random() * 5;
     travelled += step;
     const last = points.at(-1);
-    points.push({ x: last.x + step * direction, y: last.y + (random() - 0.5) * 2.4 });
+    points.push({
+      x: last.x + step * direction,
+      y: last.y + (random() - 0.5) * (1.6 + thickness * 0.5),
+    });
   }
   const stroke = (offsetY, color, widthScale) => {
     ctx.strokeStyle = color;
@@ -338,7 +465,7 @@ function drawCrack(ctx, random, { x, y, direction, length, thickness }) {
   stroke(thickness * 0.7, rgba(GRAIN_LIGHT, 0.2), 0.6);
   stroke(0, rgba(CRACK, 0.8), 1);
 
-  if (points.length > 6 && random() < 0.5) {
+  if (points.length > 6 && random() < 0.65) {
     const from = points[Math.floor(points.length * (0.3 + random() * 0.3))];
     drawCrack(ctx, random, {
       x: from.x,
