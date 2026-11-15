@@ -26,6 +26,8 @@ const AUTHOR_FONT_MAX = 0.4;
 const AUTHOR_SCALE = 1.12;
 const AUTHOR_ONE_LINE_SHRINK = 0.85;
 const AUTHOR_MIN_OF_QUOTE = 0.8;
+// Below this a byline is unreadable on the sign, so the quote counts as not fitting.
+const AUTHOR_MIN_SIZE = 16;
 // Space between the quote's last line and the byline on a shared plank, in quote lines.
 const AUTHOR_GAP = 0.35;
 // More than two lines on a plank looks cramped; a long quote spreads onto the bottom plank.
@@ -53,6 +55,10 @@ const CRACK = [30, 15, 6];
 const MAX_QUOTE_CHARS = 201;
 const RTL_TEXT = /[\u0590-\u08ff]/;
 
+// Italic markers are asterisks paired around a word or phrase, as in Markdown ("*1984*").
+// A lone or mid-word asterisk ("2*e^(2*i*pi)", "G*d") is part of the quote and stays.
+const ITALIC_MARKERS = /(^|[\s(["'“‘—-])\*(?=\S)([^*\n]*?\S)\*(?=$|[\s).,;:!?"'”’—-])/g;
+
 const QUOTES = quoteStrings
   .map(parseQuote)
   .filter((quote) => quote.text.length <= MAX_QUOTE_CHARS);
@@ -61,7 +67,7 @@ const QUOTES = quoteStrings
 // the occasional line break. The author follows the last " - "; some quotes have none.
 function parseQuote(raw) {
   const clean = raw
-    .replace(/\*/g, "")
+    .replace(ITALIC_MARKERS, "$1$2")
     .replace(/\s*\n\s*/g, " ")
     .trim();
   const split = clean.lastIndexOf(" - ");
@@ -70,15 +76,11 @@ function parseQuote(raw) {
 }
 
 // `quote` overrides the day's pick ({ text, author }), for previewing how one will look.
-export function createQuoteSign({ root, camera, quote = quoteOfTheDay(new Date()) }) {
-  if (!quote) {
-    console.warn(`quoteSign: no quotes of ${MAX_QUOTE_CHARS} characters or fewer`);
-    return null;
-  }
+export function createQuoteSign({ root, camera, quote }) {
   const panels = PANEL_NAMES.map((name) => root.getObjectByName(name));
   if (panels.some((panel) => !panel?.isMesh)) {
     console.warn(`quoteSign: missing one of ${PANEL_NAMES.join(", ")} in the room`);
-    return null;
+    return;
   }
   root.updateMatrixWorld(true);
 
@@ -94,7 +96,19 @@ export function createQuoteSign({ root, camera, quote = quoteOfTheDay(new Date()
   // room from rendering over a decoration.
   if (faces.some(({ ctx }) => !ctx)) {
     console.warn("quoteSign: no 2D canvas context available");
-    return null;
+    return;
+  }
+
+  // The character limit is only a first cut: with this device's fonts today's quote might
+  // still not fit at a readable size, so fall through to the next one in the day's order.
+  let layout = null;
+  for (const candidate of quote ? [quote] : quotesFrom(new Date())) {
+    layout = layoutQuote(faces, candidate);
+    if (layout) break;
+  }
+  if (!layout) {
+    console.warn("quoteSign: no quote fits on the planks");
+    return;
   }
 
   for (const { panel, canvas, ctx, index } of faces) {
@@ -102,7 +116,7 @@ export function createQuoteSign({ root, camera, quote = quoteOfTheDay(new Date()
     panel.material.color.set(baseColor);
     drawWood(ctx, canvas, baseColor, seededRandom(index + 1));
   }
-  drawQuote(faces, quote);
+  paintQuote(faces, layout);
 
   for (const { panel, face, canvas } of faces) {
     const texture = new THREE.CanvasTexture(canvas);
@@ -121,24 +135,38 @@ export function createQuoteSign({ root, camera, quote = quoteOfTheDay(new Date()
     plane.raycast = () => {};
     panel.add(plane);
   }
-
-  return { quote };
 }
 
-// Same quote for every visitor on a given local day. Each pass through the list is a fresh
-// shuffle, so nothing repeats until every quote has had its day.
-export function quoteOfTheDay(date) {
-  const day = Math.floor(
+// Today's quote first, then the following days' in order. Every visitor sees the same quote
+// on a given local day, and nothing repeats until every quote has had its day.
+function* quotesFrom(date) {
+  const today = Math.floor(
     Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000,
   );
-  const cycle = Math.floor(day / QUOTES.length);
+  for (let day = today; day < today + QUOTES.length; day++) {
+    const order = cycleOrder(Math.floor(day / QUOTES.length));
+    yield QUOTES[order[day % QUOTES.length]];
+  }
+}
+
+// A fresh shuffle for each pass through the list. A pass never opens with the quote the
+// previous one ended on, so the same quote can't show two days running.
+function cycleOrder(cycle) {
+  const order = shuffledIndices(cycle);
+  if (order.length > 2 && order[0] === shuffledIndices(cycle - 1).at(-1)) {
+    [order[0], order[1]] = [order[1], order[0]];
+  }
+  return order;
+}
+
+function shuffledIndices(seed) {
   const order = QUOTES.map((_, i) => i);
-  const random = seededRandom(cycle);
+  const random = seededRandom(seed);
   for (let i = order.length - 1; i > 0; i--) {
     const j = Math.floor(random() * (i + 1));
     [order[i], order[j]] = [order[j], order[i]];
   }
-  return QUOTES[order[day % QUOTES.length]];
+  return order;
 }
 
 // The plank's flat front, in the plank's own space: the node carries the sign's scale, so
@@ -481,57 +509,61 @@ function rgba([r, g, b], alpha) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-function drawQuote(faces, quote) {
-  const [top, middle, bottom] = faces;
+// The biggest quote size that fits one of two layouts, or null if the quote can't fit
+// readably. Short quotes use the top two planks and give the author the bottom one; long
+// quotes also run onto the bottom plank, with the author pushed to its lower edge. At equal
+// sizes the two-plank layout wins.
+function layoutQuote(faces, quote) {
+  const [top, , bottom] = faces;
   const { canvas, ctx } = top;
   const height = canvas.height;
   const maxWidth = canvas.width * (1 - SIDE_PADDING * 2);
   const usable = height * PLANK_TEXT_HEIGHT;
-  const minSize = Math.floor(height * QUOTE_FONT_MIN);
-  const text = `“${quote.text}”`;
+  // Curly quotes don't mirror in right-to-left text, so swap them for Hebrew and the like.
+  const text = RTL_TEXT.test(quote.text) ? `”${quote.text}“` : `“${quote.text}”`;
   const authorText = quote.author ? `— ${quote.author}` : null;
+  // The byline only depends on the quote's size, and the search below tries one size at a
+  // time, so fit each size's byline once.
+  const authorFits = new Map();
+  const authorAt = (size) => {
+    if (!authorFits.has(size)) {
+      authorFits.set(size, fitAuthor(bottom.ctx, authorText, size, maxWidth, height));
+    }
+    return authorFits.get(size);
+  };
 
-  // The biggest quote size that fits one of two layouts. Short quotes use the top two
-  // planks and give the author the bottom one; long quotes also run onto the bottom plank,
-  // with the author pushed to its lower edge. At equal sizes the two-plank layout wins.
-  let layout = null;
+  const minSize = Math.floor(height * QUOTE_FONT_MIN);
   for (let size = Math.floor(height * QUOTE_FONT_MAX); size >= minSize; size -= 1) {
     const perPlank = Math.min(MAX_LINES_PER_PLANK, linesThatFit(usable, size));
     if (perPlank < 1) continue;
     ctx.font = textFont(size);
-    const lineCount = Math.max(2, wrap(ctx, text, maxWidth).length);
-    const author =
-      authorText && fitAuthor(bottom.ctx, authorText, size, maxWidth, usable);
-    if (lineCount <= perPlank * 2) {
-      layout = { size, lineCount, perPlank, onBottom: 0, author };
-      break;
-    }
+    const wrapped = wrap(ctx, text, maxWidth);
+    // A word wider than the plank sits alone on its line and would run off the edges.
+    if (!fitsWidth(ctx, wrapped, maxWidth)) continue;
+    const author = authorText ? authorAt(size) : null;
+    if (authorText && !author) continue;
+    const lineCount = Math.max(2, wrapped.length);
+    const layout = { faces, text, size, lineCount, perPlank, author, maxWidth, usable };
+    if (lineCount <= perPlank * 2) return { ...layout, onBottom: 0 };
     const authorSpace = author ? blockHeight(author) + size * AUTHOR_GAP : 0;
     const onBottom = Math.min(
       MAX_LINES_PER_PLANK,
       linesThatFit(usable - authorSpace, size),
     );
-    if (lineCount <= perPlank * 2 + onBottom) {
-      layout = { size, lineCount, perPlank, onBottom, author };
-      break;
-    }
+    if (lineCount <= perPlank * 2 + onBottom) return { ...layout, onBottom };
   }
-  // Nothing fit (a quote far over MAX_QUOTE_CHARS): smallest size, top two planks.
-  layout ??= {
-    size: minSize,
-    lineCount: Math.max(2, wrap(ctx, text, maxWidth).length),
-    perPlank: Infinity,
-    onBottom: 0,
-    author: authorText && fitAuthor(bottom.ctx, authorText, minSize, maxWidth, usable),
-  };
+  return null;
+}
 
-  const { size, lineCount, perPlank, author } = layout;
-  ctx.font = textFont(size);
-  const lines = balancedWrap(ctx, text, maxWidth, lineCount);
+function paintQuote(faces, layout) {
+  const [top, middle, bottom] = faces;
+  const { text, size, lineCount, perPlank, onBottom, author, maxWidth, usable } = layout;
+  top.ctx.font = textFont(size);
+  const lines = balancedWrap(top.ctx, text, maxWidth, lineCount);
   // Spread the lines evenly, giving the bottom plank only what the top two can't hold.
-  const bottomCount = layout.onBottom
+  const bottomCount = onBottom
     ? Math.min(
-        layout.onBottom,
+        onBottom,
         Math.max(lines.length - perPlank * 2, Math.floor(lines.length / 3)),
       )
     : 0;
@@ -550,6 +582,7 @@ function drawQuote(faces, quote) {
     drawCentered(bottom, bottomLines);
     return;
   }
+  const height = bottom.canvas.height;
   const margin = (height - usable) / 2;
   drawBlock(bottom, bottomLines, margin + size / 2);
   drawBlock(bottom, author, height - margin - blockHeight(author) + author.size / 2);
@@ -557,31 +590,44 @@ function drawQuote(faces, quote) {
 
 // A little larger than the quote, capped so short quotes don't get a shouting byline. One
 // line if it can stay close to that size; otherwise two (a long "François-Marie Arouet,
-// Voltaire. A French Enlightenment writer and philosopher").
-function fitAuthor(ctx, text, quoteSize, maxWidth, usable) {
+// Voltaire. A French Enlightenment writer and philosopher"). Null if even two lines won't
+// fit the plank.
+function fitAuthor(ctx, text, quoteSize, maxWidth, plankHeight) {
   const start = Math.min(
-    Math.floor((usable / PLANK_TEXT_HEIGHT) * AUTHOR_FONT_MAX),
+    Math.floor(plankHeight * AUTHOR_FONT_MAX),
     Math.round(quoteSize * AUTHOR_SCALE),
   );
   const oneLineMin = Math.floor(
     Math.min(start * AUTHOR_ONE_LINE_SHRINK, quoteSize * AUTHOR_MIN_OF_QUOTE),
   );
-  for (let size = start; size >= oneLineMin; size -= 1) {
+  const oneLine = largestFittingSize(ctx, [text], maxWidth, start);
+  if (oneLine >= oneLineMin) return { lines: [text], size: oneLine };
+
+  // Where to break into two lines barely depends on the size, so choose it once.
+  ctx.font = textFont(start);
+  const lines = balancedWrap(ctx, text, ctx.measureText(text).width, 2);
+  if (lines.length !== 2) return null;
+  const twoLineMax = Math.floor((plankHeight * PLANK_TEXT_HEIGHT) / (1 + LINE_HEIGHT));
+  const size = largestFittingSize(ctx, lines, maxWidth, Math.min(start, twoLineMax));
+  return size >= AUTHOR_MIN_SIZE ? { lines, size } : null;
+}
+
+// Text width grows in step with font size, so measure once and scale; then step down the
+// last pixel or two that rounding and hinting can add.
+function largestFittingSize(ctx, lines, maxWidth, startSize) {
+  ctx.font = textFont(startSize);
+  const widest = Math.max(...lines.map((line) => ctx.measureText(line).width));
+  let size = Math.min(startSize, Math.floor((startSize * maxWidth) / widest));
+  ctx.font = textFont(size);
+  while (size > 1 && !fitsWidth(ctx, lines, maxWidth)) {
+    size -= 1;
     ctx.font = textFont(size);
-    if (ctx.measureText(text).width <= maxWidth) return { lines: [text], size };
   }
-  for (let size = start; size > 8; size -= 1) {
-    if (linesThatFit(usable, size) < 2) continue;
-    ctx.font = textFont(size);
-    const lines = balancedWrap(ctx, text, maxWidth, 2);
-    if (
-      lines.length <= 2 &&
-      lines.every((line) => ctx.measureText(line).width <= maxWidth)
-    ) {
-      return { lines, size };
-    }
-  }
-  return { lines: [text], size: oneLineMin };
+  return size;
+}
+
+function fitsWidth(ctx, lines, maxWidth) {
+  return lines.every((line) => ctx.measureText(line).width <= maxWidth);
 }
 
 // How many lines of this size stack into the given height.
