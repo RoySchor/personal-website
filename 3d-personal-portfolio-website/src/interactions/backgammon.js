@@ -9,6 +9,7 @@ import {
   BLACK,
   CHECKERS_PER_PLAYER,
   legalPlays,
+  movesForDie,
   newPosition,
   nextMoves,
   OFF,
@@ -17,7 +18,8 @@ import {
   winner,
 } from "../backgammon/rules.js";
 
-// A playable backgammon board on the side table. The visitor is red, the computer black.
+// A playable backgammon board on the side table. The visitor is red; the computer opponent
+// is black. Checkers are called "stones" in everything the visitor reads.
 //
 // At load the modelled white checkers are swapped for coloured copies in the same jumbled
 // spots. Tapping the board zooms in (main.js owns the camera hand-off) and, the first time,
@@ -25,14 +27,18 @@ import {
 // coming back continues it. Only a page reload brings back the jumble.
 
 const STATUS_ID = "backgammon-status";
+const CONTROLS_ID = "backgammon-controls";
 // A press that drags further than this is an orbit, not a tap.
 const TAP_SLOP_PX = 8;
 const COMPUTER_PAUSE_MS = 650;
 const COMPUTER_MOVE_GAP_MS = 520;
 const NO_MOVES_PAUSE_MS = 1400;
+// How long "no possible moves, skipping" stays up before play passes on.
+const SKIP_PAUSE_MS = 1900;
+const RESTART_CONFIRM_MS = 3000;
 // Camera pitch away from straight down, so the board reads as a table and lookAt is stable.
 const VIEW_TILT = THREE.MathUtils.degToRad(16);
-const VIEW_MARGIN = 1.12;
+const VIEW_MARGIN = 1.25;
 
 export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen }) {
   const layout = readBoardLayout(root, camera);
@@ -48,6 +54,10 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
   layout.checkerMesh.layers.disableAll();
 
   const status = createStatus(() => startNewGame());
+  const controls = createControls({
+    onUndo: () => undo(),
+    onRestart: () => startNewGame(),
+  });
   const hitBox = new THREE.Box3().copy(layout.boardBox).expandByScalar(0.01);
   const boardPlane = new THREE.Plane(layout.up.clone(), -layout.surfaceY);
   const planeHit = new THREE.Vector3();
@@ -57,8 +67,10 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
   let game = null;
   let selected = null;
   let downAt = null;
-  // Bumped on every new game so a computer turn in flight stops touching the old one.
+  // Bumped on every new game or undo so a computer turn in flight stops touching the board.
   let generation = 0;
+  // The game as it was just before each of the visitor's moves, newest last.
+  let history = [];
 
   for (const surface of surfaces) {
     surface.addEventListener(
@@ -99,6 +111,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     if (!game) startNewGame();
     else showTurnStatus();
     status.show();
+    controls.show();
     refreshHighlights();
   }
 
@@ -106,6 +119,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     active = false;
     selected = null;
     status.hide();
+    controls.hide();
     refreshHighlights();
   }
 
@@ -186,6 +200,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
   function startNewGame() {
     generation++;
     selected = null;
+    history = [];
     dice.hide();
     // The first 15 red and 15 black jumbled checkers play; any extras shrink away.
     const ids = [[], []];
@@ -238,7 +253,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
       }
       const first = roll[0] > roll[1] ? RED : BLACK;
       status.set(
-        `You rolled ${roll[0]}, the computer ${roll[1]}. ${first === RED ? "You go" : "Computer goes"} first.`,
+        `You rolled ${roll[0]}, your opponent ${roll[1]}. ${first === RED ? "You go" : "Your opponent goes"} first.`,
       );
       await wait(900);
       if (myGeneration !== generation) return;
@@ -264,7 +279,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     syncDiceUsed();
     if (game.plays.length === 0) {
       status.set(
-        `${player === RED ? "You have" : "The computer has"} no legal moves for ${roll.join(" and ")}.`,
+        `${player === RED ? "You have" : "Your opponent has"} no legal moves for ${roll.join(" and ")}.`,
       );
       await wait(NO_MOVES_PAUSE_MS);
       if (myGeneration !== generation) return;
@@ -277,13 +292,40 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     refreshHighlights();
   }
 
+  // True if some roll would let `player` move. When no roll can (say, a stone on the bar
+  // against a fully closed home board), rolling is pointless and the turn is skipped.
+  function canMoveAtAll(player) {
+    for (let die = 1; die <= 6; die++) {
+      if (movesForDie(game.position, player, die).length > 0) return true;
+    }
+    return false;
+  }
+
+  async function skipTurn(player) {
+    const myGeneration = generation;
+    game.phase = "skipping";
+    dice.hide();
+    status.set(
+      player === RED
+        ? "You have no possible moves, so your turn is skipped."
+        : "Your opponent has no possible moves, so their turn is skipped.",
+    );
+    refreshHighlights();
+    await wait(SKIP_PAUSE_MS);
+    if (myGeneration !== generation) return;
+    if (player === RED) computerTurn();
+    else visitorTurn();
+  }
+
   function visitorTurn() {
+    if (!canMoveAtAll(RED)) return skipTurn(RED);
     game.phase = "await-roll";
     showTurnStatus();
     refreshHighlights();
   }
 
   async function computerTurn() {
+    if (!canMoveAtAll(BLACK)) return skipTurn(BLACK);
     const myGeneration = generation;
     game.phase = "computer";
     showTurnStatus();
@@ -310,6 +352,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
   }
 
   function playVisitorMove(move) {
+    history.push(snapshot());
     performMove(RED, move);
     selected = null;
     if (game.winner !== null) return;
@@ -369,6 +412,41 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     });
   }
 
+  function snapshot() {
+    return {
+      position: game.position,
+      stacks: game.stacks.map(
+        (slots) => new Map([...slots].map(([k, ids]) => [k, ids.slice()])),
+      ),
+      roll: game.roll,
+      plays: game.plays,
+      made: game.made.slice(),
+    };
+  }
+
+  function canUndo() {
+    return (
+      Boolean(game) && history.length > 0 && !["opening", "rolling"].includes(game.phase)
+    );
+  }
+
+  // Takes back the visitor's last move. If the opponent has played since, their turn goes
+  // too, so the visitor is back where they were before that move, with the same dice.
+  function undo() {
+    if (!canUndo()) return;
+    generation++;
+    const before = history.pop();
+    Object.assign(game, before, { phase: "moving", winner: null });
+    selected = game.position.bar[RED] > 0 ? BAR : null;
+    dice.place(game.roll, RED);
+    syncDiceUsed();
+    for (const player of [RED, BLACK]) {
+      for (const [slot] of game.stacks[player]) layoutSlot(player, slot);
+    }
+    showTurnStatus();
+    refreshHighlights();
+  }
+
   // Greys out dice as they're spent; with doubles each die stands for two moves.
   function syncDiceUsed() {
     if (!game.roll) return;
@@ -393,9 +471,9 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     const messages = {
       opening: "You're red. Tap the board to roll for who goes first.",
       "await-roll": "Your turn. Tap the board to roll.",
-      computer: "Computer's turn…",
+      computer: "Opponent's turn…",
       rolling: "",
-      over: game.winner === RED ? "You win! 🎉" : "The computer wins this one.",
+      over: game.winner === RED ? "You win! 🎉" : "Your opponent wins this one.",
     };
     if (game.phase === "moving") {
       const dicePart =
@@ -404,8 +482,8 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
           : game.roll.join(" and ");
       status.set(
         selected === null
-          ? `You rolled ${dicePart}. Tap a highlighted checker${left ? " to keep going" : ""}.`
-          : "Tap a green ring to move there, or another checker.",
+          ? `You rolled ${dicePart}. Tap a ringed stone${left ? " to keep going" : ""}.`
+          : "Tap a spot marked with a dot to move there, or pick another stone.",
       );
     } else if (messages[game.phase]) {
       status.set(messages[game.phase]);
@@ -413,38 +491,44 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     status.setNewGameVisible(game.phase === "over");
   }
 
-  // Lifts and lights the selected checker, glows the ones that can move, rings targets.
+  // Rings the stones that can move, lifts and rings the picked-up one, and marks where it
+  // can land. Markers sit just above a stone's top face.
   function refreshHighlights() {
-    for (let i = 0; i < checkers.count; i++) checkers.setGlow(i, 0);
-    markers.show([]);
+    for (let i = 0; i < checkers.count; i++) checkers.setLift(i, 0);
+    markers.show();
     if (!active || !game || game.phase !== "moving") return;
     const options = nextMoves(game.plays, game.made);
     const stacks = game.stacks[RED];
     const topOf = (slot) => stacks.get(slot)?.at(-1);
+    const above = (spot, lift = 0) =>
+      spot.setY(spot.y + layout.thickness / 2 + lift + 0.0008);
+    const restingSpot = (slot) => {
+      const stack = stacks.get(slot);
+      return layout.checkerPosition(RED, slot, stack.length - 1, stack.length);
+    };
     if (selected === null) {
-      for (const from of new Set(options.map((m) => m.from))) {
-        const id = topOf(from);
-        if (id !== undefined) checkers.setGlow(id, 0.35);
-      }
+      const movable = [...new Set(options.map((m) => m.from))]
+        .filter((from) => topOf(from) !== undefined)
+        .map((from) => above(restingSpot(from)));
+      markers.show({ movable });
       return;
     }
-    const id = topOf(selected);
-    if (id !== undefined) checkers.setGlow(id, 0.6, layout.thickness * 1.5);
-    const targets = options
+    const lift = layout.thickness * 1.5;
+    if (topOf(selected) !== undefined) checkers.setLift(topOf(selected), lift);
+    const target = options
       .filter((m) => m.from === selected)
       .map((m) => {
         const count = m.hit ? 0 : (stacks.get(m.to)?.length ?? 0);
-        const spot = layout.checkerPosition(RED, m.to, count, count + 1);
-        spot.y += layout.thickness / 2 + 0.0008;
-        return spot;
+        return above(layout.checkerPosition(RED, m.to, count, count + 1));
       });
-    markers.show(targets);
+    markers.show({ selected: [above(restingSpot(selected), lift)], target });
   }
 
   function update(dt) {
     checkers.update(dt);
     dice.update(dt);
     markers.update(dt);
+    controls.setUndoEnabled(canUndo());
   }
 
   return {
@@ -487,6 +571,90 @@ function jumbleColors(layout) {
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Undo and Restart, always on screen while playing: down the left edge on wide screens,
+// along the bottom-left on phones (the Exit button sits bottom-right there). Restart asks
+// for a second tap rather than a dialog, so a stray tap can't wipe a game.
+function createControls({ onUndo, onRestart }) {
+  let panel = document.getElementById(CONTROLS_ID);
+  if (!panel) {
+    const style = document.createElement("style");
+    style.textContent = `
+      #${CONTROLS_ID} {
+        position: fixed;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 99998;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+      }
+      #${CONTROLS_ID} button {
+        min-width: 84px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.3);
+        background: rgba(0,0,0,0.6);
+        color: #fff;
+        font: 500 14px system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        backdrop-filter: blur(6px);
+        cursor: pointer;
+      }
+      #${CONTROLS_ID} button:disabled { opacity: 0.4; cursor: default; }
+      #${CONTROLS_ID} button.confirming { background: #2f9bff; border-color: #2f9bff; }
+      @media (max-width: 1024px) {
+        #${CONTROLS_ID} {
+          top: auto;
+          bottom: 5px;
+          left: 10px;
+          transform: none;
+          flex-direction: row;
+        }
+        #${CONTROLS_ID} button { min-width: 0; font-size: 13px; padding: 7px 10px; }
+      }
+    `;
+    document.head.appendChild(style);
+    panel = document.createElement("div");
+    panel.id = CONTROLS_ID;
+    panel.innerHTML = `<button type="button" data-action="undo">Undo</button><button type="button" data-action="restart">Restart</button>`;
+    document.body.appendChild(panel);
+  }
+  const undoButton = panel.querySelector('[data-action="undo"]');
+  const restartButton = panel.querySelector('[data-action="restart"]');
+  let confirmTimer = 0;
+
+  const resetRestart = () => {
+    window.clearTimeout(confirmTimer);
+    confirmTimer = 0;
+    restartButton.textContent = "Restart";
+    restartButton.classList.remove("confirming");
+  };
+
+  undoButton.addEventListener("click", onUndo);
+  restartButton.addEventListener("click", () => {
+    if (confirmTimer) {
+      resetRestart();
+      onRestart();
+      return;
+    }
+    restartButton.textContent = "Confirm restart";
+    restartButton.classList.add("confirming");
+    confirmTimer = window.setTimeout(resetRestart, RESTART_CONFIRM_MS);
+  });
+
+  return {
+    setUndoEnabled: (enabled) => {
+      if (undoButton.disabled === !enabled) return;
+      undoButton.disabled = !enabled;
+    },
+    show: () => (panel.style.display = "flex"),
+    hide: () => {
+      resetRestart();
+      panel.style.display = "none";
+    },
+  };
 }
 
 function createStatus(onNewGame) {

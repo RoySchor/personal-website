@@ -3,15 +3,24 @@ import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeom
 
 import { easeInOutCubic } from "../util/easing.js";
 
-// Checkers, dice and move markers for the backgammon board. All positions are world space.
+// Checkers (shown to players as "stones"), dice and move markers for the backgammon
+// board. All positions are world space.
 
 const CHECKER_COLORS = [new THREE.Color(0xa3161a), new THREE.Color(0x161616)];
 const HOP_HEIGHT = 0.02;
+// Blue reads clearly against red, black and the tan points for red-green colour vision
+// deficiencies; markers also differ by shape so colour is never the only cue.
+const MARKER_COLOR = 0x2f9bff;
 
 // All checkers share one draw call. Each starts where its modelled twin sits.
 export function createCheckers({ layout, colorOf }) {
   const geometry = islandGeometry(layout.checkerMesh, layout.checkerIslands[0]);
-  const material = new THREE.MeshStandardMaterial({ roughness: 0.32, metalness: 0.05 });
+  // Satin rather than glossy: the room's environment map otherwise glares off the tops.
+  const material = new THREE.MeshStandardMaterial({
+    roughness: 0.62,
+    metalness: 0,
+    envMapIntensity: 0.45,
+  });
   const count = layout.checkerIslands.length;
   const mesh = new THREE.InstancedMesh(geometry, material, count);
   mesh.name = "backgammon_checkers";
@@ -23,17 +32,17 @@ export function createCheckers({ layout, colorOf }) {
   const matrix = new THREE.Matrix4();
   const quaternion = new THREE.Quaternion();
   const scaleVector = new THREE.Vector3();
-  const color = new THREE.Color();
-  const checkers = layout.checkerIslands.map((island, i) => ({
-    position: island.center.clone(),
-    tween: null,
-    scale: 1,
-    targetScale: 1,
-    baseColor: CHECKER_COLORS[colorOf(i)].clone(),
-    glow: 0,
-    lift: 0,
-    dirty: true,
-  }));
+  const checkers = layout.checkerIslands.map((island, i) => {
+    mesh.setColorAt(i, CHECKER_COLORS[colorOf(i)]);
+    return {
+      position: island.center.clone(),
+      tween: null,
+      scale: 1,
+      targetScale: 1,
+      lift: 0,
+      dirty: true,
+    };
+  });
   const shown = new THREE.Vector3();
 
   // Moves a checker to `to`, hopping over the board when `hop` is set.
@@ -50,10 +59,9 @@ export function createCheckers({ layout, colorOf }) {
     };
   }
 
-  // Brightens a checker in its own colour (glow 0-1) and raises it off the board.
-  function setGlow(i, amount, lift = 0) {
-    if (checkers[i].glow === amount && checkers[i].lift === lift) return;
-    checkers[i].glow = amount;
+  // Raises a checker off the board, e.g. while it's picked up.
+  function setLift(i, lift) {
+    if (checkers[i].lift === lift) return;
     checkers[i].lift = lift;
     checkers[i].dirty = true;
   }
@@ -64,7 +72,6 @@ export function createCheckers({ layout, colorOf }) {
 
   function update(dt) {
     let matricesChanged = false;
-    let colorsChanged = false;
     checkers.forEach((checker, i) => {
       if (checker.tween) {
         const tween = checker.tween;
@@ -91,17 +98,13 @@ export function createCheckers({ layout, colorOf }) {
       shown.copy(checker.position).setY(checker.position.y + checker.lift);
       matrix.compose(shown, quaternion, scaleVector);
       mesh.setMatrixAt(i, matrix);
-      color.copy(checker.baseColor).offsetHSL(0, 0, checker.glow * 0.35);
-      mesh.setColorAt(i, color);
       matricesChanged = true;
-      colorsChanged = true;
     });
     if (matricesChanged) mesh.instanceMatrix.needsUpdate = true;
-    if (colorsChanged && mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
   }
 
   update(0);
-  return { mesh, count, moveTo, setGlow, setVisible, update };
+  return { mesh, count, moveTo, setLift, setVisible, update };
 }
 
 // Copies one island of a mesh into its own geometry, in world scale, centred on the origin.
@@ -232,6 +235,19 @@ export function createDice({ layout }) {
     return new Promise((resolve) => setTimeout(resolve, ROLL_SECONDS * 1000 + 50));
   }
 
+  // Shows `values` at rest straight away, e.g. after an undo.
+  function place(values, player) {
+    dice.forEach((die, which) => {
+      const land = layout.diceSpot(player, which);
+      land.y += size / 2;
+      const face = FACE_NORMALS[FACE_VALUES.indexOf(values[which])];
+      die.roll = null;
+      die.mesh.position.copy(land);
+      die.mesh.quaternion.setFromUnitVectors(face, layout.up);
+      die.mesh.visible = true;
+    });
+  }
+
   function setUsed(which, used) {
     dice[which].used = used;
     tint(dice[which]);
@@ -265,7 +281,7 @@ export function createDice({ layout }) {
     }
   }
 
-  return { meshes: dice.map((d) => d.mesh), roll, setUsed, hide, update };
+  return { meshes: dice.map((d) => d.mesh), roll, place, setUsed, hide, update };
 }
 
 function pipTexture(value) {
@@ -286,43 +302,68 @@ function pipTexture(value) {
   return texture;
 }
 
-// Flat rings that mark where the selected checker can go.
-export function createMarkers({ layout, count = 4 }) {
-  const geometry = new THREE.RingGeometry(
-    layout.diameter * 0.26,
-    layout.diameter * 0.5,
-    32,
-  );
-  geometry.rotateX(-Math.PI / 2);
-  const material = new THREE.MeshBasicMaterial({
-    color: 0x3dff8a,
-    transparent: true,
-    opacity: 0.9,
-    depthWrite: false,
-    toneMapped: false,
-  });
+// Flat markers, all one colour but told apart by shape:
+//   movable  - a thin steady ring around each checker that can move
+//   selected - a thick solid ring around the picked-up checker
+//   target   - a pulsing ring with a centre dot where the picked-up checker can land
+export function createMarkers({ layout }) {
+  const d = layout.diameter;
+  const flatRing = (inner, outer) =>
+    new THREE.RingGeometry(d * inner, d * outer, 40).rotateX(-Math.PI / 2);
+  const pulsing = markerMaterial();
+  const solid = markerMaterial();
+  const kinds = {
+    movable: pool(16, () => new THREE.Mesh(flatRing(0.52, 0.67), solid)),
+    selected: pool(1, () => new THREE.Mesh(flatRing(0.52, 0.7), solid)),
+    target: pool(4, () => {
+      const ring = new THREE.Mesh(flatRing(0.3, 0.48), pulsing);
+      const dot = new THREE.Mesh(
+        new THREE.CircleGeometry(d * 0.12, 24).rotateX(-Math.PI / 2),
+        pulsing,
+      );
+      ring.add(dot);
+      return ring;
+    }),
+  };
   const group = new THREE.Group();
   group.name = "backgammon_markers";
-  const rings = Array.from({ length: count }, () => {
-    const ring = new THREE.Mesh(geometry, material);
-    ring.visible = false;
-    ring.renderOrder = 2;
-    group.add(ring);
-    return ring;
-  });
+  for (const meshes of Object.values(kinds)) group.add(...meshes);
   let time = 0;
 
-  function show(positions) {
-    rings.forEach((ring, i) => {
-      ring.visible = i < positions.length;
-      if (ring.visible) ring.position.copy(positions[i]);
+  function pool(count, make) {
+    return Array.from({ length: count }, () => {
+      const mesh = make();
+      mesh.visible = false;
+      mesh.renderOrder = 2;
+      return mesh;
     });
+  }
+
+  // Each argument is a list of positions (the selected one has at most one).
+  function show({ movable = [], selected = [], target = [] } = {}) {
+    for (const [kind, positions] of Object.entries({ movable, selected, target })) {
+      kinds[kind].forEach((mesh, i) => {
+        mesh.visible = i < positions.length;
+        if (mesh.visible) mesh.position.copy(positions[i]);
+      });
+    }
   }
 
   function update(dt) {
     time += dt;
-    material.opacity = 0.8 + 0.2 * Math.sin(time * 6);
+    pulsing.opacity = 0.6 + 0.4 * (0.5 + 0.5 * Math.sin(time * 6));
   }
 
   return { group, show, update };
+}
+
+function markerMaterial() {
+  return new THREE.MeshBasicMaterial({
+    color: MARKER_COLOR,
+    transparent: true,
+    opacity: 1,
+    depthWrite: false,
+    toneMapped: false,
+    side: THREE.DoubleSide,
+  });
 }
