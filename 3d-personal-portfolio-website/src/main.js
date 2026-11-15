@@ -20,6 +20,7 @@ import { createFocusZoom } from "./three/focusZoom.js";
 import { addLights } from "./three/lights.js";
 import { loadRoom } from "./three/loadRoom.js";
 import { createMonitorTerminal } from "./three/monitorTerminal.js";
+import { createQuoteSign } from "./three/quoteSign.js";
 import { mountScreenOverlay } from "./three/screenOverlay.js";
 import { makeEvenViewportSync } from "./three/viewport.js";
 import { createArrowControls } from "./ui/arrowControls.js";
@@ -513,6 +514,7 @@ const onAllAssetsLoaded = () => {
   ].filter(Boolean);
   const coffeeSteam = createCoffeeSteam({ root, scene });
   const monitorTerminal = createMonitorTerminal({ root, scene, camera });
+  createQuoteSign({ root, camera });
   const clearToyHover = () => roomToys.forEach((toy) => toy.clearHover());
 
   function clickRoom(e) {
