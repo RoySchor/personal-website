@@ -463,6 +463,12 @@ const onAllAssetsLoaded = () => {
       pinch.attach();
       arrowControls.show();
       exitBtn.style.display = "block";
+      // The laptop screen starts with a small wallpaper; now that it's up close, it can
+      // fetch the full one. Same origin by construction (see vite.config.js).
+      iframeEl.contentWindow?.postMessage(
+        { type: "laptop-focused" },
+        window.location.origin,
+      );
     },
     onExit: () => {
       overlay.setFocused(false);

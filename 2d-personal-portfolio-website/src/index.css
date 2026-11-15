@@ -299,3 +299,13 @@ a:hover {
     font-size: 46px;
   }
 }
+
+/* Shown for a moment while a lazily loaded app (the résumé viewer) downloads */
+.app-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 28px;
+}

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 import DesktopIcon from "./DesktopIcon";
 import Dock from "./Dock";
@@ -10,7 +10,6 @@ import Window from "./Window";
 // APP COMPONENTS
 import PortfolioApp from "../apps/Portfolio";
 import QuotesApp from "../apps/QuotesApp";
-import ResumeApp from "../apps/ResumeApp";
 // ICONS
 import iconBlog from "../assets/icons/app-blog.svg";
 import iconPortfolio from "../assets/icons/app-portfolio.webp";
@@ -19,9 +18,40 @@ import iconGithub from "../assets/icons/external-github.svg";
 import iconLinkedIn from "../assets/icons/external-linkedin.webp";
 import iconResume from "../assets/icons/resume.webp";
 import resumePdf from "../assets/resume/Schor, Roy Resume.pdf";
+import wallpaperPreview from "../assets/wallpapers/dead-sea-wallpaper-preview.webp";
 import wallpaper from "../assets/wallpapers/dead-sea-wallpaper.webp";
 
+// The résumé viewer bundles the PDF renderer (pdfjs, ~120 KB gzipped). Loading it only when
+// the Résumé app is first opened keeps it out of every visitor's initial download.
+const ResumeApp = lazy(() => import("../apps/ResumeApp"));
+
+// Inside the 3D room this app is a small screen across the room until the visitor zooms
+// onto the laptop, so it starts with a tiny wallpaper and swaps in the full one when the
+// room says the laptop is focused. Opened on its own, it uses the full one from the start.
+const EMBEDDED = window.parent !== window;
+const LAPTOP_FOCUSED_MESSAGE = "laptop-focused";
+
+function useWallpaper() {
+  const [src, setSrc] = useState(EMBEDDED ? wallpaperPreview : wallpaper);
+  useEffect(() => {
+    if (!EMBEDDED) return;
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== LAPTOP_FOCUSED_MESSAGE) return;
+      window.removeEventListener("message", onMessage);
+      // Swap only once the full image is ready, so the screen never flashes blank.
+      const full = new window.Image();
+      full.onload = () => setSrc(wallpaper);
+      full.src = wallpaper;
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+  return src;
+}
+
 const Desktop: React.FC = () => {
+  const wallpaperSrc = useWallpaper();
   const apps: AppDefinition[] = useMemo(
     () => [
       {
@@ -42,7 +72,11 @@ const Desktop: React.FC = () => {
         key: "resume",
         title: "Resume",
         icon: iconResume,
-        component: (p) => <ResumeApp {...p} />,
+        component: (p) => (
+          <Suspense fallback={<div className="app-loading">Loading résumé…</div>}>
+            <ResumeApp {...p} />
+          </Suspense>
+        ),
         dockFixed: true,
       },
     ],
@@ -179,7 +213,7 @@ const Desktop: React.FC = () => {
     <div style={{ position: "absolute", inset: 0, background: "var(--mac-desktop)" }}>
       {/* Desktop wallpaper (optional) */}
       <img
-        src={wallpaper}
+        src={wallpaperSrc}
         style={{
           position: "absolute",
           inset: 0,
