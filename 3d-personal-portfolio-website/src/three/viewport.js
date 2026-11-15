@@ -11,15 +11,17 @@ export function makeEvenViewportSync(ctx) {
    * Unsolved without resolution plan in sight
    */
   function syncSizesEven() {
-    const rect = renderer.domElement.getBoundingClientRect();
-    let w = Math.round(rect.width);
-    let h = Math.round(rect.height);
+    // Measure the window, not the canvas: the canvas carries its last fixed pixel size,
+    // so measuring it meant a rotate or window resize never grew or shrank the view.
+    let w = Math.round(window.innerWidth);
+    let h = Math.round(window.innerHeight);
 
     // force even
     const evenH = h % 2 === 0 ? h : h + 1;
     const evenW = w % 2 === 0 ? w : w + 1;
 
-    renderer.setSize(evenW, evenH, false);
+    // Both layers get the same even pixel box (canvas style included) so they stay aligned.
+    renderer.setSize(evenW, evenH);
     cssRenderer.setSize(evenW, evenH);
 
     // lock CSS box to exact px to avoid fractional layout

@@ -2,6 +2,7 @@ import * as THREE from "three";
 
 import musicUrl from "./assets/air-on-a-g-sring.m4a";
 import roomUrl from "./assets/portfolio-room.glb?url";
+import { createBackgammon } from "./interactions/backgammon.js";
 import { createChairSwivel } from "./interactions/chairSwivel.js";
 import { createClockHands } from "./interactions/clockHands.js";
 import { createOutletSparks } from "./interactions/outletSparks.js";
@@ -62,8 +63,11 @@ const onAllAssetsLoaded = () => {
   const ctx = createThreeContext("c");
   const { renderer, cssRenderer, scene, camera } = ctx;
 
+  // Same guard as the Escape key below.
   const exitBtn = createExitButton(() => {
-    if (!focuser.isFocusing() && preview.isFocused()) exitFocus();
+    if (focuser.isFocusing() || transitioning) return;
+    if (preview.isFocused()) exitFocus();
+    else if (backgammon?.isActive()) exitBoard();
   });
 
   let viewport = makeEvenViewportSync(ctx);
@@ -481,6 +485,16 @@ const onAllAssetsLoaded = () => {
 
   const ray = createRaycast(renderer, camera);
 
+  // The side-table board: a toy until tapped, then a zoomed-in game (enterBoard below).
+  const backgammon = createBackgammon({
+    root,
+    scene,
+    camera,
+    ray,
+    surfaces: [renderer.domElement, cssRenderer.domElement],
+    onOpen: () => enterBoard(),
+  });
+
   // Small objects that react to hover (mouse) and taps (touch).
   const roomToys = [
     createPencilFan({ root, ray }),
@@ -488,12 +502,19 @@ const onAllAssetsLoaded = () => {
     createClockHands({ root, ray }),
     createChairSwivel({ root, ray }),
     createOutletSparks({ root, scene, ray }),
+    backgammon,
   ].filter(Boolean);
   const coffeeSteam = createCoffeeSteam({ root, scene });
   const clearToyHover = () => roomToys.forEach((toy) => toy.clearHover());
 
   function clickRoom(e) {
     if (gateIfBusy(e)) return;
+
+    // While playing, every tap belongs to the board; a tap off it leaves.
+    if (backgammon?.isActive()) {
+      if (!backgammon.handleTap(e)) exitBoard();
+      return;
+    }
 
     // Check speaker
     if (speakerRoot) {
@@ -563,6 +584,43 @@ const onAllAssetsLoaded = () => {
     }
   }
 
+  function enterBoard() {
+    if (transitioning || preview.isFocused() || backgammon.isActive()) return;
+    transitioning = true;
+    clearToyHover();
+    renderer.domElement.style.cursor = "";
+    cssRenderer.domElement.style.cursor = "";
+    if (instructions) instructions.classList.add("hidden");
+    (async () => {
+      await focuser.focusAt({ ...backgammon.cameraPose(), duration: 750 });
+      backgammon.activate();
+      exitBtn.style.display = "block";
+      transitioning = false;
+    })();
+  }
+
+  function exitBoard() {
+    transitioning = true;
+    backgammon.deactivate();
+    exitBtn.style.display = "none";
+    if (instructions) instructions.classList.remove("hidden");
+    (async () => {
+      await focuser.restore(500);
+      transitioning = false;
+    })();
+  }
+
+  // Rotating a phone (or resizing the window) while at the board re-frames it for the new
+  // screen shape. Waits for the resize to settle and the camera aspect to update first.
+  let reframeTimer = 0;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(reframeTimer);
+    reframeTimer = window.setTimeout(() => {
+      if (!backgammon?.isActive() || transitioning || focuser.isFocusing()) return;
+      focuser.focusAt({ ...backgammon.cameraPose(), duration: 300 });
+    }, 200);
+  });
+
   function exitFocus() {
     transitioning = true;
     if (instructions) instructions.classList.remove("hidden");
@@ -579,6 +637,13 @@ const onAllAssetsLoaded = () => {
     if (e.pointerType !== "mouse") return;
     if (transitioning || focuser.isFocusing() || preview.isFocused()) {
       clearToyHover();
+      return;
+    }
+    if (backgammon?.isActive()) {
+      clearToyHover();
+      const c = backgammon.handleHover(e) ? "pointer" : "";
+      renderer.domElement.style.cursor = c;
+      cssRenderer.domElement.style.cursor = c;
       return;
     }
 
@@ -616,9 +681,9 @@ const onAllAssetsLoaded = () => {
 
   // Escape closes focus
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !focuser.isFocusing() && preview.isFocused()) {
-      exitFocus();
-    }
+    if (e.key !== "Escape" || focuser.isFocusing() || transitioning) return;
+    if (preview.isFocused()) exitFocus();
+    else if (backgammon?.isActive()) exitBoard();
   });
 
   function onWheel(e) {

@@ -38,7 +38,14 @@ export function createRaycast(renderer, camera) {
     );
   }
 
-  return { intersect, pointsAt };
+  // The world-space pointer ray, for tests against shapes that aren't scene objects.
+  function rayFor(e) {
+    setMouseFromEvent(e);
+    ray.setFromCamera(ndc, camera);
+    return ray.ray;
+  }
+
+  return { intersect, pointsAt, rayFor };
 }
 
 function isWithin(object, ancestor) {
