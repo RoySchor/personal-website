@@ -20,6 +20,8 @@ const FILES = [
 ];
 
 const CANVAS_WIDTH = 1024;
+// Prettier wraps at 90 columns; the font is sized so a full line plus the gutter fits.
+const CODE_COLUMNS = 90;
 // The glass has a rounded edge; keep the picture on its flat front.
 const FACE_INSET = 0.97;
 // Lift off the glass so the plane never z-fights with it.
@@ -37,7 +39,9 @@ const OUTPUT_LINE_SECONDS = 0.16;
 const LINE_END_PAUSE = [0.12, 0.45];
 const BETWEEN_SNIPPETS_SECONDS = 1.6;
 const CURSOR_BLINK_SECONDS = 0.53;
-// Redraws only when something changed, and never faster than this.
+// Two triangles count as the same flat face when their normals are this close.
+const SAME_FACE_DOT = 0.999;
+// Redraws only when something changed and the screen is in view, and never faster than this.
 const MAX_REDRAWS_PER_SECOND = 24;
 
 // VS Code "Dark+" colours.
@@ -134,12 +138,22 @@ export function createMonitorTerminal({ root, scene, camera }) {
     return null;
   }
   root.updateMatrixWorld(true);
+  // Anything odd about the glass or the canvas skips the monitor rather than throwing,
+  // which would stop the whole room from rendering over a decoration.
   const face = frontFace(glass, camera);
+  if (!face) {
+    console.warn("monitorTerminal: could not find the monitor glass's front face");
+    return null;
+  }
 
   const canvas = document.createElement("canvas");
   canvas.width = CANVAS_WIDTH;
   canvas.height = Math.round((CANVAS_WIDTH * face.height) / face.width);
   const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    console.warn("monitorTerminal: no 2D canvas context available");
+    return null;
+  }
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.anisotropy = 4;
@@ -153,15 +167,19 @@ export function createMonitorTerminal({ root, scene, camera }) {
   screen.matrix
     .makeBasis(face.right, face.up, face.normal)
     .setPosition(face.center.clone().addScaledVector(face.normal, SURFACE_GAP));
+  screen.matrixWorldNeedsUpdate = true;
   // Decoration only: never the target of, or an obstacle to, a click or hover.
   screen.raycast = () => {};
   scene.add(screen);
+  screen.updateMatrixWorld(true);
+  screen.geometry.computeBoundingSphere();
 
   const layout = measure(ctx, canvas);
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const state = {
     file: null,
     lines: [],
+    tokens: [],
     typedLine: 0,
     typedChars: 0,
     terminal: [],
@@ -176,6 +194,8 @@ export function createMonitorTerminal({ root, scene, camera }) {
   let cursorClock = 0;
   let redrawClock = 0;
   let needsDraw = true;
+  const frustum = new THREE.Frustum();
+  const viewProjection = new THREE.Matrix4();
   // Uncommitted changes, shown as the prompt's ✗: set by writing code, cleared by a commit.
   let gitDirty = true;
 
@@ -197,6 +217,7 @@ export function createMonitorTerminal({ root, scene, camera }) {
     const file = FILES[fileIndex++ % FILES.length];
     state.file = file;
     state.lines = pickSnippet(file.source);
+    state.tokens = highlightLines(state.lines);
     state.typedLine = 0;
     state.typedChars = 0;
     state.phase = "typing";
@@ -204,9 +225,16 @@ export function createMonitorTerminal({ root, scene, camera }) {
     needsDraw = true;
   }
 
+  function pushTerminal(entry) {
+    state.terminal.push(entry);
+    if (state.terminal.length > layout.terminalRows) {
+      state.terminal.splice(0, state.terminal.length - layout.terminalRows);
+    }
+  }
+
   function startCommand() {
     state.command = COMMANDS[Math.floor(Math.random() * COMMANDS.length)];
-    state.terminal.push({ kind: "command", gitDirty, typed: "" });
+    pushTerminal({ kind: "command", gitDirty, typed: "" });
     state.outputIndex = 0;
     state.phase = "command";
     needsDraw = true;
@@ -234,11 +262,18 @@ export function createMonitorTerminal({ root, scene, camera }) {
       startSnippet();
     }
 
+    // The text keeps typing while the monitor is out of view (zoomed onto the laptop or
+    // the board, or looking elsewhere); it just isn't drawn and uploaded until it's back.
     redrawClock += dt;
-    if (needsDraw && redrawClock >= 1 / MAX_REDRAWS_PER_SECOND) {
+    if (needsDraw && redrawClock >= 1 / MAX_REDRAWS_PER_SECOND && inView()) {
       redrawClock = 0;
       draw();
     }
+  }
+
+  function inView() {
+    viewProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+    return frustum.setFromProjectionMatrix(viewProjection).intersectsObject(screen);
   }
 
   function typeCode(dt) {
@@ -287,7 +322,7 @@ export function createMonitorTerminal({ root, scene, camera }) {
   function printOutput() {
     const output = lines(state.command.output);
     if (state.outputIndex < output.length) {
-      state.terminal.push(output[state.outputIndex++]);
+      pushTerminal(output[state.outputIndex++]);
       state.wait = OUTPUT_LINE_SECONDS;
       needsDraw = true;
       return;
@@ -331,7 +366,7 @@ export function createMonitorTerminal({ root, scene, camera }) {
       ctx.textAlign = "left";
       const line = state.lines[row];
       const shown = isCurrent ? state.typedChars : line.length;
-      drawCode(line, shown, gutterWidth + padding, y);
+      drawCode(state.tokens[row], shown, gutterWidth + padding, y);
       if (isCurrent && cursorOn && state.phase === "typing") {
         ctx.fillStyle = THEME.cursor;
         ctx.fillRect(
@@ -351,9 +386,7 @@ export function createMonitorTerminal({ root, scene, camera }) {
     ctx.fillStyle = THEME.terminalLabel;
     const terminalLeft = padding * 2 + charWidth * TERMINAL_INDENT_CHARS;
     ctx.fillText("TERMINAL", terminalLeft, terminalTop + rowHeight * 0.75);
-    const terminalRows = Math.floor((height - terminalTop - rowHeight * 1.4) / rowHeight);
-    const recent = state.terminal.slice(-terminalRows);
-    state.terminal = state.terminal.slice(-terminalRows);
+    const recent = state.terminal;
     recent.forEach((entry, i) => {
       const y = terminalTop + rowHeight * (1.6 + i);
       const segments =
@@ -376,8 +409,8 @@ export function createMonitorTerminal({ root, scene, camera }) {
     texture.needsUpdate = true;
   }
 
-  function drawCode(line, shown, x0, y) {
-    for (const token of highlight(line)) {
+  function drawCode(tokens, shown, x0, y) {
+    for (const token of tokens) {
       if (token.start >= shown) break;
       const text = token.text.slice(0, shown - token.start);
       ctx.fillStyle = token.color;
@@ -401,7 +434,7 @@ function frontFace(mesh, camera) {
       .applyMatrix4(mesh.matrixWorld);
   const triangleCount = (index ? index.count : positions.count) / 3;
 
-  const groups = new Map();
+  const groups = [];
   const edgeA = new THREE.Vector3();
   const edgeB = new THREE.Vector3();
   for (let t = 0; t < triangleCount; t++) {
@@ -415,21 +448,21 @@ function frontFace(mesh, camera) {
     const area = normal.length() / 2;
     if (area === 0) continue;
     normal.normalize();
-    const key = normal
-      .toArray()
-      .map((x) => x.toFixed(2))
-      .join();
-    if (!groups.has(key)) groups.set(key, { normal, area: 0, corners: [] });
-    const group = groups.get(key);
+    let group = groups.find((g) => g.normal.dot(normal) > SAME_FACE_DOT);
+    if (!group) {
+      group = { normal, area: 0, corners: [] };
+      groups.push(group);
+    }
     group.area += area;
     group.corners.push(a, b, c);
   }
 
   const toCamera = (group) =>
     camera.position.clone().sub(group.corners[0]).dot(group.normal);
-  const front = [...groups.values()]
+  const front = groups
     .filter((group) => toCamera(group) > 0)
     .sort((x, y) => y.area - x.area)[0];
+  if (!front) return null;
   const normal = front.normal.clone();
   const up = new THREE.Vector3(0, 1, 0).projectOnPlane(normal).normalize();
   const right = new THREE.Vector3().crossVectors(up, normal).normalize();
@@ -445,15 +478,31 @@ function frontFace(mesh, camera) {
     .addScaledVector(up, (minY + maxY) / 2)
     .addScaledVector(normal, depth);
 
-  return { center, normal, up, right, width: maxX - minX, height: maxY - minY };
+  const width = maxX - minX;
+  const height = maxY - minY;
+  if (!(width > 0 && height > 0)) return null;
+  return { center, normal, up, right, width, height };
 }
 
 function measure(ctx, canvas) {
   const rowHeight = canvas.height / SCREEN_ROWS;
-  const font = `${Math.round(rowHeight * 0.62)}px Menlo, Consolas, "DejaVu Sans Mono", monospace`;
+  const padding = Math.round(rowHeight * 0.5);
+  const family = 'Menlo, Consolas, "DejaVu Sans Mono", monospace';
+  // As large as the row height allows, but small enough that a full-width line of code
+  // (plus the 4-digit gutter) fits across, so nothing runs off the right edge.
+  ctx.font = `100px ${family}`;
+  const widthPerPixel = ctx.measureText("M").width / 100;
+  const columnsAcross = CODE_COLUMNS + 4 + 1;
+  const fontSize = Math.floor(
+    Math.min(
+      rowHeight * 0.62,
+      (canvas.width - padding * 4) / (columnsAcross * widthPerPixel),
+    ),
+  );
+  const font = `${fontSize}px ${family}`;
   ctx.font = font;
   const charWidth = ctx.measureText("M").width;
-  const padding = Math.round(rowHeight * 0.5);
+  const terminalTop = Math.round(canvas.height * 0.7);
   return {
     font,
     charWidth,
@@ -461,7 +510,8 @@ function measure(ctx, canvas) {
     padding,
     tabHeight: Math.round(rowHeight * 1.5),
     gutterWidth: Math.round(charWidth * 4 + padding * 2),
-    terminalTop: Math.round(canvas.height * 0.7),
+    terminalTop,
+    terminalRows: Math.floor((canvas.height - terminalTop - rowHeight * 1.4) / rowHeight),
   };
 }
 
@@ -486,17 +536,45 @@ function pickSnippet(source) {
 }
 
 const TOKEN =
-  /(\/\/.*$)|("(?:[^"\\]|\\.)*"?|'(?:[^'\\]|\\.)*'?|`(?:[^`\\]|\\.)*`?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_$][\w$]*)/g;
+  /(\/\*.*?(?:\*\/|$))|(\/\/.*$)|("(?:[^"\\]|\\.)*"?|'(?:[^'\\]|\\.)*'?|`(?:[^`\\]|\\.)*`?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_$][\w$]*)/g;
 
-// Splits a line into coloured tokens with their column, for VS Code-like highlighting.
-function highlight(line) {
+// Colours a snippet once, line by line, for VS Code-like highlighting. Each token keeps
+// its column so a partly typed line can be drawn up to the cursor. Tracks /* */ comments
+// across lines.
+function highlightLines(lines) {
+  let inBlockComment = false;
+  return lines.map((line) => {
+    const tokens = [];
+    let rest = 0;
+    if (inBlockComment) {
+      const close = line.indexOf("*/");
+      rest = close === -1 ? line.length : close + 2;
+      tokens.push({ start: 0, text: line.slice(0, rest), color: THEME.comment });
+      inBlockComment = close === -1;
+    }
+    const code = line.slice(rest);
+    for (const token of highlightCode(code)) {
+      tokens.push({ ...token, start: token.start + rest });
+      if (token.opensBlockComment) inBlockComment = true;
+    }
+    return tokens;
+  });
+}
+
+function highlightCode(line) {
   const tokens = [];
   let last = 0;
-  const push = (start, text, color) => tokens.push({ start, text, color });
+  const push = (start, text, color, extra) =>
+    tokens.push({ start, text, color, ...extra });
   for (const match of line.matchAll(TOKEN)) {
     if (match.index > last) push(last, line.slice(last, match.index), THEME.text);
-    const [text, comment, string, number, word] = match;
+    const [text, block, comment, string, number, word] = match;
     let color = THEME.text;
+    if (block) {
+      push(match.index, text, THEME.comment, { opensBlockComment: !text.endsWith("*/") });
+      last = match.index + text.length;
+      continue;
+    }
     if (comment) color = THEME.comment;
     else if (string) color = THEME.string;
     else if (number) color = THEME.number;
