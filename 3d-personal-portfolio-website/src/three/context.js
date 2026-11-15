@@ -33,7 +33,9 @@ export function createThreeContext(canvasId = "c") {
   // Scene + Environment
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.05).texture;
+  // Blur of 0.04 rad is the most PMREM samples allow; 0.05 was silently clipped to it
+  // (with a console warning), so this looks identical.
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
   // Camera
   const camera = new THREE.PerspectiveCamera(

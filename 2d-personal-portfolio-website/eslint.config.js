@@ -38,6 +38,7 @@ export default [
         HTMLTextAreaElement: "readonly",
         HTMLIFrameElement: "readonly",
         FocusEvent: "readonly",
+        MessageEvent: "readonly",
         EventTarget: "readonly",
         EventListenerOrEventListenerObject: "readonly",
         AddEventListenerOptions: "readonly",
