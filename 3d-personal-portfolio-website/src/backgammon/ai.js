@@ -15,11 +15,16 @@ const OPPONENT_ON_BAR = 4;
 export function choosePlay(position, player, plays, random = Math.random) {
   if (plays.length === 0) return [];
   let best = null;
+  // Many plays are the same moves in a different order; score each end position once.
+  const seen = new Set();
   for (const play of plays) {
     const end = play.reduce(
       (current, move) => applyMove(current, player, move),
       position,
     );
+    const key = `${end.points[0]}|${end.points[1]}|${end.bar}|${end.off}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
     // A whisper of noise so equal choices don't always look identical.
     const score = evaluate(end, player) + random() * 0.01;
     if (!best || score > best.score) best = { play, score };

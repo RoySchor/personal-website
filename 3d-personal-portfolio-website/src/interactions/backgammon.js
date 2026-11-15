@@ -36,9 +36,13 @@ const NO_MOVES_PAUSE_MS = 1400;
 // How long "no possible moves, skipping" stays up before play passes on.
 const SKIP_PAUSE_MS = 1900;
 const RESTART_CONFIRM_MS = 3000;
-// Camera pitch away from straight down, so the board reads as a table and lookAt is stable.
-const VIEW_TILT = THREE.MathUtils.degToRad(16);
-const VIEW_MARGIN = 1.25;
+// The camera looks straight down. A hair off vertical keeps "up" on screen defined (at
+// exactly vertical, lookAt and OrbitControls can't tell which way the board should face).
+const VIEW_TILT = THREE.MathUtils.degToRad(1);
+// Breathing room around the board: across the screen, and top-to-bottom where the status
+// bar and buttons sit.
+const VIEW_MARGIN_WIDTH = 1.06;
+const VIEW_MARGIN_HEIGHT = 1.2;
 
 export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen }) {
   const layout = readBoardLayout(root, camera);
@@ -63,7 +67,6 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
   const planeHit = new THREE.Vector3();
 
   let active = false;
-  let hovered = false;
   let game = null;
   let selected = null;
   let downAt = null;
@@ -90,13 +93,11 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
   }
 
   function hoverAt(e) {
-    hovered = isPointedAt(e);
-    return hovered;
+    return isPointedAt(e);
   }
 
-  function clearHover() {
-    hovered = false;
-  }
+  // Part of the room-toy interface; the board keeps no hover state of its own.
+  function clearHover() {}
 
   function tapAt(e) {
     if (!isPointedAt(e)) return false;
@@ -123,28 +124,24 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     refreshHighlights();
   }
 
-  // Camera pose that frames the board for the current screen shape. On portrait screens
-  // the camera looks down the board's length so the points become wider tap targets.
+  // Camera pose straight above the board, framing it for the current screen shape.
   function cameraPose() {
-    const portrait = camera.aspect < 1;
     const size = layout.boardBox.getSize(new THREE.Vector3());
-    const longSize = Math.abs(size.dot(layout.right));
-    const acrossSize = Math.abs(size.dot(layout.toVisitor));
-    const viewFrom = portrait ? layout.right.clone() : layout.toVisitor.clone();
-    const screenWidth = portrait ? acrossSize : longSize;
-    const screenHeight = portrait ? longSize : acrossSize;
+    const screenWidth = Math.abs(size.dot(layout.right));
+    const screenHeight = Math.abs(size.dot(layout.toVisitor));
     const vFov = THREE.MathUtils.degToRad(camera.fov);
     const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect);
-    const distance =
-      Math.max(
-        screenHeight / 2 / Math.tan(vFov / 2),
-        screenWidth / 2 / Math.tan(hFov / 2),
-      ) * VIEW_MARGIN;
+    // The board is held level and the right way round on every screen: phones in
+    // portrait zoom out until its full width fits rather than turning it.
+    const distance = Math.max(
+      (screenHeight / 2 / Math.tan(vFov / 2)) * VIEW_MARGIN_HEIGHT,
+      (screenWidth / 2 / Math.tan(hFov / 2)) * VIEW_MARGIN_WIDTH,
+    );
     const target = layout.center.clone().setY(layout.surfaceY);
     const position = target
       .clone()
       .addScaledVector(layout.up, distance * Math.cos(VIEW_TILT))
-      .addScaledVector(viewFrom, distance * Math.sin(VIEW_TILT));
+      .addScaledVector(layout.toVisitor, distance * Math.sin(VIEW_TILT));
     return { position, target, distance };
   }
 
@@ -170,7 +167,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     }
     if (game.phase !== "moving") return true;
 
-    const options = nextMoves(game.plays, game.made);
+    const options = currentOptions();
     if (selected !== null) {
       const move = options.find((m) => m.from === selected && m.to === slot);
       if (move) {
@@ -191,8 +188,24 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     if (slot === null) return false;
     if (game.phase === "opening" || game.phase === "await-roll") return true;
     if (game.phase !== "moving") return false;
-    const options = nextMoves(game.plays, game.made);
+    const options = currentOptions();
     return options.some((m) => m.from === slot || (m.from === selected && m.to === slot));
+  }
+
+  // The visitor's legal next moves. Doubles can have thousands of plays, so this is worked
+  // out once per move rather than on every hover and tap. It is keyed on the play list and
+  // the moves-made array itself, since undo swaps in a different array of the same length.
+  let optionsCache = { plays: null, made: null, count: -1, moves: [] };
+  function currentOptions() {
+    const { plays, made } = game;
+    if (
+      optionsCache.plays !== plays ||
+      optionsCache.made !== made ||
+      optionsCache.count !== made.length
+    ) {
+      optionsCache = { plays, made, count: made.length, moves: nextMoves(plays, made) };
+    }
+    return optionsCache.moves;
   }
 
   // --- Game flow ---
@@ -261,6 +274,9 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
       return;
     }
     game.phase = "rolling";
+    // Once new dice are rolled, undo only reaches moves made with them; going back past a
+    // roll would let the visitor re-roll a bad one.
+    history = [];
     const roll = [rollDie(), rollDie()];
     await dice.roll(roll, RED);
     if (myGeneration !== generation) return;
@@ -356,7 +372,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     performMove(RED, move);
     selected = null;
     if (game.winner !== null) return;
-    if (nextMoves(game.plays, game.made).length === 0) {
+    if (currentOptions().length === 0) {
       computerTurn();
       return;
     }
@@ -497,7 +513,7 @@ export function createBackgammon({ root, scene, camera, ray, surfaces, onOpen })
     for (let i = 0; i < checkers.count; i++) checkers.setLift(i, 0);
     markers.show();
     if (!active || !game || game.phase !== "moving") return;
-    const options = nextMoves(game.plays, game.made);
+    const options = currentOptions();
     const stacks = game.stacks[RED];
     const topOf = (slot) => stacks.get(slot)?.at(-1);
     const above = (spot, lift = 0) =>
@@ -555,18 +571,20 @@ function jumbleColors(layout) {
   });
   const groups = [...new Set(slots)];
   const colorOfGroup = new Map(groups.map((g, i) => [g, i % 2]));
-  const count = (color) => slots.filter((s) => colorOfGroup.get(s) === color).length;
+  const colors = slots.map((slot) => colorOfGroup.get(slot));
+  // At most one colour can be short (there are 30+ checkers). Top it up one checker at a
+  // time from the other colour, which keeps at least 15 because the total is at least 30.
+  const groupSize = (slot) => slots.filter((s) => s === slot).length;
   for (const color of [RED, BLACK]) {
-    const other = 1 - color;
-    const bySize = groups
-      .filter((g) => colorOfGroup.get(g) === other)
-      .map((g) => [g, slots.filter((s) => s === g).length])
-      .sort((a, b) => a[1] - b[1]);
-    while (count(color) < CHECKERS_PER_PLAYER && bySize.length) {
-      colorOfGroup.set(bySize.shift()[0], color);
+    const spare = colors
+      .map((c, i) => i)
+      .filter((i) => colors[i] !== color)
+      .sort((a, b) => groupSize(slots[a]) - groupSize(slots[b]));
+    while (colors.filter((c) => c === color).length < CHECKERS_PER_PLAYER) {
+      colors[spare.shift()] = color;
     }
   }
-  return (i) => colorOfGroup.get(slots[i]);
+  return (i) => colors[i];
 }
 
 function wait(ms) {
@@ -577,50 +595,52 @@ function wait(ms) {
 // along the bottom-left on phones (the Exit button sits bottom-right there). Restart asks
 // for a second tap rather than a dialog, so a stray tap can't wipe a game.
 function createControls({ onUndo, onRestart }) {
-  let panel = document.getElementById(CONTROLS_ID);
-  if (!panel) {
-    const style = document.createElement("style");
-    style.textContent = `
+  // Rebuilt on every call, so a dev hot reload replaces the old panel instead of stacking
+  // a second set of click handlers on it.
+  document.getElementById(CONTROLS_ID)?.remove();
+  document.getElementById(`${CONTROLS_ID}-style`)?.remove();
+  const style = document.createElement("style");
+  style.id = `${CONTROLS_ID}-style`;
+  style.textContent = `
+    #${CONTROLS_ID} {
+      position: fixed;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 99998;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+    #${CONTROLS_ID} button {
+      min-width: 84px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      font: 500 14px system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+    }
+    #${CONTROLS_ID} button:disabled { opacity: 0.4; cursor: default; }
+    #${CONTROLS_ID} button.confirming { background: #2f9bff; border-color: #2f9bff; }
+    @media (max-width: 1024px) {
       #${CONTROLS_ID} {
-        position: fixed;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 99998;
-        display: none;
-        flex-direction: column;
-        gap: 8px;
+        top: auto;
+        bottom: 5px;
+        left: 10px;
+        transform: none;
+        flex-direction: row;
       }
-      #${CONTROLS_ID} button {
-        min-width: 84px;
-        padding: 8px 12px;
-        border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.3);
-        background: rgba(0,0,0,0.6);
-        color: #fff;
-        font: 500 14px system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-        backdrop-filter: blur(6px);
-        cursor: pointer;
-      }
-      #${CONTROLS_ID} button:disabled { opacity: 0.4; cursor: default; }
-      #${CONTROLS_ID} button.confirming { background: #2f9bff; border-color: #2f9bff; }
-      @media (max-width: 1024px) {
-        #${CONTROLS_ID} {
-          top: auto;
-          bottom: 5px;
-          left: 10px;
-          transform: none;
-          flex-direction: row;
-        }
-        #${CONTROLS_ID} button { min-width: 0; font-size: 13px; padding: 7px 10px; }
-      }
-    `;
-    document.head.appendChild(style);
-    panel = document.createElement("div");
-    panel.id = CONTROLS_ID;
-    panel.innerHTML = `<button type="button" data-action="undo">Undo</button><button type="button" data-action="restart">Restart</button>`;
-    document.body.appendChild(panel);
-  }
+      #${CONTROLS_ID} button { min-width: 0; font-size: 13px; padding: 7px 10px; }
+    }
+  `;
+  document.head.appendChild(style);
+  const panel = document.createElement("div");
+  panel.id = CONTROLS_ID;
+  panel.innerHTML = `<button type="button" data-action="undo">Undo</button><button type="button" data-action="restart">Restart</button>`;
+  document.body.appendChild(panel);
   const undoButton = panel.querySelector('[data-action="undo"]');
   const restartButton = panel.querySelector('[data-action="restart"]');
   let confirmTimer = 0;
@@ -658,52 +678,54 @@ function createControls({ onUndo, onRestart }) {
 }
 
 function createStatus(onNewGame) {
-  let panel = document.getElementById(STATUS_ID);
-  if (!panel) {
-    const style = document.createElement("style");
-    style.textContent = `
-      #${STATUS_ID} {
-        position: fixed;
-        top: 12px;
-        left: 0;
-        right: 0;
-        margin-inline: auto;
-        width: max-content;
-        z-index: 99998;
-        display: none;
-        align-items: center;
-        gap: 10px;
-        max-width: min(560px, calc(100vw - 32px));
-        padding: 8px 14px;
-        border-radius: 12px;
-        border: 1px solid rgba(255,255,255,0.3);
-        background: rgba(0,0,0,0.6);
-        color: #fff;
-        font: 500 14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-        text-align: center;
-        backdrop-filter: blur(6px);
-        box-sizing: border-box;
-      }
-      #${STATUS_ID} button {
-        flex: none;
-        padding: 6px 10px;
-        border-radius: 8px;
-        border: 0;
-        background: #fff;
-        color: #111;
-        font: inherit;
-        cursor: pointer;
-      }
-      @media (max-width: 1024px) {
-        #${STATUS_ID} { top: 10px; font-size: 13px; }
-      }
-    `;
-    document.head.appendChild(style);
-    panel = document.createElement("div");
-    panel.id = STATUS_ID;
-    panel.innerHTML = `<span></span><button type="button">New game</button>`;
-    document.body.appendChild(panel);
-  }
+  // Rebuilt on every call, so a dev hot reload replaces the old panel instead of stacking
+  // a second set of click handlers on it.
+  document.getElementById(STATUS_ID)?.remove();
+  document.getElementById(`${STATUS_ID}-style`)?.remove();
+  const style = document.createElement("style");
+  style.id = `${STATUS_ID}-style`;
+  style.textContent = `
+    #${STATUS_ID} {
+      position: fixed;
+      top: 12px;
+      left: 0;
+      right: 0;
+      margin-inline: auto;
+      width: max-content;
+      z-index: 99998;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      max-width: min(560px, calc(100vw - 32px));
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      font: 500 14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      box-sizing: border-box;
+    }
+    #${STATUS_ID} button {
+      flex: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 0;
+      background: #fff;
+      color: #111;
+      font: inherit;
+      cursor: pointer;
+    }
+    @media (max-width: 1024px) {
+      #${STATUS_ID} { top: 10px; font-size: 13px; }
+    }
+  `;
+  document.head.appendChild(style);
+  const panel = document.createElement("div");
+  panel.id = STATUS_ID;
+  panel.innerHTML = `<span></span><button type="button">New game</button>`;
+  document.body.appendChild(panel);
   const text = panel.querySelector("span");
   const button = panel.querySelector("button");
   button.addEventListener("click", onNewGame);

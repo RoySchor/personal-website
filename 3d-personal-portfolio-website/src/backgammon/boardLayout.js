@@ -146,13 +146,14 @@ export function readBoardLayout(root, camera) {
     const halfLong = Math.abs(size.clone().dot(right)) / 2;
     const halfAcross = Math.abs(size.clone().dot(toVisitor)) / 2;
     if (Math.abs(a) > halfLong || Math.abs(s) > halfAcross) return null;
-    if (Math.abs(a - trayAlong) <= diameter) return OFF;
-    if (Math.abs(a - barAlong) <= columnPitch / 2) return BAR;
     const row = s > 0 ? near : far;
     const start = s > 0 ? 1 : 13;
     for (let i = 0; i < 12; i++) {
       if (Math.abs(a - along(row[i].center)) <= columnPitch / 2) return start + i;
     }
+    if (Math.abs(a - barAlong) <= columnPitch / 2) return BAR;
+    // The tray is everything past the 1-point column, so it can never steal a point tap.
+    if (a > points[1].along + columnPitch / 2) return OFF;
     return "board";
   }
 

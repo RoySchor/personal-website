@@ -63,8 +63,9 @@ const onAllAssetsLoaded = () => {
   const ctx = createThreeContext("c");
   const { renderer, cssRenderer, scene, camera } = ctx;
 
+  // Same guard as the Escape key below.
   const exitBtn = createExitButton(() => {
-    if (focuser.isFocusing()) return;
+    if (focuser.isFocusing() || transitioning) return;
     if (preview.isFocused()) exitFocus();
     else if (backgammon?.isActive()) exitBoard();
   });
@@ -608,6 +609,17 @@ const onAllAssetsLoaded = () => {
       transitioning = false;
     })();
   }
+
+  // Rotating a phone (or resizing the window) while at the board re-frames it for the new
+  // screen shape. Waits for the resize to settle and the camera aspect to update first.
+  let reframeTimer = 0;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(reframeTimer);
+    reframeTimer = window.setTimeout(() => {
+      if (!backgammon?.isActive() || transitioning || focuser.isFocusing()) return;
+      focuser.focusAt({ ...backgammon.cameraPose(), duration: 300 });
+    }, 200);
+  });
 
   function exitFocus() {
     transitioning = true;
