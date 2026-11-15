@@ -31,9 +31,9 @@ const AUTHOR_GAP = 0.35;
 // More than two lines on a plank looks cramped; a long quote spreads onto the bottom plank.
 const MAX_LINES_PER_PLANK = 2;
 // Share of a plank's height the lettering may fill, top to bottom.
-const PLANK_TEXT_HEIGHT = 0.9;
-const LINE_HEIGHT = 1.12;
-const SIDE_PADDING = 0.02;
+const PLANK_TEXT_HEIGHT = 0.92;
+const LINE_HEIGHT = 1.08;
+const SIDE_PADDING = 0.01;
 // A plain, heavy sans-serif reads best at a distance and at an angle.
 const FONT_FAMILY = '"Helvetica Neue", Helvetica, Arial, sans-serif';
 const FONT_WEIGHT = 700;
@@ -47,7 +47,7 @@ const GRAIN_LIGHT = [255, 226, 180];
 const CRACK = [30, 15, 6];
 // Longer quotes would need lettering too small to read on the planks; the laptop app still
 // shows those.
-const MAX_QUOTE_CHARS = 185;
+const MAX_QUOTE_CHARS = 190;
 const RTL_TEXT = /[\u0590-\u08ff]/;
 
 const QUOTES = quoteStrings
